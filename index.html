@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P.O.S. Local - Control de Inventario</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans text-gray-800">
+
+    <div class="min-h-screen flex flex-col">
+        
+        <header class="bg-blue-600 text-white shadow-md p-4">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-xl font-bold tracking-wide">📦 P.O.S. Sistema de Inventario Local</h1>
+                <span class="text-sm bg-blue-700 px-3 py-1 rounded-full shadow-inner">Modo Finanzas Activo</span>
+            </div>
+        </header>
+
+        <main class="flex-grow container mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <section class="bg-white p-6 rounded-lg shadow-md border-t-4 border-green-500 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold text-green-700 mb-4 flex items-center gap-2">
+                        📥 Ingreso de Mercancía (Compra/Stock)
+                    </h2>
+                    <form id="form-ingreso" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600">Código</label>
+                            <input type="text" id="ingreso-codigo" required class="w-full mt-1 p-2 border rounded focus:ring-2 focus:ring-green-400 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600">Artículo / Descripción</label>
+                            <input type="text" id="ingreso-articulo" required class="w-full mt-1 p-2 border rounded focus:ring-2 focus:ring-green-400 outline-none transition-all">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600">Cantidad</label>
+                                <input type="number" id="ingreso-cantidad" min="1" required class="w-full mt-1 p-2 border rounded focus:ring-2 focus:ring-green-400 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600">Precio de Compra ($)</label>
+                                <input type="number" id="ingreso-precio" step="0.01" min="0" required class="w-full mt-1 p-2 border rounded focus:ring-2 focus:ring-green-400 outline-none">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 rounded transition-colors shadow mt-2">
+                            Registrar Ingreso
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 rounded-lg shadow-md border-t-4 border-red-500 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold text-red-700 mb-4 flex items-center gap-2">
+                        📤 Egreso de Mercancía (Venta/Salida)
+                    </h2>
+                    <form id="form-egreso" class="space-y-4">
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600">Código</label>
+                            <input type="text" id="egreso-codigo" required placeholder="Se autocompleta o escribe el código" class="w-full mt-1 p-2 border rounded focus:ring-2 focus:ring-red-400 outline-none">
+                        </div>
+                        
+			<div>
+                            <label class="block text-sm font-medium text-gray-600">Artículo / Descripción (Buscar)</label>
+                            <input type="text" id="egreso-articulo" list="lista-articulos-egreso" required placeholder="Escribe para buscar por nombre..." class="w-full mt-1 p-2 border rounded focus:ring-2 focus:ring-red-400 outline-none">
+                            <datalist id="lista-articulos-egreso"></datalist>
+                        </div>			
+
+			<div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600">Cantidad</label>
+                                <input type="number" id="egreso-cantidad" min="1" required class="w-full mt-1 p-2 border rounded focus:ring-2 focus:ring-red-400 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-600">Precio de Venta (unid.) ($)</label>
+                                <input type="number" id="egreso-precio" step="0.01" min="0" required placeholder="Sugerido o nuevo precio" class="w-full mt-1 p-2 border rounded focus:ring-2 focus:ring-red-400 outline-none">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 rounded transition-colors shadow">
+                            ➕ Añadir a la Venta Actual
+                        </button>
+                    </form>
+
+                    <div class="mt-6 pt-4 border-t border-gray-200">
+                        <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">🛒 Artículos en la venta actual:</h3>
+                        <div class="max-h-44 overflow-y-auto border border-gray-200 rounded bg-gray-50">
+                            <table class="w-full text-left text-xs text-gray-600">
+                                <thead class="bg-gray-200 text-gray-700 uppercase tracking-wider sticky top-0">
+                                    <tr>
+                                        <th class="p-2">Artículo</th>
+                                        <th class="p-2 text-center">Cant.</th>
+                                        <th class="p-2 text-right">Precio</th>
+                                        <th class="p-2 text-right">Total</th>
+                                        <th class="p-2 text-center"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-carrito" class="divide-y divide-gray-200"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="flex justify-between items-center mt-3 p-2 bg-gray-100 rounded border font-bold text-gray-700">
+                            <span>TOTAL DE LA VENTA:</span>
+                            <span id="total-carrito" class="text-base text-red-600">$ 0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mt-4 pt-2">
+                    <button type="button" id="btn-cancelar-egreso" class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-semibold py-2 rounded transition-colors">
+                        Cancelar Venta
+                    </button>
+                    <button type="button" id="btn-procesar-egreso" class="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold py-2 rounded transition-colors shadow">
+                        ✔ Finalizar Venta
+                    </button>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 rounded-lg shadow-md lg:col-span-2">
+                <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100 flex-wrap gap-4">
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-700">📊 Inventario en Tiempo Real</h2>
+                        <p class="text-xs text-gray-400">Datos paginados de 10 en 10</p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <button id="btn-exportar" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded shadow transition-colors flex items-center gap-1">
+                            📧 Exportar y Enviar
+                        </button>
+                        <label for="input-importar" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold px-3 py-2 rounded shadow transition-colors cursor-pointer flex items-center gap-1">
+                            📂 Importar CSV
+                        </label>
+                        <input type="file" id="input-importar" accept=".csv" class="hidden">
+                        <button id="btn-limpiar" class="text-xs bg-gray-100 hover:bg-red-100 text-gray-500 hover:text-red-600 px-3 py-2 rounded transition-colors">
+                            Borrar Todo
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto border-collapse text-left text-sm text-gray-600">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-700 uppercase text-xs tracking-wider border-b">
+                                <th class="p-3">Código</th>
+                                <th class="p-3">Artículo</th>
+                                <th class="p-3 text-center">Stock Actual</th>
+                                <th class="p-3 text-right">Último Costo</th>
+                                <th class="p-3 text-right">Último Precio</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-inventario" class="divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+
+                <div class="flex justify-between items-center mt-4 pt-4 border-t border-gray-100">
+                    <span id="info-paginacion" class="text-sm text-gray-500 font-medium">Página 1 de 1</span>
+                    <div class="inline-flex gap-2">
+                        <button id="btn-anterior" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded transition-colors disabled:opacity-40 disabled:cursor-not-allowed">Anterior</button>
+                        <button id="btn-siguiente" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded transition-colors disabled:opacity-40 disabled:cursor-not-allowed">Siguiente</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        let inventario = JSON.parse(localStorage.getItem('pos_inventario')) || {};
+        let transacciones = JSON.parse(localStorage.getItem('pos_transacciones')) || [];
+        let carrito = [];
+        let paginaActual = 1;
+        const itemsPorPagina = 10;
+
+        const formIngreso = document.getElementById('form-ingreso');
+        const formEgreso = document.getElementById('form-egreso');
+        const tablaInventario = document.getElementById('tabla-inventario');
+        const btnLimpiar = document.getElementById('btn-limpiar');
+        const ingresoCodigo = document.getElementById('ingreso-codigo');
+        const ingresoArticulo = document.getElementById('ingreso-articulo');
+        const egresoCodigo = document.getElementById('egreso-codigo');
+        const egresoArticulo = document.getElementById('egreso-articulo');
+        const egresoPrecio = document.getElementById('egreso-precio');
+        const listaArticulosEgreso = document.getElementById('lista-articulos-egreso');
+        const tablaCarrito = document.getElementById('tabla-carrito');
+        const totalCarrito = document.getElementById('total-carrito');
+        const btnProcesarEgreso = document.getElementById('btn-procesar-egreso');
+        const btnCancelarEgreso = document.getElementById('btn-cancelar-egreso');
+        const infoPaginacion = document.getElementById('info-paginacion');
+        const btnAnterior = document.getElementById('btn-anterior');
+        const btnSiguiente = document.getElementById('btn-siguiente');
+        const btnExportar = document.getElementById('btn-exportar');
+        const inputImportar = document.getElementById('input-importar');
+
+        function actualizarTabla() {
+            tablaInventario.innerHTML = '';
+            const keys = Object.keys(inventario);
+            const totalItems = keys.length;
+            
+            if (totalItems === 0) {
+                tablaInventario.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-400 italic">No hay mercancía en inventario.</td></tr>`;
+                infoPaginacion.textContent = "Página 1 de 1";
+                btnAnterior.disabled = true;
+                btnSiguiente.disabled = true;
+                return;
+            }
+
+            const totalPaginas = Math.ceil(totalItems / itemsPorPagina);
+            if (paginaActual > totalPaginas) paginaActual = totalPaginas;
+
+            const indiceInicio = (paginaActual - 1) * itemsPorPagina;
+            const indiceFin = indiceInicio + itemsPorPagina;
+            const keysPaginadas = keys.slice(indiceInicio, indiceFin);
+
+            keysPaginadas.forEach(codigo => {
+                const item = inventario[codigo];
+                const fila = document.createElement('tr');
+                fila.className = "hover:bg-gray-50 transition-colors";
+                fila.innerHTML = `
+                    <td class="p-3 font-mono font-bold text-gray-700">${codigo}</td>
+                    <td class="p-3 font-medium">${item.articulo}</td>
+                    <td class="p-3 text-center">
+                        <span class="px-2 py-1 rounded text-xs font-bold ${item.cantidad > 5 ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'}">
+                            ${item.cantidad} u
+                        </span>
+                    </td>
+                    <td class="p-3 text-right text-gray-500">$ ${parseFloat(item.precioCompra).toFixed(2)}</td>
+                    <td class="p-3 text-right text-gray-500">$ ${item.precioVenta ? parseFloat(item.precioVenta).toFixed(2) : '-.--'}</td>
+                `;
+                tablaInventario.appendChild(fila);
+            });
+
+            infoPaginacion.textContent = `Página ${paginaActual} de ${totalPaginas} (${totalItems} artículos)`;
+            btnAnterior.disabled = (paginaActual === 1);
+            btnSiguiente.disabled = (paginaActual === totalPaginas);
+        }
+
+        function actualizarListaSugerencias() {
+            listaArticulosEgreso.innerHTML = '';
+            Object.keys(inventario).forEach(codigo => {
+                const option = document.createElement('option');
+                option.value = inventario[codigo].articulo;
+                listaArticulosEgreso.appendChild(option);
+            });
+        }
+
+        function actualizarCarrito() {
+            tablaCarrito.innerHTML = '';
+            let sumaTotal = 0;
+
+            if (carrito.length === 0) {
+                tablaCarrito.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-gray-400 italic">Ningún artículo añadido.</td></tr>`;
+                totalCarrito.textContent = "$ 0.00";
+                return;
+            }
+
+            carrito.forEach((item, index) => {
+                const subtotal = item.cantidad * item.precioVenta;
+                sumaTotal += subtotal;
+
+                const fila = document.createElement('tr');
+                fila.className = "hover:bg-gray-100";
+                fila.innerHTML = `
+                    <td class="p-2 font-medium truncate max-w-[120px]">${item.articulo}</td>
+                    <td class="p-2 text-center font-bold">${item.cantidad}</td>
+                    <td class="p-2 text-right text-gray-500">$${item.precioVenta.toFixed(2)}</td>
+                    <td class="p-2 text-right font-semibold text-gray-700">$${subtotal.toFixed(2)}</td>
+                    <td class="p-2 text-center">
+                        <button type="button" onclick="eliminarDelCarrito(${index})" class="text-red-500 hover:text-red-700 font-bold px-1">✕</button>
+                    </td>
+                `;
+                tablaCarrito.appendChild(fila);
+            });
+
+            totalCarrito.textContent = `$ ${sumaTotal.toFixed(2)}`;
+        }
+
+        function eliminarDelCarrito(index) {
+            carrito.splice(index, 1);
+            actualizarCarrito();
+        }
+
+        function guardarDatos() {
+            localStorage.setItem('pos_inventario', JSON.stringify(inventario));
+            localStorage.setItem('pos_transacciones', JSON.stringify(transacciones));
+            actualizarTabla();
+            actualizarListaSugerencias();
+        }
+
+        btnAnterior.addEventListener('click', () => { if (paginaActual > 1) { paginaActual--; actualizarTabla(); } });
+        btnSiguiente.addEventListener('click', () => {
+            const totalPaginas = Math.ceil(Object.keys(inventario).length / itemsPorPagina);
+            if (paginaActual < totalPaginas) { paginaActual++; actualizarTabla(); }
+        });
+
+        ingresoCodigo.addEventListener('input', () => {
+            const codigo = ingresoCodigo.value.trim();
+            if (inventario[codigo]) {
+                ingresoArticulo.value = inventario[codigo].articulo;
+                ingresoArticulo.readOnly = true;
+                ingresoArticulo.classList.add('bg-gray-100', 'text-gray-500', 'cursor-not-allowed');
+            } else {
+                ingresoArticulo.readOnly = false;
+                ingresoArticulo.classList.remove('bg-gray-100', 'text-gray-500', 'cursor-not-allowed');
+            }
+        });
+
+        formIngreso.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const codigo = ingresoCodigo.value.trim();
+            const articulo = ingresoArticulo.value.trim();
+            const cantidad = parseInt(document.getElementById('ingreso-cantidad').value);
+            const precioCompra = parseFloat(document.getElementById('ingreso-precio').value);
+
+            if (inventario[codigo]) {
+                inventario[codigo].cantidad += cantidad;
+                inventario[codigo].precioCompra = precioCompra;
+            } else {
+                inventario[codigo] = { articulo, cantidad, precioCompra, precioVenta: null };
+            }
+
+            // REGISTRO DE INGRESO: Se guarda precioCompra, precioVenta va en 0
+            transacciones.push({
+                fecha: new Date().toLocaleString('es-ES'),
+                tipo: 'Ingreso',
+                codigo,
+                articulo: inventario[codigo].articulo,
+                cantidad,
+                precioCompra: precioCompra,
+                precioVenta: 0
+            });
+
+            guardarDatos();
+            formIngreso.reset();
+            ingresoArticulo.readOnly = false;
+            ingresoArticulo.classList.remove('bg-gray-100', 'text-gray-500', 'cursor-not-allowed');
+            ingresoCodigo.focus();
+        });
+
+        egresoArticulo.addEventListener('input', () => {
+            const nombreIngresado = egresoArticulo.value.trim().toLowerCase();
+            const codigoEncontrado = Object.keys(inventario).find(codigo => 
+                inventario[codigo].articulo.toLowerCase() === nombreIngresado
+            );
+
+            if (codigoEncontrado) {
+                egresoCodigo.value = codigoEncontrado;
+                if (inventario[codigoEncontrado].precioVenta) {
+                    egresoPrecio.value = inventario[codigoEncontrado].precioVenta;
+                } else {
+                    egresoPrecio.value = '';
+                }
+            } else {
+                egresoCodigo.value = '';
+                egresoPrecio.value = '';
+            }
+        });
+
+        egresoCodigo.addEventListener('input', () => {
+            const codigo = egresoCodigo.value.trim();
+            if (inventario[codigo]) {
+                egresoArticulo.value = inventario[codigo].articulo;
+                if (inventario[codigo].precioVenta) {
+                    egresoPrecio.value = inventario[codigo].precioVenta;
+                } else {
+                    egresoPrecio.value = '';
+                }
+            } else {
+                egresoArticulo.value = '';
+                egresoPrecio.value = '';
+            }
+        });
+
+        formEgreso.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const codigo = egresoCodigo.value.trim();
+            const cantidad = parseInt(document.getElementById('egreso-cantidad').value);
+            const precioVenta = parseFloat(egresoPrecio.value);
+
+            if (!inventario[codigo]) {
+                return alert('⚠️ Error: El artículo o código ingresado no coincide con ningún producto.');
+            }
+
+            const itemEnCarrito = carrito.find(item => item.codigo === codigo);
+            const cantidadPreviaEnCarrito = itemEnCarrito ? itemEnCarrito.cantidad : 0;
+
+            if (inventario[codigo].cantidad < (cantidadPreviaEnCarrito + cantidad)) {
+                return alert(`❌ Stock insuficiente. Quedan ${inventario[codigo].cantidad} unidades.`);
+            }
+
+            if (itemEnCarrito) {
+                itemEnCarrito.cantidad += cantidad;
+                itemEnCarrito.precioVenta = precioVenta; 
+            } else {
+                carrito.push({
+                    codigo,
+                    articulo: inventario[codigo].articulo,
+                    cantidad,
+                    precioVenta
+                });
+            }
+
+            formEgreso.reset();
+            actualizarCarrito();
+            egresoArticulo.focus();
+        });
+
+        btnProcesarEgreso.addEventListener('click', () => {
+            if (carrito.length === 0) return alert('⚠️ El carrito está vacío.');
+
+            const fechaActual = new Date().toLocaleString('es-ES');
+            carrito.forEach(item => {
+                inventario[item.codigo].cantidad -= item.cantidad;
+                inventario[item.codigo].precioVenta = item.precioVenta; 
+
+                // REGISTRO DE EGRESO INTELIGENTE: Guarda el costo de compra histórico + el precio de venta actual
+                transacciones.push({
+                    fecha: fechaActual,
+                    tipo: 'Egreso',
+                    codigo: item.codigo,
+                    articulo: item.articulo,
+                    cantidad: item.cantidad,
+                    precioCompra: inventario[item.codigo].precioCompra || 0,
+                    precioVenta: item.precioVenta
+                });
+            });
+
+            carrito = [];
+            actualizarCarrito();
+            guardarDatos(); 
+            alert('🛍️ ¡Venta completada con éxito!');
+        });
+
+        btnCancelarEgreso.addEventListener('click', () => {
+            if (carrito.length > 0 && confirm('¿Deseas vaciar la lista de la venta actual?')) {
+                carrito = [];
+                actualizarCarrito();
+            }
+        });
+
+        // =========================================================================
+        // ✨ MODIFICADO: Estructura del CSV con dos columnas independientes de precios
+        // =========================================================================
+        btnExportar.addEventListener('click', async () => {
+            if (transacciones.length === 0) return alert("No hay transacciones para exportar.");
+            
+            let csv = "\uFEFF"; 
+            // Nueva cabecera con Precio de Compra y Precio de Venta separados
+            csv += "Fecha y Hora;Tipo de Movimiento;Código;Artículo;Cantidad;Precio de Compra;Precio de Venta\n";
+            
+            transacciones.forEach(t => {
+                // Validación para mantener compatibilidad con transacciones antiguas si las hubiera
+                let pCompra = t.precioCompra !== undefined ? t.precioCompra : (t.tipo === 'Ingreso' ? t.precio : 0);
+                let pVenta = t.precioVenta !== undefined ? t.precioVenta : (t.tipo === 'Egreso' ? t.precio : 0);
+                
+                csv += `${t.fecha};${t.tipo};${t.codigo};"${t.articulo.replace(/"/g, '""')}";${t.cantidad};${pCompra.toFixed(2)};${pVenta.toFixed(2)}\n`;
+            });
+            
+            const nombreArchivo = `reporte_financiero_pos_${new Date().toISOString().slice(0, 10)}.csv`;
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const archivoCSV = new File([blob], nombreArchivo, { type: 'text/csv' });
+
+            if (navigator.canShare && navigator.canShare({ files: [archivoCSV] })) {
+                try {
+                    await navigator.share({
+                        files: [archivoCSV],
+                        title: 'Reporte Financiero P.O.S.',
+                        text: 'Historial de transacciones optimizado con costos de compra y venta adjunto.'
+                    });
+                } catch (err) {
+                    console.log("Envío cancelado o fallido: ", err);
+                }
+            } else {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.setAttribute("href", url);
+                link.setAttribute("download", nombreArchivo);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        });
+
+        // Lector adaptado para procesar la nueva columna en la importación
+        inputImportar.addEventListener('change', (e) => {
+            const archivo = e.target.files[0];
+            if (!archivo) return;
+            const lector = new FileReader();
+            lector.onload = function(evt) {
+                const lineas = evt.target.result.split(/\r?\n/);
+                if (lineas.length <= 1) return alert("El archivo está vacío o dañado.");
+                if (!confirm("⚠️ ATENCIÓN: Reemplazará todo el stock actual. ¿Continuar?")) { inputImportar.value = ''; return; }
+
+                let nuevoInventario = {};
+                let nuevasTransacciones = [];
+
+                for (let i = 1; i < lineas.length; i++) {
+                    let linea = lineas[i].trim();
+                    if (!linea) continue;
+                    let columnas = linea.split(';');
+                    if (columnas.length < 6) continue;
+
+                    let fecha = columnas[0], tipo = columnas[1], codigo = columnas[2];
+                    let articulo = columnas[3].replace(/^"|"$/g, '');
+                    let cantidad = parseInt(columnas[4]);
+                    
+                    let precioCompra = 0;
+                    let precioVenta = 0;
+
+                    // Detecta si es un formato nuevo (7 columnas) o antiguo (6 columnas)
+                    if (columnas.length >= 7) {
+                        precioCompra = parseFloat(columnas[5]);
+                        precioVenta = parseFloat(columnas[6]);
+                    } else {
+                        // Soporte para archivos antiguos
+                        let precioAntiguo = parseFloat(columnas[5]);
+                        if (tipo === 'Ingreso') precioCompra = precioAntiguo;
+                        if (tipo === 'Egreso') precioVenta = precioAntiguo;
+                    }
+
+                    if (isNaN(cantidad) || isNaN(precioCompra) || isNaN(precioVenta)) continue;
+
+                    nuevasTransacciones.push({ fecha, tipo, codigo, articulo, cantidad, precioCompra, precioVenta });
+
+                    if (tipo === 'Ingreso') {
+                        if (nuevoInventario[codigo]) { 
+                            nuevoInventario[codigo].cantidad += cantidad; 
+                            nuevoInventario[codigo].precioCompra = precioCompra; 
+                        } else { 
+                            nuevoInventario[codigo] = { articulo, cantidad, precioCompra, precioVenta: null }; 
+                        }
+                    } else if (tipo === 'Egreso') {
+                        if (nuevoInventario[codigo]) { 
+                            nuevoInventario[codigo].cantidad -= cantidad; 
+                            nuevoInventario[codigo].precioVenta = precioVenta; 
+                        } else { 
+                            nuevoInventario[codigo] = { articulo, cantidad: -cantidad, precioCompra: 0, precioVenta }; 
+                        }
+                    }
+                }
+                inventario = nuevoInventario; transacciones = nuevasTransacciones; paginaActual = 1;
+                guardarDatos(); alert("¡Éxito! Base de datos financiera sincronizada correctamente."); inputImportar.value = '';
+            };
+            lector.readAsText(archivo, 'UTF-8');
+        });
+
+        btnLimpiar.addEventListener('click', () => {
+            if (confirm('¿Seguro que deseas borrar TODO? Se vaciarán almacenes e historiales.')) {
+                inventario = {}; transacciones = []; carrito = [];
+                paginaActual = 1; actualizarCarrito(); guardarDatos();
+            }
+        });
+
+        actualizarTabla();
+        actualizarCarrito();
+        actualizarListaSugerencias();
+    </script>
+</body>
+</html>

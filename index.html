@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>P.O.S. Pro - Almacén Inteligente</title>
     <script src="https://cdn.tailwindcss.com"></script>
+	<script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body class="bg-slate-100 font-sans text-slate-800">
 
@@ -44,7 +45,12 @@
 					<div class="grid grid-cols-3 gap-3">
 						<div class="col-span-2">
 							<label class="block text-sm font-semibold text-slate-600">Código de Barras / ID</label>
-							<input type="text" id="ingreso-codigo" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none">
+							<div class="flex gap-2 mt-1">
+								<input type="text" id="ingreso-codigo" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none">
+								<button type="button" onclick="abrirScanner('ingreso-codigo')" class="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-3 rounded-lg border border-emerald-200 transition-colors" title="Escanear con cámara">
+									📷
+								</button>
+							</div>
 						</div>
 						<!-- CHECKBOX EXENTO -->
 						<div class="flex flex-col justify-end items-center pb-2">
@@ -128,12 +134,15 @@
                     </h2>
                     <form id="form-egreso" class="space-y-4">
                         
-                        <div class="grid grid-cols-4 gap-3">
-                            <div class="col-span-2">
-                                <label class="block text-sm font-semibold text-slate-600">Código</label>
-                                <input type="text" id="egreso-codigo" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-rose-400 outline-none">
-                            </div>
-                        </div>
+                        <div class="col-span-2">
+							<label class="block text-sm font-semibold text-slate-600">Código</label>
+							<div class="flex gap-2 mt-1">
+								<input type="text" id="egreso-codigo" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-rose-400 outline-none">
+								<button type="button" onclick="abrirScanner('egreso-codigo')" class="bg-rose-100 text-rose-700 hover:bg-rose-200 px-3 rounded-lg border border-rose-200 transition-colors" title="Escanear con cámara">
+									📷
+								</button>
+							</div>
+						</div>
 
                         <div>
                             <label class="block text-sm font-semibold text-slate-600">Buscar por Nombre</label>
@@ -895,7 +904,59 @@
                 paginaActual = 1; actualizarCarrito(); guardarDatos();
             }
         });
+		
+		
+		// --- LÓGICA DEL ESCÁNER DE CÓDIGOS DE BARRAS ---
+		let escanerActivo = null;
+		let inputDestinoActual = ''; // Variable para saber a cuál casilla enviar el código
 
+		function abrirScanner(idInputDestino) {
+			inputDestinoActual = idInputDestino;
+			document.getElementById('modal-scanner').classList.remove('hidden');
+
+			// Inicializamos la cámara
+			escanerActivo = new Html5QrcodeScanner(
+				"lector-camara", 
+				{ 
+					fps: 10, 
+					qrbox: { width: 250, height: 100 }, // Rectángulo apaisado ideal para códigos de barras
+					formatsToSupport: [ Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.CODE_128 ]
+				}, 
+				/* verbose= */ false
+			);
+
+			escanerActivo.render(onScanExito, onScanError);
+		}
+
+		function cerrarScanner() {
+			document.getElementById('modal-scanner').classList.add('hidden');
+			if (escanerActivo) {
+				escanerActivo.clear(); // Apaga la cámara
+			}
+		}
+
+		function onScanExito(codigoDecodificado) {
+			// 1. Apagamos la cámara y cerramos la ventana
+			cerrarScanner();
+			
+			// 2. Colocamos el número leído en la casilla correspondiente
+			const input = document.getElementById(inputDestinoActual);
+			input.value = codigoDecodificado;
+			
+			// 3. ¡TRUCO DE MAGIA! Simulamos que el usuario escribió el código en el teclado
+			// Esto disparará tus detectores inteligentes (los addEventListener de 'input') 
+			// y autocompletará el nombre del artículo automáticamente.
+			const evento = new Event('input', { bubbles: true });
+			input.dispatchEvent(evento);
+		}
+
+		function onScanError(mensajeError) {
+			// La cámara está leyendo fotogramas constantemente. 
+			// Si no encuentra nada en el frame actual, arroja error de forma silenciosa.
+			// No hacemos nada aquí para que siga intentando leer en el siguiente fotograma.
+		}
+		
+		
         // Arranque Inicial
         actualizarTabla();
 		actualizarListaSugerencias();
@@ -995,5 +1056,14 @@
 			campoPrecio.value = precioVentaSugerido.toFixed(2);
 		}
     </script>
+	<div id="modal-scanner" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+        <div class="flex justify-between items-center p-4 border-b bg-slate-50">
+            <h3 class="font-bold text-slate-700 flex items-center gap-2">📷 Escanear Código de Barras</h3>
+            <button onclick="cerrarScanner()" class="text-rose-500 hover:text-rose-700 font-black text-lg px-2">✕</button>
+        </div>
+        <div id="lector-camara" class="w-full"></div>
+    </div>
+</div>
 </body>
 </html>

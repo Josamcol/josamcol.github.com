@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>P.O.S. Pro - Almacén Inteligente</title>
     <script src="https://cdn.tailwindcss.com"></script>
-	<script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body class="bg-slate-100 font-sans text-slate-800">
 
@@ -14,7 +14,7 @@
         <header class="bg-indigo-700 text-white shadow-md p-4">
             <div class="container mx-auto flex justify-between items-center">
                 <h1 class="text-xl font-bold tracking-wide">📦 P.O.S. Almacén Inteligente</h1>
-                <span class="text-sm bg-indigo-800 px-3 py-1 rounded-full shadow-inner font-medium text-indigo-200">Versión 2.21 (Finanzas & Alertas)</span>
+                <span class="text-sm bg-indigo-800 px-3 py-1 rounded-full shadow-inner font-medium text-indigo-200">Versión b 0.30 (Finanzas & Alertas)</span>
             </div>
         </header>
 
@@ -35,97 +35,93 @@
 
         <main class="flex-grow container mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
             
-            <!-- MÓDULO: INGRESO DE MERCANCÍA (COMPRA CON CARRITO) -->
-		<section class="bg-white p-6 rounded-xl shadow-md border-t-4 border-emerald-500 flex flex-col justify-between">
-			<div>
-				<h2 class="text-lg font-bold text-emerald-700 mb-4 flex items-center gap-2">
-					📥 Registro de Compras e Inventario
-				</h2>
-				<form id="form-ingreso" class="space-y-4">
-					<div class="grid grid-cols-3 gap-3">
-						<div class="col-span-2">
-							<label class="block text-sm font-semibold text-slate-600">Código de Barras / ID</label>
-							<div class="flex gap-2 mt-1">
-								<input type="text" id="ingreso-codigo" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none">
-								<button type="button" onclick="abrirScanner('ingreso-codigo')" class="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-3 rounded-lg border border-emerald-200 transition-colors" title="Escanear con cámara">
-									📷
-								</button>
-							</div>
-						</div>
-						<!-- CHECKBOX EXENTO -->
-						<div class="flex flex-col justify-end items-center pb-2">
-							<label class="inline-flex items-center gap-2 cursor-pointer select-none">
-								<input type="checkbox" id="ingreso-exento" class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500">
-								<span class="text-sm font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded border">Exento (E)</span>
-							</label>
-						</div>
-					</div>
-					<div>
-						<label class="block text-sm font-semibold text-slate-600">Artículo / Descripción</label>
-						<input type="text" id="ingreso-articulo" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none">
-					</div>
-					<div class="grid grid-cols-3 gap-3">
-						<div>
-							<label class="block text-sm font-semibold text-slate-600">Cantidad</label>
-							<input type="number" id="ingreso-cantidad" min="1" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none">
-						</div>
-						<div>
-							<label class="block text-sm font-semibold text-slate-600">Costo (u)($)</label>
-							<input type="number" id="ingreso-precio" step="0.01" min="0" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none">
-						</div>
-						<div>
-							<label class="block text-sm font-semibold text-rose-600">Stock Mínimo</label>
-							<input type="number" id="ingreso-minimo" min="0" value="3" required class="w-full mt-1 p-2 border border-rose-200 rounded-lg focus:ring-2 focus:ring-rose-400 outline-none bg-rose-50/30">
-						</div>
-					</div>
-					<button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg transition-colors shadow-sm mt-2">
-						➕ Añadir a la Compra Actual
-					</button>
-				</form>
+            <section class="bg-white p-6 rounded-xl shadow-md border-t-4 border-emerald-500 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-lg font-bold text-emerald-700 mb-4 flex items-center gap-2">
+                        📥 Registro de Compras e Inventario
+                    </h2>
+                    <form id="form-ingreso" class="space-y-4">
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="col-span-2">
+                                <label class="block text-sm font-semibold text-slate-600">Código de Barras / ID</label>
+                                <div class="flex gap-2 mt-1">
+                                    <input type="text" id="ingreso-codigo" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none">
+                                    <button type="button" onclick="abrirScanner('ingreso-codigo')" class="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-3 rounded-lg border border-emerald-200 transition-colors" title="Escanear con cámara">
+                                        📷
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="flex flex-col justify-end items-center pb-2">
+                                <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                                    <input type="checkbox" id="ingreso-exento" class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500">
+                                    <span class="text-sm font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded border">Exento (E)</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-600">Artículo / Descripción</label>
+                            <input type="text" id="ingreso-articulo" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none">
+                        </div>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-600">Cantidad</label>
+                                <input type="number" id="ingreso-cantidad" min="1" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-600">Costo (u)($)</label>
+                                <input type="number" id="ingreso-precio" step="0.01" min="0" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-rose-600">Stock Mínimo</label>
+                                <input type="number" id="ingreso-minimo" min="0" value="3" required class="w-full mt-1 p-2 border border-rose-200 rounded-lg focus:ring-2 focus:ring-rose-400 outline-none bg-rose-50/30">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg transition-colors shadow-sm mt-2">
+                            ➕ Añadir a la Compra Actual
+                        </button>
+                    </form>
 
-				<!-- TABLA TEMPORAL DEL CARRITO DE INGRESO -->
-				<div class="mt-6 pt-4 border-t border-slate-100">
-					<h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">📦 Lista de mercancía a ingresar:</h3>
-					<div class="max-h-40 overflow-y-auto border border-slate-200 rounded-lg bg-slate-50">
-						<table class="w-full text-left text-xs text-slate-600">
-							<thead class="bg-slate-200 text-slate-700 uppercase tracking-wider sticky top-0">
-								<tr>
-									<th class="p-2">Artículo</th>
-									<th class="p-2 text-center">Cant.</th>
-									<th class="p-2 text-right">Costo (u)</th>
-									<th class="p-2 text-center">Tipo</th>
-									<th class="p-2 text-right">Total</th>
-									<th class="p-2 text-center"></th>
-								</tr>
-							</thead>
-							<tbody id="tabla-carrito-ingreso" class="divide-y divide-slate-200"></tbody>
-						</table>
-					</div>
+                    <div class="mt-6 pt-4 border-t border-slate-100">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">📦 Lista de mercancía a ingresar:</h3>
+                        <div class="max-h-40 overflow-y-auto border border-slate-200 rounded-lg bg-slate-50">
+                            <table class="w-full text-left text-xs text-slate-600">
+                                <thead class="bg-slate-200 text-slate-700 uppercase tracking-wider sticky top-0">
+                                    <tr>
+                                        <th class="p-2">Artículo</th>
+                                        <th class="p-2 text-center">Cant.</th>
+                                        <th class="p-2 text-right">Costo (u)</th>
+                                        <th class="p-2 text-right">Impuesto (u)</th>
+                                        <th class="p-2 text-center">Tipo</th>
+                                        <th class="p-2 text-right">Total c/Imp</th>
+                                        <th class="p-2 text-center"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-carrito-ingreso" class="divide-y divide-slate-200"></tbody>
+                            </table>
+                        </div>
 
-					<!-- TOTALES DE LA COMPRA -->
-					<div class="mt-3 space-y-2">
-						<div class="flex justify-between items-center p-2 bg-slate-50 rounded-lg border border-dashed font-medium text-slate-500 text-xs">
-							<span>IMPUESTO COMPRAS (16%):</span>
-							<span id="impuesto-carrito-ingreso">$ 0.00</span>
-						</div>
-						<div class="flex justify-between items-center p-2 bg-slate-100 rounded-lg border font-bold text-slate-700">
-							<span>TOTAL FACTURA COMPRA:</span>
-							<span id="total-carrito-ingreso" class="text-base text-emerald-600">$ 0.00</span>
-						</div>
-					</div>
-				</div>
-			</div>
+                        <div class="mt-3 space-y-2">
+                            <div class="flex justify-between items-center p-2 bg-slate-50 rounded-lg border border-dashed font-medium text-slate-500 text-xs">
+                                <span>IMPUESTO COMPRAS (16%):</span>
+                                <span id="impuesto-carrito-ingreso">$ 0.00</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-slate-100 rounded-lg border font-bold text-slate-700">
+                                <span>TOTAL FACTURA COMPRA:</span>
+                                <span id="total-carrito-ingreso" class="text-base text-emerald-600">$ 0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-			<!-- ACCIONES FINALES DEL CARRITO DE COMPRA -->
-			<div class="grid grid-cols-2 gap-3 mt-4 pt-2">
-				<button type="button" id="btn-cancelar-ingreso" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold py-2.5 rounded-lg transition-colors">
-					Cancelar Ingreso
-				</button>
-				<button type="button" id="btn-procesar-ingreso" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 rounded-lg transition-colors shadow-sm">
-					✔ Procesar Entrada / Carga
-				</button>
-			</div>
-		</section>
+                <div class="grid grid-cols-2 gap-3 mt-4 pt-2">
+                    <button type="button" id="btn-cancelar-ingreso" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold py-2.5 rounded-lg transition-colors">
+                        Cancelar Ingreso
+                    </button>
+                    <button type="button" id="btn-procesar-ingreso" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 rounded-lg transition-colors shadow-sm">
+                        ✔ Procesar Entrada / Carga
+                    </button>
+                </div>
+            </section>
 
             <section class="bg-white p-6 rounded-xl shadow-md border-t-4 border-rose-500 flex flex-col justify-between">
                 <div>
@@ -134,15 +130,15 @@
                     </h2>
                     <form id="form-egreso" class="space-y-4">
                         
-                        <div class="col-span-2">
-							<label class="block text-sm font-semibold text-slate-600">Código</label>
-							<div class="flex gap-2 mt-1">
-								<input type="text" id="egreso-codigo" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-rose-400 outline-none">
-								<button type="button" onclick="abrirScanner('egreso-codigo')" class="bg-rose-100 text-rose-700 hover:bg-rose-200 px-3 rounded-lg border border-rose-200 transition-colors" title="Escanear con cámara">
-									📷
-								</button>
-							</div>
-						</div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-600">Código</label>
+                            <div class="flex gap-2 mt-1">
+                                <input type="text" id="egreso-codigo" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-rose-400 outline-none">
+                                <button type="button" onclick="abrirScanner('egreso-codigo')" class="bg-rose-100 text-rose-700 hover:bg-rose-200 px-3 rounded-lg border border-rose-200 transition-colors" title="Escanear con cámara">
+                                    📷
+                                </button>
+                            </div>
+                        </div>
 
                         <div>
                             <label class="block text-sm font-semibold text-slate-600">Buscar por Nombre</label>
@@ -150,20 +146,20 @@
                             <datalist id="lista-articulos-egreso"></datalist>
                         </div>
                         
-                        <div class="grid grid-cols-4 gap-3">
-                            <div class="col-span-1">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
                                 <label class="block text-sm font-semibold text-slate-600">Cantidad</label>
                                 <input type="number" id="egreso-cantidad" min="1" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-rose-400 outline-none">
                             </div>
-                            <div class="col-span-1">
-								<div class="flex justify-between items-center">
-									<label class="block text-sm font-semibold text-slate-600">Precio Venta ($)</label>
-									<button type="button" onclick="sugerirPrecioGanancia()" class="text-[10px] text-indigo-600 hover:text-indigo-800 font-bold underline bg-indigo-50 px-1.5 py-0.5 rounded">
-										+30% CPP
-									</button>
-								</div>
-								<input type="number" id="egreso-precio" step="0.01" min="0" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-rose-400 outline-none">
-							</div>
+                            <div>
+                                <div class="flex justify-between items-center">
+                                    <label class="block text-sm font-semibold text-slate-600">Precio Venta ($)</label>
+                                    <button type="button" onclick="sugerirPrecioGanancia()" class="text-[10px] text-indigo-600 hover:text-indigo-800 font-bold underline bg-indigo-50 px-1.5 py-0.5 rounded">
+                                        +30% CPP
+                                    </button>
+                                </div>
+                                <input type="number" id="egreso-precio" step="0.01" min="0" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-rose-400 outline-none">
+                            </div>
                         </div>
                         
                         <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2.5 rounded-lg transition-colors shadow-sm mt-2">
@@ -180,7 +176,9 @@
                                         <th class="p-2">Artículo</th>
                                         <th class="p-2 text-center">Cant.</th>
                                         <th class="p-2 text-right">Precio (u)</th>
-                                        <th class="p-2 text-right">Total</th>
+                                        <th class="p-2 text-right">Impuesto (u)</th>
+                                        <th class="p-2 text-center">Tipo</th>
+                                        <th class="p-2 text-right">Total c/Imp</th>
                                         <th class="p-2 text-center"></th>
                                     </tr>
                                 </thead>
@@ -223,14 +221,14 @@
                             📧 Exportar y Enviar
                         </button>
                         <label for="input-importar" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-colors cursor-pointer flex items-center gap-1">
-                            📂 Importar CSV
+                            📂 Importar TXT (Tabulado)
                         </label>
-                        <input type="file" id="input-importar" accept=".csv" class="hidden">
-                        <button type="button" onclick="descargarMovimientosCSV()" 
-								class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md text-xs transition-colors flex items-center gap-2">
-							<span>📊 Exportar Historial (CSV)</span>
-						</button>
-						<button id="btn-limpiar" class="text-xs bg-slate-100 hover:bg-rose-100 text-slate-400 hover:text-rose-600 px-3 py-2 rounded-lg transition-colors">
+                        <input type="file" id="input-importar" accept=".txt,.tsv" class="hidden">
+                        <button type="button" onclick="descargarMovimientosTXT()" 
+                                class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md text-xs transition-colors flex items-center gap-2">
+                            <span>📊 Exportar Historial (TXT)</span>
+                        </button>
+                        <button id="btn-limpiar" class="text-xs bg-slate-100 hover:bg-rose-100 text-slate-400 hover:text-rose-600 px-3 py-2 rounded-lg transition-colors">
                             Borrar Todo
                         </button>
                     </div>
@@ -269,18 +267,26 @@
         let transacciones = JSON.parse(localStorage.getItem('pos_transacciones')) || [];
         let carrito = [];
         let paginaActual = 1;
-		let carritoIngreso = [];
+        let carritoIngreso = [];
         const itemsPorPagina = 10;
+
+        // Función global para formatear números con coma decimal y punto de miles
+        const formatoMoneda = (numero) => {
+            return numero.toLocaleString('es-VE', { 
+                minimumFractionDigits: 2, 
+                maximumFractionDigits: 2 
+            });
+        };
 
         // Elementos DOM
         const ingresoExento = document.getElementById('ingreso-exento');
-		const tablaCarritoIngreso = document.getElementById('tabla-carrito-ingreso');
-		const impuestoCarritoIngreso = document.getElementById('impuesto-carrito-ingreso');
-		const totalCarritoIngreso = document.getElementById('total-carrito-ingreso');
-		const btnProcesarIngreso = document.getElementById('btn-procesar-ingreso');
-		const btnCancelarIngreso = document.getElementById('btn-cancelar-ingreso');
-		const impuestoCarrito = document.getElementById('impuesto-carrito');
-		const formIngreso = document.getElementById('form-ingreso');
+        const tablaCarritoIngreso = document.getElementById('tabla-carrito-ingreso');
+        const impuestoCarritoIngreso = document.getElementById('impuesto-carrito-ingreso');
+        const totalCarritoIngreso = document.getElementById('total-carrito-ingreso');
+        const btnProcesarIngreso = document.getElementById('btn-procesar-ingreso');
+        const btnCancelarIngreso = document.getElementById('btn-cancelar-ingreso');
+        const impuestoCarrito = document.getElementById('impuesto-carrito');
+        const formIngreso = document.getElementById('form-ingreso');
         const formEgreso = document.getElementById('form-egreso');
         const tablaInventario = document.getElementById('tabla-inventario');
         const btnLimpiar = document.getElementById('btn-limpiar');
@@ -307,31 +313,29 @@
         const dashGananciaEstimada = document.getElementById('dash-ganancia-estimada');
 
         function actualizarDashboard() {
-			let totalUnidades = 0;
-			let costoAlmacen = 0;
-			let gananciaRealEfectiva = 0;
+            let totalUnidades = 0;
+            let costoAlmacen = 0;
+            let gananciaRealEfectiva = 0;
 
-			// 1. Cálculo del Stock y Costo de lo que hay en Almacén
-			Object.keys(inventario).forEach(codigo => {
-				const item = inventario[codigo];
-				totalUnidades += item.cantidad;
-				costoAlmacen += (item.cantidad * item.precioCompra); // Lo que vale tu inventario hoy
-			});
+            // 1. Cálculo del Stock y Costo de lo que hay en Almacén
+            Object.keys(inventario).forEach(codigo => {
+                const item = inventario[codigo];
+                totalUnidades += item.cantidad;
+                costoAlmacen += (item.cantidad * item.precioCompra); 
+            });
 
-			// 2. CORRECCIÓN: Cálculo de la Ganancia Real basada en Ventas Ejecutadas
-			transacciones.forEach(t => {
-				if (t.tipo === 'Egreso') {
-					// Ganancia de esta venta = (Precio Venta - Precio Compra) * Cantidad Vendida
-					const gananciaPorArticulo = t.precioVenta - t.precioCompra;
-					gananciaRealEfectiva += (gananciaPorArticulo * t.cantidad);
-				}
-			});
+            // 2. Cálculo de la Ganancia Real basada en Ventas Ejecutadas
+            transacciones.forEach(t => {
+                if (t.tipo === 'Egreso') {
+                    const gananciaPorArticulo = t.precioVenta - t.precioCompra;
+                    gananciaRealEfectiva += (gananciaPorArticulo * t.cantidad);
+                }
+            });
 
-			// 3. Renderizado en las tarjetas superiores
-			dashTotalItems.textContent = `${totalUnidades} u`;
-			dashValorCosto.textContent = `$ ${costoAlmacen.toFixed(2)}`;
-			dashGananciaEstimada.textContent = `$ ${gananciaRealEfectiva.toFixed(2)}`;
-		}
+            dashTotalItems.textContent = `${totalUnidades} u`;
+            dashValorCosto.textContent = `$ ${formatoMoneda(costoAlmacen)}`;
+            dashGananciaEstimada.textContent = `$ ${formatoMoneda(gananciaRealEfectiva)}`;
+        }
 
         function actualizarTabla() {
             tablaInventario.innerHTML = '';
@@ -357,11 +361,8 @@
             keysPaginadas.forEach(codigo => {
                 const item = inventario[codigo];
                 const fila = document.createElement('tr');
-                
-                // Configurar por defecto el stock mínimo si no existía en bases anteriores
                 const stockMin = item.stockMinimo !== undefined ? item.stockMinimo : 3;
                 
-                // LÓGICA DE ALERTA: Si el stock es bajo o cero, aplicamos colores de advertencia
                 let claseFila = "hover:bg-slate-50 transition-colors";
                 let badgeEstado = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">OK</span>`;
                 
@@ -379,8 +380,8 @@
                     <td class="p-3 font-medium">${item.articulo}</td>
                     <td class="p-3 text-center font-bold">${item.cantidad} u</td>
                     <td class="p-3 text-center text-slate-400 font-medium">${stockMin} u</td>
-                    <td class="p-3 text-right text-slate-500">$ ${parseFloat(item.precioCompra).toFixed(2)}</td>
-                    <td class="p-3 text-right text-slate-500">$ ${item.precioVenta ? parseFloat(item.precioVenta).toFixed(2) : '-.--'}</td>
+                    <td class="p-3 text-right text-slate-500">$ ${formatoMoneda(item.precioCompra)}</td>
+                    <td class="p-3 text-right text-slate-500">$ ${item.precioVenta ? formatoMoneda(item.precioVenta) : '-,--'}</td>
                     <td class="p-3 text-center">${badgeEstado}</td>
                 `;
                 tablaInventario.appendChild(fila);
@@ -403,142 +404,123 @@
         }
 
         function actualizarCarrito() {
-			const tablaCarrito = document.getElementById('tabla-carrito');
-			tablaCarrito.innerHTML = '';
-			
-			if (carrito.length === 0) {
-				tablaCarrito.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-slate-400 italic">Ningún artículo añadido.</td></tr>`;
-				impuestoCarrito.textContent = "$ 0.00";
-				totalCarrito.textContent = "$ 0.00";
-				return;
-			}
-			// Inicializamos acumuladores separados para la base gravable y lo exento
-			let sumaSubtotalGravable = 0;
-			let sumaSubtotalExento = 0;
+            tablaCarrito.innerHTML = '';
+            
+            if (carrito.length === 0) {
+                tablaCarrito.innerHTML = `<tr><td colspan="7" class="p-3 text-center text-slate-400 italic">Ningún artículo añadido.</td></tr>`;
+                impuestoCarrito.textContent = "$ 0.00";
+                totalCarrito.textContent = "$ 0.00";
+                return;
+            }
 
-			// 2. Renderizar los productos y clasificar su dinero según su estatus fiscal
-			carrito.forEach((item, index) => {
-				const esExento = item.exento === true;
-				const subtotalItem = item.cantidad * item.precioVenta;
-				
-				// Verificamos si el artículo viene marcado como exento desde el inventario
-				if (esExento) {
-					sumaSubtotalExento += subtotalItem;
-				} else {
-					sumaSubtotalGravable += subtotalItem;
-				}
+            let sumaSubtotalGravable = 0;
+            let sumaSubtotalExento = 0;
 
-				// Creamos una pequeña etiqueta visual para saber en el carrito qué es exento y qué no
-				const indicadorFiscal = item.exento ? 
-					`<span class="ml-1 text-[10px] font-bold bg-amber-100 text-amber-800 px-1 rounded">E</span>` : '';
+            carrito.forEach((item, index) => {
+                const esExento = item.exento === true;
+                const subtotalItem = item.cantidad * item.precioVenta;
+                
+                const impuestoUnitario = esExento ? 0 : item.precioVenta * 0.16;
+                const impuestoTotalFila = esExento ? 0 : subtotalItem * 0.16;
+                
+                const totalFilaConImpuesto = subtotalItem + impuestoTotalFila;
+                
+                if (esExento) {
+                    sumaSubtotalExento += subtotalItem;
+                } else {
+                    sumaSubtotalGravable += subtotalItem;
+                }
 
-				const fila = document.createElement('tr');
-				fila.className = "hover:bg-slate-100";
-				fila.innerHTML = `
-					<td class="p-2 font-medium truncate max-w-[120px]">
-						${item.articulo} ${indicadorFiscal}
-					</td>
-					<td class="p-2 text-center font-bold text-slate-700">${item.cantidad}</td>
-					<td class="p-2 text-right text-slate-500">$${item.precioVenta.toFixed(2)}</td>
-					<td class="p-2 text-right font-bold text-slate-700">$${subtotalItem.toFixed(2)}</td>
-					<td class="p-2 text-center">
-						<button type="button" onclick="eliminarDelCarrito(${index})" class="text-rose-500 hover:text-rose-700 font-bold px-1">✕</button>
-					</td>
-				`;
-				tablaCarrito.appendChild(fila);
-			});
+                const etiquetaTipo = esExento ? 
+                    `<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-bold">E</span>` : 
+                    `<span class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-bold">G</span>`;
 
-			// 3. CORRECCIÓN: El IVA del 16% se calcula ÚNICAMENTE sobre la suma de artículos gravables
-			const totalImpuesto = sumaSubtotalGravable * 0.16;
-			
-			// 4. El Total General es la suma de todo lo gravable + todo lo exento + el impuesto calculado
-			const totalConImpuesto = sumaSubtotalGravable + sumaSubtotalExento + totalImpuesto;
+                const fila = document.createElement('tr');
+                fila.className = "hover:bg-slate-100";
+                
+                fila.innerHTML = `
+                    <td class="p-2 font-medium truncate max-w-[120px]">${item.articulo}</td>
+                    <td class="p-2 text-center font-bold text-slate-700">${item.cantidad}</td>
+                    <td class="p-2 text-right text-slate-500">$${formatoMoneda(item.precioVenta)}</td>
+                    <td class="p-2 text-right font-medium text-rose-500">$${formatoMoneda(impuestoUnitario)}</td>
+                    <td class="p-2 text-center">${etiquetaTipo}</td>
+                    <td class="p-2 text-right font-bold text-slate-700">$${formatoMoneda(totalFilaConImpuesto)}</td>
+                    <td class="p-2 text-center">
+                        <button type="button" onclick="eliminarDelCarrito(${index})" class="text-rose-500 hover:text-rose-700 font-bold px-1">✕</button>
+                    </td>
+                `;
+                tablaCarrito.appendChild(fila);
+            });
 
-			// 5. Pintar los resultados formateados en la interfaz
-			impuestoCarrito.textContent = `$ ${totalImpuesto.toFixed(2)}`;
-			totalCarrito.textContent = `$ ${totalConImpuesto.toFixed(2)}`;
-		}
-		
-		
-		// Asegúrate de que tu lógica de "añadir al carrito" busque el estado exento en tu inventario global
-		function agregarAlCarrito(codigo, cantidad) {
-			const productoBase = inventario[codigo]; // Tu base de datos global
+            const totalImpuesto = sumaSubtotalGravable * 0.16;
+            const totalConImpuesto = sumaSubtotalGravable + sumaSubtotalExento + totalImpuesto;
 
-			if (productoBase) {
-				carrito.push({
-					codigo: codigo,
-					articulo: productoBase.articulo,
-					cantidad: cantidad,
-					precioVenta: productoBase.precioVenta,
-					// ¡ESTA LÍNEA ES LA QUE FALTA O ESTÁ FALLANDO!
-					exento: productoBase.exento || false 
-				});
-				actualizarCarrito(); // Refresca la tabla y el cálculo
-			}
-		}
-		
+            impuestoCarrito.textContent = `$ ${formatoMoneda(totalImpuesto)}`;
+            totalCarrito.textContent = `$ ${formatoMoneda(totalConImpuesto)}`;
+        }
 
         function eliminarDelCarrito(index) {
             carrito.splice(index, 1);
             actualizarCarrito();
         }
-		
-		
-		function actualizarCarritoIngreso() {
-			tablaCarritoIngreso.innerHTML = '';
-			let sumaSubtotalGravable = 0;
-			let sumaSubtotalExento = 0;
+        
+        function actualizarCarritoIngreso() {
+            tablaCarritoIngreso.innerHTML = '';
+            let sumaSubtotalGravable = 0;
+            let sumaSubtotalExento = 0;
 
-			if (carritoIngreso.length === 0) {
-				tablaCarritoIngreso.innerHTML = `<tr><td colspan="6" class="p-3 text-center text-slate-400 italic">Ningún artículo añadido.</td></tr>`;
-				impuestoCarritoIngreso.textContent = "$ 0.00";
-				totalCarritoIngreso.textContent = "$ 0.00";
-				return;
-			}
+            if (carritoIngreso.length === 0) {
+                tablaCarritoIngreso.innerHTML = `<tr><td colspan="7" class="p-3 text-center text-slate-400 italic">Ningún artículo añadido.</td></tr>`;
+                impuestoCarritoIngreso.textContent = "$ 0.00";
+                totalCarritoIngreso.textContent = "$ 0.00";
+                return;
+            }
 
-			carritoIngreso.forEach((item, index) => {
-				const subtotalItem = item.cantidad * item.precioCompra;
-				
-				// Separamos el dinero según su tipo de impuesto
-				if (item.exento) {
-					sumaSubtotalExento += subtotalItem;
-				} else {
-					sumaSubtotalGravable += subtotalItem;
-				}
+            carritoIngreso.forEach((item, index) => {
+                const subtotalItem = item.cantidad * item.precioCompra;
+                
+                const impuestoUnitario = item.exento ? 0 : item.precioCompra * 0.16;
+                const impuestoTotalFila = item.exento ? 0 : subtotalItem * 0.16;
+                
+                const totalFilaConImpuesto = subtotalItem + impuestoTotalFila;
+                
+                if (item.exento) {
+                    sumaSubtotalExento += subtotalItem;
+                } else {
+                    sumaSubtotalGravable += subtotalItem;
+                }
 
-				const etiquetaTipo = item.exento ? 
-					`<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-bold">E</span>` : 
-					`<span class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-bold">G</span>`;
+                const etiquetaTipo = item.exento ? 
+                    `<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-bold">E</span>` : 
+                    `<span class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-bold">G</span>`;
 
-				const fila = document.createElement('tr');
-				fila.className = "hover:bg-slate-100";
-				fila.innerHTML = `
-					<td class="p-2 font-medium truncate max-w-[120px]">${item.articulo}</td>
-					<td class="p-2 text-center font-bold text-slate-700">${item.cantidad}</td>
-					<td class="p-2 text-right text-slate-500">$${item.precioCompra.toFixed(2)}</td>
-					<td class="p-2 text-center">${etiquetaTipo}</td>
-					<td class="p-2 text-right font-bold text-slate-700">$${subtotalItem.toFixed(2)}</td>
-					<td class="p-2 text-center">
-						<button type="button" onclick="eliminarDelCarritoIngreso(${index})" class="text-rose-500 hover:text-rose-700 font-bold px-1">✕</button>
-					</td>
-				`;
-				tablaCarritoIngreso.appendChild(fila);
-			});
+                const fila = document.createElement('tr');
+                fila.className = "hover:bg-slate-100";
+                fila.innerHTML = `
+                    <td class="p-2 font-medium truncate max-w-[120px]">${item.articulo}</td>
+                    <td class="p-2 text-center font-bold text-slate-700">${item.cantidad}</td>
+                    <td class="p-2 text-right text-slate-500">$${formatoMoneda(item.precioCompra)}</td>
+                    <td class="p-2 text-right font-medium text-emerald-500">$${formatoMoneda(impuestoUnitario)}</td>
+                    <td class="p-2 text-center">${etiquetaTipo}</td>
+                    <td class="p-2 text-right font-bold text-slate-700">$${formatoMoneda(totalFilaConImpuesto)}</td>
+                    <td class="p-2 text-center">
+                        <button type="button" onclick="eliminarDelCarritoIngreso(${index})" class="text-rose-500 hover:text-rose-700 font-bold px-1">✕</button>
+                    </td>
+                `;
+                tablaCarritoIngreso.appendChild(fila);
+            });
 
-    // CORRECCIÓN FISCAL: El 16% se calcula ÚNICAMENTE sobre los artículos Gravables (G)
-			const totalImpuesto = sumaSubtotalGravable * 0.16;
-			const totalFactura = sumaSubtotalGravable + sumaSubtotalExento + totalImpuesto;
+            const totalImpuesto = sumaSubtotalGravable * 0.16;
+            const totalFactura = sumaSubtotalGravable + sumaSubtotalExento + totalImpuesto;
 
-			impuestoCarritoIngreso.textContent = `$ ${totalImpuesto.toFixed(2)}`;
-			totalCarritoIngreso.textContent = `$ ${totalFactura.toFixed(2)}`;
-		}
+            impuestoCarritoIngreso.textContent = `$ ${formatoMoneda(totalImpuesto)}`;
+            totalCarritoIngreso.textContent = `$ ${formatoMoneda(totalFactura)}`;
+        }
 
-		function eliminarDelCarritoIngreso(index) {
-			carritoIngreso.splice(index, 1);
-			actualizarCarritoIngreso();
-}
-		
-		
+        function eliminarDelCarritoIngreso(index) {
+            carritoIngreso.splice(index, 1);
+            actualizarCarritoIngreso();
+        }
 
         function guardarDatos() {
             localStorage.setItem('pos_inventario', JSON.stringify(inventario));
@@ -553,127 +535,106 @@
             if (paginaActual < totalPaginas) { paginaActual++; actualizarTabla(); }
         });
 
-        // A. DETECTOR INTELIGENTE: Cuando el usuario escribe o escanea un código
-		ingresoCodigo.addEventListener('input', (e) => {
-			const codigo = e.target.value.trim();
-			
-			// Si el producto ya existe en nuestro inventario global
-			if (inventario[codigo]) {
-				ingresoArticulo.value = inventario[codigo].articulo;
-				ingresoArticulo.readOnly = true;
-				ingresoArticulo.classList.add('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
-				
-				// CORRECCIÓN: Marcamos el checkbox según el historial y lo deshabilitamos para evitar errores
-				ingresoExento.checked = inventario[codigo].exento || false;
-				ingresoExento.disabled = true; 
-			} else {
-				// Si el producto es totalmente nuevo, dejamos que el usuario elija
-				ingresoArticulo.readOnly = false;
-				ingresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
-				ingresoExento.disabled = false;
-			}
-		});
+        ingresoCodigo.addEventListener('input', (e) => {
+            const codigo = e.target.value.trim();
+            
+            if (inventario[codigo]) {
+                ingresoArticulo.value = inventario[codigo].articulo;
+                ingresoArticulo.readOnly = true;
+                ingresoArticulo.classList.add('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+                ingresoExento.checked = inventario[codigo].exento || false;
+                ingresoExento.disabled = true; 
+            } else {
+                ingresoArticulo.readOnly = false;
+                ingresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+                ingresoExento.disabled = false;
+            }
+        });
 
-		// B. EL MANEJADOR DEL SUBMIT (Añadir al carrito de compras)
-		formIngreso.addEventListener('submit', (e) => {
-			e.preventDefault();
-			const codigo = ingresoCodigo.value.trim();
-			const articulo = ingresoArticulo.value.trim();
-			const cantidad = parseInt(document.getElementById('ingreso-cantidad').value);
-			const precioCompra = parseFloat(document.getElementById('ingreso-precio').value);
-			const stockMin = parseInt(ingresoMinimo.value);
-			
-			// CORRECCIÓN: Si el elemento ya existe en el inventario, respetamos su estatus real. 
-			// Si es nuevo, leemos el checkbox.
-			const exento = inventario[codigo] ? inventario[codigo].exento : ingresoExento.checked;
+        formIngreso.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const codigo = ingresoCodigo.value.trim();
+            const articulo = ingresoArticulo.value.trim();
+            const cantidad = parseInt(document.getElementById('ingreso-cantidad').value);
+            const precioCompra = parseFloat(document.getElementById('ingreso-precio').value);
+            const stockMin = parseInt(ingresoMinimo.value);
+            
+            const exento = inventario[codigo] ? inventario[codigo].exento : ingresoExento.checked;
+            const itemExistente = carritoIngreso.find(item => item.codigo === codigo);
 
-			const itemExistente = carritoIngreso.find(item => item.codigo === codigo);
+            if (itemExistente) {
+                itemExistente.cantidad += cantidad;
+                itemExistente.precioCompra = precioCompra;
+                itemExistente.stockMinimo = stockMin;
+            } else {
+                carritoIngreso.push({
+                    codigo,
+                    articulo,
+                    cantidad,
+                    precioCompra,
+                    stockMinimo: stockMin,
+                    exento: !!exento
+                });
+            }
 
-			if (itemExistente) {
-				// Si ya estaba en el carrito de la compra actual, acumulamos cantidad y actualizamos precio
-				itemExistente.cantidad += cantidad;
-				itemExistente.precioCompra = precioCompra;
-				itemExistente.stockMinimo = stockMin;
-				// Mantenemos el valor de exento original del carrito
-			} else {
-				// Si es el primer artículo de este tipo en la factura actual, lo insertamos completo
-				carritoIngreso.push({
-					codigo,
-					articulo,
-					cantidad,
-					precioCompra,
-					stockMinimo: stockMin,
-					exento: !!exento // Nos aseguramos de guardar un valor booleano puro (true/false)
-				});
-			}
+            formIngreso.reset();
+            ingresoMinimo.value = 3;
+            ingresoExento.checked = false;
+            ingresoExento.disabled = false;
+            ingresoArticulo.readOnly = false;
+            ingresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+            
+            actualizarCarritoIngreso();
+            ingresoCodigo.focus();
+        });
 
-			// CORRECCIÓN: Reset manual y liberación de los controles para el siguiente producto
-			formIngreso.reset();
-			ingresoMinimo.value = 3;
-			
-			ingresoExento.checked = false;
-			ingresoExento.disabled = false; // Lo volvemos a habilitar para el próximo producto nuevo
-			
-			ingresoArticulo.readOnly = false;
-			ingresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
-			
-			// Refrescamos la tabla visual y los impuestos en pantalla
-			actualizarCarritoIngreso();
-			ingresoCodigo.focus();
-		});
+        btnProcesarIngreso.addEventListener('click', () => {
+            if (carritoIngreso.length === 0) return alert('⚠️ La lista de compra está vacía.');
 
-		// 2. Botón Procesar: Descarga los datos de manera definitiva al inventario e historial
-		btnProcesarIngreso.addEventListener('click', () => {
-			if (carritoIngreso.length === 0) return alert('⚠️ La lista de compra está vacía.');
+            const fechaActual = new Date().toLocaleString('es-ES');
 
-			const fechaActual = new Date().toLocaleString('es-ES');
+            carritoIngreso.forEach(item => {
+                if (inventario[item.codigo]) {
+                    inventario[item.codigo].cantidad += item.cantidad;
+                    inventario[item.codigo].precioCompra = item.precioCompra;
+                    inventario[item.codigo].stockMinimo = item.stockMinimo;
+                    inventario[item.codigo].exento = item.exento;
+                } else {
+                    inventario[item.codigo] = {
+                        articulo: item.articulo,
+                        cantidad: item.cantidad,
+                        precioCompra: item.precioCompra,
+                        precioVenta: null,
+                        stockMinimo: item.stockMinimo,
+                        exento: item.exento
+                    };
+                }
 
-			carritoIngreso.forEach(item => {
-				// Si el producto ya existe en el inventario global, sumamos stock
-				if (inventario[item.codigo]) {
-					inventario[item.codigo].cantidad += item.cantidad;
-					inventario[item.codigo].precioCompra = item.precioCompra;
-					inventario[item.codigo].stockMinimo = item.stockMinimo;
-					inventario[item.codigo].exento = item.exento; // Guardamos su estado fiscal
-				} else {
-					// Si es totalmente nuevo, lo creamos
-					inventario[item.codigo] = {
-						articulo: item.articulo,
-						cantidad: item.cantidad,
-						precioCompra: item.precioCompra,
-						precioVenta: null,
-						stockMinimo: item.stockMinimo,
-						exento: item.exento
-					};
-				}
+                transacciones.push({
+                    fecha: fechaActual,
+                    tipo: 'Ingreso',
+                    codigo: item.codigo,
+                    articulo: item.articulo,
+                    cantidad: item.cantidad,
+                    precioCompra: item.precioCompra,
+                    precioVenta: 0,
+                    stockMinimo: item.stockMinimo,
+                    exento: item.exento
+                });
+            });
 
-				// Registrar movimiento en el Kardex/Historial
-				transacciones.push({
-					fecha: fechaActual,
-					tipo: 'Ingreso',
-					codigo: item.codigo,
-					articulo: item.articulo,
-					cantidad: item.cantidad,
-					precioCompra: item.precioCompra,
-					precioVenta: 0,
-					stockMinimo: item.stockMinimo,
-					exento: item.exento
-				});
-			});
+            carritoIngreso = [];
+            actualizarCarritoIngreso();
+            guardarDatos();
+            alert('📥 ¡Inventario actualizado y compras cargadas con éxito!');
+        });
 
-			carritoIngreso = [];
-			actualizarCarritoIngreso();
-			guardarDatos(); // Guarda en localStorage y refresca la tabla visual inferior
-			alert('📥 ¡Inventario actualizado y compras cargadas con éxito!');
-		});
-
-		// 3. Botón Cancelar: Limpia el listado temporal de compras
-		btnCancelarIngreso.addEventListener('click', () => {
-			if (carritoIngreso.length > 0 && confirm('¿Deseas vaciar la lista de la compra actual sin guardarla?')) {
-				carritoIngreso = [];
-				actualizarCarritoIngreso();
-			}
-		});
+        btnCancelarIngreso.addEventListener('click', () => {
+            if (carritoIngreso.length > 0 && confirm('¿Deseas vaciar la lista de la compra actual sin guardarla?')) {
+                carritoIngreso = [];
+                actualizarCarritoIngreso();
+            }
+        });
 
         egresoArticulo.addEventListener('input', () => {
             const nombreIngresado = egresoArticulo.value.trim().toLowerCase();
@@ -719,7 +680,6 @@
                 return alert('⚠️ Error: El artículo o código ingresado no coincide con ningún producto.');
             }
 
-            // MEJORA: CONTROL Y PREVENCIÓN DE SOBREGIRADOS (STOCK NEGATIVO)
             const itemEnCarrito = carrito.find(item => item.codigo === codigo);
             const cantidadPreviaEnCarrito = itemEnCarrito ? itemEnCarrito.cantidad : 0;
             const cantidadSolicitadaTotal = cantidadPreviaEnCarrito + cantidad;
@@ -732,13 +692,12 @@
                 itemEnCarrito.cantidad += cantidad;
                 itemEnCarrito.precioVenta = precioVenta; 
             } else {
-                // CORRECCIÓN CRÍTICA: Añadimos la propiedad 'exento' heredada del inventario global
                 carrito.push({
                     codigo,
                     articulo: inventario[codigo].articulo,
                     cantidad,
                     precioVenta,
-                    exento: !!inventario[codigo].exento // Transforma a true o false puro
+                    exento: !!inventario[codigo].exento
                 });
             }
 
@@ -752,7 +711,6 @@
 
             const fechaActual = new Date().toLocaleString('es-ES');
             
-            // Segunda verificación de seguridad global antes de descargar stock definitivo
             for (let item of carrito) {
                 if (inventario[item.codigo].cantidad < item.cantidad) {
                     return alert(`❌ Error crítico de última hora: El producto "${item.articulo}" ya no cuenta con stock disponible en almacén.`);
@@ -772,7 +730,7 @@
                     precioCompra: inventario[item.codigo].precioCompra || 0,
                     precioVenta: item.precioVenta,
                     stockMinimo: inventario[item.codigo].stockMinimo || 3,
-                    exento: item.exento // CORRECCIÓN: Registra el estado fiscal en el historial/kardex
+                    exento: item.exento
                 });
             });
 
@@ -789,36 +747,74 @@
             }
         });
 
-        // Exportador Inteligente de CSV con 8 columnas
+        // Exportador Inteligente de Texto Delimitado por Tabulaciones (\t)
         btnExportar.addEventListener('click', async () => {
-            if (transacciones.length === 0) return alert("No hay transacciones guardadas en el historial.");
-            
-            let csv = "\uFEFF"; 
-            csv += "Fecha y Hora;Tipo de Movimiento;Código;Artículo;Cantidad;Precio de Compra;Precio de Venta;Stock Minimo Configurado\n";
-            
-            transacciones.forEach(t => {
-                let pCompra = t.precioCompra !== undefined ? t.precioCompra : (t.tipo === 'Ingreso' ? t.precio : 0);
-                let pVenta = t.precioVenta !== undefined ? t.precioVenta : (t.tipo === 'Egreso' ? t.precio : 0);
-                let sMin = t.stockMinimo !== undefined ? t.stockMinimo : 3;
-                
-                csv += `${t.fecha};${t.tipo};${t.codigo};"${t.articulo.replace(/"/g, '""')}";${t.cantidad};${pCompra.toFixed(2)};${pVenta.toFixed(2)};${sMin}\n`;
-            });
-            
-            const nombreArchivo = `reporte_pos_avanzado_${new Date().toISOString().slice(0, 10)}.csv`;
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const archivoCSV = new File([blob], nombreArchivo, { type: 'text/csv' });
+            if (transacciones.length === 0) return alert("⚠️ No hay transacciones guardadas en el historial.");
 
-            if (navigator.canShare && navigator.canShare({ files: [archivoCSV] })) {
+            let txtContent = "Fecha\tHora\tTipo de Movimiento\tCódigo\tArtículo\tCantidad Entrada\tCantidad Salida\tCosto/Precio Unitario\tExento\tStock Minimo\tMonto Impuesto (16%)\n";
+
+            transacciones.forEach(item => {
+                const esIngreso = item.tipo === 'Ingreso';
+                const esEgreso = item.tipo === 'Egreso';
+                
+                const cantidadEntrada = esIngreso ? item.cantidad : 0;
+                const cantidadSalida = esEgreso ? item.cantidad : 0;
+                const precio = esIngreso ? (item.precioCompra || 0) : (item.precioVenta || 0);
+                const subtotal = item.cantidad * precio;
+
+                let montoImpuesto = 0;
+                if (item.exento !== true) {
+                    montoImpuesto = subtotal * 0.16;
+                }
+
+                let fechaPura = item.fecha;
+                let horaPura = "";
+                if (item.fecha.includes(",")) {
+                    let partes = item.fecha.split(",");
+                    fechaPura = partes[0].trim();
+                    horaPura = partes[1].trim();
+                } else if (item.fecha.includes(" ")) {
+                    let partes = item.fecha.split(" ");
+                    fechaPura = partes[0].trim();
+                    horaPura = partes[1].trim();
+                }
+
+                const fila = [
+                    fechaPura,
+                    horaPura,
+                    item.tipo,
+                    item.codigo,
+                    item.articulo, 
+                    cantidadEntrada,
+                    cantidadSalida,
+                    precio.toFixed(2), 
+                    item.exento ? "Si" : "No",
+                    item.stockMinimo || 3,
+                    montoImpuesto.toFixed(2)
+                ];
+                
+                txtContent += fila.join("\t") + "\n";
+            });
+
+            const nombreArchivo = `Master_Inventario_POS_${new Date().toLocaleDateString('es-ES').replace(/\//g, '-')}.txt`;
+            const blob = new Blob(["\uFEFF" + txtContent], { type: 'text/plain;charset=utf-8;' });
+            const archivoTXT = new File([blob], nombreArchivo, { type: 'text/plain' });
+
+            const esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+            if (esMovil && navigator.canShare && navigator.canShare({ files: [archivoTXT] })) {
                 try {
                     await navigator.share({
-                        files: [archivoCSV],
-                        title: 'Reporte Comercial P.O.S.',
-                        text: 'Historial financiero con alertas de stock integrado.'
+                        files: [archivoTXT],
+                        title: 'Backup P.O.S.',
+                        text: 'Adjunto el archivo maestro de inventario para su respaldo o revisión.'
                     });
                 } catch (err) {
-                    console.log("Compartición cancelada.");
+                    console.log("Operación de compartir cancelada por el usuario.");
                 }
             } else {
+                if (esMovil) alert("Tu navegador móvil no soporta el envío directo. Iniciando descarga...");
+                
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement("a");
                 link.setAttribute("href", url);
@@ -829,71 +825,90 @@
             }
         });
 
-        // Lector adaptativo de importaciones (Soporta archivos antiguos y nuevos)
+        // Lector adaptativo de importaciones (Texto delimitado por tabulaciones)
         inputImportar.addEventListener('change', (e) => {
             const archivo = e.target.files[0];
             if (!archivo) return;
             const lector = new FileReader();
+            
             lector.onload = function(evt) {
                 const lineas = evt.target.result.split(/\r?\n/);
-                if (lineas.length <= 1) return alert("El archivo está vacío.");
-                if (!confirm("⚠️ ATENCIÓN: Esta acción reconstruirá la base de datos local. ¿Continuar?")) { inputImportar.value = ''; return; }
+                if (lineas.length <= 1) return alert("❌ Error: El archivo está vacío.");
+                
+                if (!confirm("⚠️ ATENCIÓN: Esta acción reconstruirá la base de datos a partir del archivo de texto tabulado. ¿Continuar?")) { 
+                    inputImportar.value = ''; 
+                    return; 
+                }
 
                 let nuevoInventario = {};
                 let nuevasTransacciones = [];
+                let lineasProcesadas = 0;
+
+                const parsearLineaTab = (texto) => {
+                    return texto.split('\t').map(valor => {
+                        let v = valor.trim();
+                        if (v.startsWith('"') && v.endsWith('"')) {
+                            v = v.substring(1, v.length - 1).replace(/""/g, '"');
+                        }
+                        return v;
+                    });
+                };
 
                 for (let i = 1; i < lineas.length; i++) {
                     let linea = lineas[i].trim();
                     if (!linea) continue;
-                    let columnas = linea.split(';');
-                    if (columnas.length < 6) continue;
-
-                    let fecha = columnas[0], tipo = columnas[1], codigo = columnas[2];
-                    let articulo = columnas[3].replace(/^"|"$/g, '');
-                    let cantidad = parseInt(columnas[4]);
                     
-                    let precioCompra = 0;
-                    let precioVenta = 0;
-                    let stockMinimo = 3;
+                    let columnas = parsearLineaTab(linea);
+                    if (columnas.length < 10) continue; 
 
-                    // Mapeo adaptivo según versión del CSV importado
-                    if (columnas.length >= 8) {
-                        precioCompra = parseFloat(columnas[5]);
-                        precioVenta = parseFloat(columnas[6]);
-                        stockMinimo = parseInt(columnas[7]);
-                    } else if (columnas.length === 7) {
-                        precioCompra = parseFloat(columnas[5]);
-                        precioVenta = parseFloat(columnas[6]);
-                    } else {
-                        let precioAntiguo = parseFloat(columnas[5]);
-                        if (tipo === 'Ingreso') precioCompra = precioAntiguo;
-                        if (tipo === 'Egreso') precioVenta = precioAntiguo;
-                    }
+                    let fecha = columnas[0];
+                    let hora = columnas[1]; 
+                    let tipo = columnas[2];
+                    let codigo = columnas[3];
+                    let articulo = columnas[4];
+                    let cantidadEntrada = parseInt(columnas[5]) || 0;
+                    let cantidadSalida = parseInt(columnas[6]) || 0;
+                    let precio = parseFloat(columnas[7]) || 0;
+                    let exento = columnas[8].toLowerCase() === 'si';
+                    let stockMinimo = parseInt(columnas[9]) || 3;
+                    
+                    let fechaCompleta = hora ? `${fecha}, ${hora}` : fecha;
+                    let cantidad = tipo === 'Ingreso' ? cantidadEntrada : cantidadSalida;
+                    let precioCompra = tipo === 'Ingreso' ? precio : 0;
+                    let precioVenta = tipo === 'Egreso' ? precio : 0;
 
-                    if (isNaN(cantidad) || isNaN(precioCompra) || isNaN(precioVenta)) continue;
-                    if (isNaN(stockMinimo)) stockMinimo = 3;
-
-                    nuevasTransacciones.push({ fecha, tipo, codigo, articulo, cantidad, precioCompra, precioVenta, stockMinimo });
+                    nuevasTransacciones.push({ fecha: fechaCompleta, tipo, codigo, articulo, cantidad, precioCompra, precioVenta, stockMinimo, exento });
 
                     if (tipo === 'Ingreso') {
                         if (nuevoInventario[codigo]) { 
                             nuevoInventario[codigo].cantidad += cantidad; 
                             nuevoInventario[codigo].precioCompra = precioCompra;
                             nuevoInventario[codigo].stockMinimo = stockMinimo;
+                            nuevoInventario[codigo].exento = exento;
                         } else { 
-                            nuevoInventario[codigo] = { articulo, cantidad, precioCompra, precioVenta: null, stockMinimo }; 
+                            nuevoInventario[codigo] = { articulo, cantidad, precioCompra, precioVenta: null, stockMinimo, exento }; 
                         }
                     } else if (tipo === 'Egreso') {
                         if (nuevoInventario[codigo]) { 
                             nuevoInventario[codigo].cantidad -= cantidad; 
                             nuevoInventario[codigo].precioVenta = precioVenta; 
                         } else { 
-                            nuevoInventario[codigo] = { articulo, cantidad: -cantidad, precioCompra: 0, precioVenta, stockMinimo }; 
+                            nuevoInventario[codigo] = { articulo, cantidad: -Math.abs(cantidad), precioCompra: 0, precioVenta, stockMinimo: 3, exento }; 
                         }
                     }
+                    lineasProcesadas++;
                 }
-                inventario = nuevoInventario; transacciones = nuevasTransacciones; paginaActual = 1;
-                guardarDatos(); alert("Sincronización Pro completada."); inputImportar.value = '';
+
+                if (lineasProcesadas === 0) {
+                    alert("❌ Formato incompatible. Asegúrate de importar un archivo de texto tabulado válido.");
+                } else {
+                    inventario = nuevoInventario; 
+                    transacciones = nuevasTransacciones; 
+                    paginaActual = 1;
+                    guardarDatos(); 
+                    alert(`✅ Base de datos restaurada con éxito. Se procesaron ${lineasProcesadas} movimientos.`); 
+                }
+                inputImportar.value = ''; 
             };
             lector.readAsText(archivo, 'UTF-8');
         });
@@ -904,166 +919,148 @@
                 paginaActual = 1; actualizarCarrito(); guardarDatos();
             }
         });
-		
-		
-		// --- LÓGICA DEL ESCÁNER DE CÓDIGOS DE BARRAS ---
-		let escanerActivo = null;
-		let inputDestinoActual = ''; // Variable para saber a cuál casilla enviar el código
+        
+        // --- LÓGICA DEL ESCÁNER DE CÓDIGOS DE BARRAS ---
+        let escanerActivo = null;
+        let inputDestinoActual = ''; 
 
-		function abrirScanner(idInputDestino) {
-			inputDestinoActual = idInputDestino;
-			document.getElementById('modal-scanner').classList.remove('hidden');
+        function abrirScanner(idInputDestino) {
+            inputDestinoActual = idInputDestino;
+            document.getElementById('modal-scanner').classList.remove('hidden');
 
-			// Inicializamos la cámara
-			escanerActivo = new Html5QrcodeScanner(
-				"lector-camara", 
-				{ 
-					fps: 10, 
-					qrbox: { width: 250, height: 100 }, // Rectángulo apaisado ideal para códigos de barras
-					formatsToSupport: [ Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.CODE_128 ]
-				}, 
-				/* verbose= */ false
-			);
+            escanerActivo = new Html5QrcodeScanner(
+                "lector-camara", 
+                { 
+                    fps: 10, 
+                    qrbox: { width: 250, height: 100 }, 
+                    formatsToSupport: [ Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.CODE_128 ]
+                }, 
+                false
+            );
+            escanerActivo.render(onScanExito, onScanError);
+        }
 
-			escanerActivo.render(onScanExito, onScanError);
-		}
+        function cerrarScanner() {
+            document.getElementById('modal-scanner').classList.add('hidden');
+            if (escanerActivo) {
+                escanerActivo.clear(); 
+            }
+        }
 
-		function cerrarScanner() {
-			document.getElementById('modal-scanner').classList.add('hidden');
-			if (escanerActivo) {
-				escanerActivo.clear(); // Apaga la cámara
-			}
-		}
+        function onScanExito(codigoDecodificado) {
+            cerrarScanner();
+            const input = document.getElementById(inputDestinoActual);
+            input.value = codigoDecodificado;
+            
+            const evento = new Event('input', { bubbles: true });
+            input.dispatchEvent(evento);
+        }
 
-		function onScanExito(codigoDecodificado) {
-			// 1. Apagamos la cámara y cerramos la ventana
-			cerrarScanner();
-			
-			// 2. Colocamos el número leído en la casilla correspondiente
-			const input = document.getElementById(inputDestinoActual);
-			input.value = codigoDecodificado;
-			
-			// 3. ¡TRUCO DE MAGIA! Simulamos que el usuario escribió el código en el teclado
-			// Esto disparará tus detectores inteligentes (los addEventListener de 'input') 
-			// y autocompletará el nombre del artículo automáticamente.
-			const evento = new Event('input', { bubbles: true });
-			input.dispatchEvent(evento);
-		}
-
-		function onScanError(mensajeError) {
-			// La cámara está leyendo fotogramas constantemente. 
-			// Si no encuentra nada en el frame actual, arroja error de forma silenciosa.
-			// No hacemos nada aquí para que siga intentando leer en el siguiente fotograma.
-		}
-		
-		
+        function onScanError(mensajeError) { }
+        
         // Arranque Inicial
         actualizarTabla();
-		actualizarListaSugerencias();
-		actualizarCarritoIngreso();
+        actualizarListaSugerencias();
+        actualizarCarritoIngreso();
         actualizarCarrito();
-		
-		function descargarMovimientosCSV() {
-			let csvContent = "data:text/csv;charset=utf-8,";
-			// Encabezados con las columnas separadas y la nueva columna de Impuesto (16%)
-			csvContent += "Fecha,Hora,Tipo de Movimiento,Código,Artículo,Cantidad Entrada,Cantidad Salida,Costo/Precio Unitario,Exento,Monto Impuesto (16%)\n";
+        
+        function descargarMovimientosTXT() {
+            let txtContent = "Fecha\tHora\tTipo de Movimiento\tCódigo\tArtículo\tCantidad Entrada\tCantidad Salida\tCosto/Precio Unitario\tExento\tStock Minimo\tMonto Impuesto (16%)\n";
 
-			// Recorrer el historial de transacciones del sistema
-			transacciones.forEach(item => {
-				const esIngreso = item.tipo === 'Ingreso';
-				const esEgreso = item.tipo === 'Egreso';
-				
-				// 1. Separamos cantidades de entrada y salida
-				const cantidadEntrada = esIngreso ? item.cantidad : 0;
-				const cantidadSalida = esEgreso ? item.cantidad : 0;
-				
-				// 2. Determinamos el precio unitario correspondiente
-				const precio = esIngreso ? (item.precioCompra || 0) : (item.precioVenta || 0);
-				
-				// 3. Calculamos el subtotal de la línea (Cantidad * Precio)
-				const subtotalLinea = item.cantidad * precio;
+            transacciones.forEach(item => {
+                const esIngreso = item.tipo === 'Ingreso';
+                const esEgreso = item.tipo === 'Egreso';
+                
+                const cantidadEntrada = esIngreso ? item.cantidad : 0;
+                const cantidadSalida = esEgreso ? item.cantidad : 0;
+                const precio = esIngreso ? (item.precioCompra || 0) : (item.precioVenta || 0);
+                const subtotal = item.cantidad * precio;
 
-				// 4. LÓGICA DEL IMPUESTO: Si es exento es 0, si es gravable se calcula el 16% del subtotal
-				let montoImpuesto = 0;
-				if (item.exento !== true) {
-					montoImpuesto = subtotalLinea * 0.16;
-				}
+                let montoImpuesto = 0;
+                if (item.exento !== true) {
+                    montoImpuesto = subtotal * 0.16;
+                }
 
-				// 5. Construimos la fila con formato limpio de dos decimales para los montos de dinero
-				const fila = [
-					item.fecha,
-					item.tipo,
-					item.codigo,
-					`"${item.articulo}"`, // Comillas para proteger nombres con comas
-					cantidadEntrada,
-					cantidadSalida,
-					precio.toFixed(2),
-					item.exento ? "Si" : "No",
-					montoImpuesto.toFixed(2) // Nueva columna calculada
-				];
-				
-				csvContent += fila.join(",") + "\n";
-			});
+                let fechaPura = item.fecha;
+                let horaPura = "";
+                if (item.fecha.includes(",")) {
+                    let partes = item.fecha.split(",");
+                    fechaPura = partes[0].trim();
+                    horaPura = partes[1].trim();
+                } else if (item.fecha.includes(" ")) {
+                    let partes = item.fecha.split(" ");
+                    fechaPura = partes[0].trim();
+                    horaPura = partes[1].trim();
+                }
 
-			// Código nativo para forzar la descarga del archivo en el navegador
-			const encodedUri = encodeURI(csvContent);
-			const link = document.createElement("a");
-			link.setAttribute("href", encodedUri);
-			link.setAttribute("download", `Reporte_Movimientos_y_Tasas_${new Date().toLocaleDateString('es-ES')}.csv`);
-			document.body.appendChild(link);
-			link.click();
-			document.body.removeChild(link);
-		}
-		
-		function sugerirPrecioGanancia() {
-			const codigo = document.getElementById('egreso-codigo').value.trim();
-			const campoPrecio = document.getElementById('egreso-precio');
+                const fila = [
+                    fechaPura,
+                    horaPura,
+                    item.tipo,
+                    item.codigo,
+                    item.articulo,
+                    cantidadEntrada,
+                    cantidadSalida,
+                    precio.toFixed(2),
+                    item.exento ? "Si" : "No",
+                    item.stockMinimo || 3, 
+                    montoImpuesto.toFixed(2)
+                ];
+                txtContent += fila.join("\t") + "\n";
+            });
 
-			if (!codigo) {
-				return alert('⚠️ Por favor, ingresa o busca un producto primero para poder calcular su costo.');
-			}
+            const blob = new Blob(["\uFEFF" + txtContent], { type: 'text/plain;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Master_Inventario_POS_${new Date().toLocaleDateString('es-ES').replace(/\//g, '-')}.txt`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function sugerirPrecioGanancia() {
+            const codigo = document.getElementById('egreso-codigo').value.trim();
+            const campoPrecio = document.getElementById('egreso-precio');
 
-			// 1. Filtrar todas las compras (Ingresos) históricas de este artículo específico
-			const comprasArticulo = transacciones.filter(t => t.codigo === codigo && t.tipo === 'Ingreso');
+            if (!codigo) {
+                return alert('⚠️ Por favor, ingresa o busca un producto primero para poder calcular su costo.');
+            }
 
-			if (comprasArticulo.length === 0) {
-				// Si no hay historial en transacciones, intentamos usar el precioCompra actual del inventario
-				if (inventario[codigo] && inventario[codigo].precioCompra) {
-					const precioSugerido = inventario[codigo].precioCompra * 1.30;
-					campoPrecio.value = precioSugerido.toFixed(2);
-					return;
-				}
-				return alert('⚠️ No se encontraron registros de compras para este artículo. Introduce el precio manualmente.');
-			}
+            const comprasArticulo = transacciones.filter(t => t.codigo === codigo && t.tipo === 'Ingreso');
 
-			// 2. Aplicar la fórmula matemática del Costo Promedio Ponderado (CPP)
-			let inversionTotal = 0;
-			let cantidadTotalComprada = 0;
+            if (comprasArticulo.length === 0) {
+                if (inventario[codigo] && inventario[codigo].precioCompra) {
+                    const precioSugerido = inventario[codigo].precioCompra * 1.30;
+                    campoPrecio.value = precioSugerido.toFixed(2);
+                    return;
+                }
+                return alert('⚠️ No se encontraron registros de compras para este artículo. Introduce el precio manualmente.');
+            }
 
-			comprasArticulo.forEach(compra => {
-				inversionTotal += (compra.cantidad * compra.precioCompra);
-				cantidadTotalComprada += compra.cantidad;
-			});
+            let inversionTotal = 0;
+            let cantidadTotalComprada = 0;
 
-			if (cantidadTotalComprada === 0) return alert('⚠️ Error al calcular: La cantidad comprada registrada es cero.');
+            comprasArticulo.forEach(compra => {
+                inversionTotal += (compra.cantidad * compra.precioCompra);
+                cantidadTotalComprada += compra.cantidad;
+            });
 
-			const costoPromedioPonderado = inversionTotal / cantidadTotalComprada;
+            if (cantidadTotalComprada === 0) return alert('⚠️ Error al calcular: La cantidad comprada registrada es cero.');
 
-			// 3. Calcular el precio final añadiendo el margen del 30%
-			const precioVentaSugerido = costoPromedioPonderado * 1.30;
-
-			// 4. Inyectar el valor en la casilla de forma opcional (el usuario puede borrarlo o cambiarlo)
-			campoPrecio.value = precioVentaSugerido.toFixed(2);
-		}
+            const costoPromedioPonderado = inversionTotal / cantidadTotalComprada;
+            const precioVentaSugerido = costoPromedioPonderado * 1.30;
+            campoPrecio.value = precioVentaSugerido.toFixed(2);
+        }
     </script>
-	<div id="modal-scanner" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
-        <div class="flex justify-between items-center p-4 border-b bg-slate-50">
-            <h3 class="font-bold text-slate-700 flex items-center gap-2">📷 Escanear Código de Barras</h3>
-            <button onclick="cerrarScanner()" class="text-rose-500 hover:text-rose-700 font-black text-lg px-2">✕</button>
+    <div id="modal-scanner" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="flex justify-between items-center p-4 border-b bg-slate-50">
+                <h3 class="font-bold text-slate-700 flex items-center gap-2">📷 Escanear Código de Barras</h3>
+                <button onclick="cerrarScanner()" class="text-rose-500 hover:text-rose-700 font-black text-lg px-2">✕</button>
+            </div>
+            <div id="lector-camara" class="w-full"></div>
         </div>
-        <div id="lector-camara" class="w-full"></div>
     </div>
-</div>
 </body>
 </html>

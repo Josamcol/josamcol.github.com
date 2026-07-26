@@ -26,7 +26,7 @@
                             <option value="VES">VES (Bs.)</option>
                         </select>
                     </div>
-                    <span class="text-sm bg-indigo-800 px-3 py-1 rounded-full shadow-inner font-medium text-indigo-200">Versión b 0.34 (Decimal con coma en TXT)</span>
+                    <span class="text-sm bg-indigo-800 px-3 py-1 rounded-full shadow-inner font-medium text-indigo-200">Versión b 0.35 (Reporte dual USD/VES)</span>
                 </div>
             </div>
         </header>
@@ -166,7 +166,7 @@
                             </div>
                             <div>
                                 <div class="flex justify-between items-center">
-                                    <label class="block text-sm font-semibold text-slate-600" id="label-precio-venta">Precio Venta (u)($)</label>
+                                    <label class="block text-sm font-semibold text-slate-600" id="label-precio-venta">Precio Venta ($)</label>
                                     <button type="button" onclick="sugerirPrecioGanancia()" class="text-[10px] text-indigo-600 hover:text-indigo-800 font-bold underline bg-indigo-50 px-1.5 py-0.5 rounded" title="Calcula precio con 30% de margen sobre el precio de venta">
                                         +30% Margen
                                     </button>
@@ -296,16 +296,14 @@
             });
         };
 
-        // ✅ NUEVA FUNCIÓN: Formatea número con coma decimal para TXT
-        // Convierte 1234.56 → "1234,56"
         const formatoDecimal = (numero, decimales = 2) => {
             if (numero === null || numero === undefined || isNaN(numero)) return '';
             return numero.toFixed(decimales).replace('.', ',');
         };
 
-        const convertirAVES = (montoUSD) => {
-            if (tasaBCV === 0) return 0;
-            return montoUSD * tasaBCV;
+        const convertirAVES = (montoUSD, tasa = tasaBCV) => {
+            if (!tasa || tasa === 0) return 0;
+            return montoUSD * tasa;
         };
 
         const convertirAUSD = (montoVES) => {
@@ -842,9 +840,10 @@
             }
         });
 
-        // ✅ FUNCIÓN AUXILIAR: Genera el contenido TXT con coma decimal
+        // ✅ NUEVO: Genera contenido TXT con costos en AMBAS monedas (USD y VES)
         function generarContenidoTXT() {
-            let txtContent = "Fecha\tHora\tTipo de Movimiento\tCódigo\tArtículo\tCantidad Entrada\tCantidad Salida\tCosto/Precio Unitario\tExento\tStock Minimo\tMonto Impuesto (16%)\tTasa BCV\tCPP Resultante\tStock Resultante\n";
+            // Encabezado con columnas duplicadas para USD y VES
+            let txtContent = "Fecha\tHora\tTipo de Movimiento\tCódigo\tArtículo\tCantidad Entrada\tCantidad Salida\tPrecio USD\tPrecio VES\tExento\tStock Minimo\tImpuesto USD\tImpuesto VES\tTasa BCV\tCPP USD\tCPP VES\tStock Resultante\n";
 
             transacciones.forEach(item => {
                 const esIngreso = item.tipo === 'Ingreso';
@@ -852,11 +851,24 @@
                 
                 const cantidadEntrada = esIngreso ? item.cantidad : 0;
                 const cantidadSalida = esEgreso ? item.cantidad : 0;
-                const precio = esIngreso ? (item.precioCompra || 0) : (item.precioVenta || 0);
-                const subtotal = item.cantidad * precio;
+                const precioUSD = esIngreso ? (item.precioCompra || 0) : (item.precioVenta || 0);
+                
+                // ✅ Tasa BCV usada en el momento de la transacción
+                const tasaUsada = item.tasaBCV || tasaBCV || 0;
+                
+                // ✅ Convertir a VES usando la tasa de la transacción
+                const precioVES = convertirAVES(precioUSD, tasaUsada);
+                
+                const subtotalUSD = item.cantidad * precioUSD;
+                let montoImpuestoUSD = 0;
+                if (item.exento !== true) montoImpuestoUSD = subtotalUSD * 0.16;
+                
+                // ✅ Impuesto también en VES
+                const montoImpuestoVES = convertirAVES(montoImpuestoUSD, tasaUsada);
 
-                let montoImpuesto = 0;
-                if (item.exento !== true) montoImpuesto = subtotal * 0.16;
+                // ✅ CPP en ambas monedas
+                const cppUSD = item.cppResultante || 0;
+                const cppVES = convertirAVES(cppUSD, tasaUsada);
 
                 let fechaPura = item.fecha;
                 let horaPura = "";
@@ -870,7 +882,6 @@
                     horaPura = partes[1].trim();
                 }
 
-                // ✅ Todos los valores numéricos usan coma como separador decimal
                 const fila = [
                     fechaPura, 
                     horaPura, 
@@ -879,12 +890,15 @@
                     item.articulo, 
                     cantidadEntrada, 
                     cantidadSalida, 
-                    formatoDecimal(precio),           // ← Costo/Precio con coma
+                    formatoDecimal(precioUSD),           // Precio USD
+                    formatoDecimal(precioVES),           // Precio VES
                     item.exento ? "Si" : "No", 
                     item.stockMinimo || 3,
-                    formatoDecimal(montoImpuesto),    // ← Impuesto con coma
-                    formatoDecimal(item.tasaBCV || tasaBCV || 0),  // ← Tasa BCV con coma
-                    item.cppResultante ? formatoDecimal(item.cppResultante) : '',  // ← CPP con coma
+                    formatoDecimal(montoImpuestoUSD),    // Impuesto USD
+                    formatoDecimal(montoImpuestoVES),    // Impuesto VES
+                    formatoDecimal(tasaUsada),           // Tasa BCV
+                    formatoDecimal(cppUSD),              // CPP USD
+                    formatoDecimal(cppVES),              // CPP VES
                     item.stockResultante !== undefined ? item.stockResultante : ''
                 ];
                 
@@ -909,7 +923,7 @@
                     await navigator.share({
                         files: [archivoTXT],
                         title: 'Backup P.O.S.',
-                        text: 'Adjunto el archivo maestro de inventario para su respaldo o revisión.'
+                        text: 'Adjunto el archivo maestro de inventario (dual USD/VES) para su respaldo o revisión.'
                     });
                 } catch (err) {
                     console.log("Operación de compartir cancelada por el usuario.");
@@ -944,7 +958,6 @@
                 let nuevasTransacciones = [];
                 let lineasProcesadas = 0;
 
-                // ✅ Parseador adaptado para aceptar coma o punto como decimal
                 const parsearLineaTab = (texto) => {
                     return texto.split('\t').map(valor => {
                         let v = valor.trim();
@@ -955,10 +968,8 @@
                     });
                 };
 
-                // ✅ Función para parsear números con coma o punto decimal
                 const parsearNumero = (texto) => {
                     if (!texto || texto === '') return 0;
-                    // Reemplaza coma por punto para parseFloat
                     const normalizado = texto.toString().replace(',', '.');
                     const resultado = parseFloat(normalizado);
                     return isNaN(resultado) ? 0 : resultado;
@@ -978,17 +989,43 @@
                     let articulo = columnas[4];
                     let cantidadEntrada = parseInt(columnas[5]) || 0;
                     let cantidadSalida = parseInt(columnas[6]) || 0;
-                    let precio = parsearNumero(columnas[7]);  // ← Acepta coma o punto
-                    let exento = columnas[8].toLowerCase() === 'si';
-                    let stockMinimo = parseInt(columnas[9]) || 3;
-                    let tasaBCVTransaccion = parsearNumero(columnas[11]) || tasaBCV || 0;  // ← Acepta coma o punto
+                    
+                    // ✅ Detectar formato: nuevo (17 cols) o antiguo (12 cols)
+                    // En el nuevo formato: col 7 = Precio USD, col 8 = Precio VES
+                    // En el antiguo: col 7 = Precio único
+                    let precio;
+                    let exento, stockMinimo, tasaBCVTransaccion, cppResultante, stockResultante;
+                    
+                    if (columnas.length >= 17) {
+                        // ✅ Formato nuevo con ambas monedas
+                        precio = parsearNumero(columnas[7]);      // Precio USD
+                        exento = columnas[9].toLowerCase() === 'si';
+                        stockMinimo = parseInt(columnas[10]) || 3;
+                        tasaBCVTransaccion = parsearNumero(columnas[13]);
+                        cppResultante = parsearNumero(columnas[14]);
+                        stockResultante = parseInt(columnas[16]) || 0;
+                    } else {
+                        // ✅ Formato antiguo (compatibilidad hacia atrás)
+                        precio = parsearNumero(columnas[7]);
+                        exento = columnas[8].toLowerCase() === 'si';
+                        stockMinimo = parseInt(columnas[9]) || 3;
+                        tasaBCVTransaccion = parsearNumero(columnas[11]) || tasaBCV || 0;
+                        cppResultante = columnas[12] ? parsearNumero(columnas[12]) : 0;
+                        stockResultante = columnas[13] ? parseInt(columnas[13]) : 0;
+                    }
                     
                     let fechaCompleta = hora ? `${fecha}, ${hora}` : fecha;
                     let cantidad = tipo === 'Ingreso' ? cantidadEntrada : cantidadSalida;
                     let precioCompra = tipo === 'Ingreso' ? precio : 0;
                     let precioVenta = tipo === 'Egreso' ? precio : 0;
 
-                    nuevasTransacciones.push({ fecha: fechaCompleta, tipo, codigo, articulo, cantidad, precioCompra, precioVenta, stockMinimo, exento, tasaBCV: tasaBCVTransaccion });
+                    nuevasTransacciones.push({ 
+                        fecha: fechaCompleta, tipo, codigo, articulo, cantidad, 
+                        precioCompra, precioVenta, stockMinimo, exento, 
+                        tasaBCV: tasaBCVTransaccion,
+                        cppResultante: cppResultante,
+                        stockResultante: stockResultante
+                    });
 
                     if (tipo === 'Ingreso') {
                         if (nuevoInventario[codigo]) { 
@@ -1097,7 +1134,6 @@
         actualizarListaSugerencias();
         obtenerTasaBCV();
         
-        // ✅ Ahora usa la función centralizada generarContenidoTXT()
         function descargarMovimientosTXT() {
             if (transacciones.length === 0) return alert("⚠️ No hay transacciones guardadas en el historial.");
             

@@ -6,6 +6,34 @@
     <title>P.O.S. Pro - Almacén Inteligente</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        /* Estilos para el modal de factura */
+        .factura-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border: 1px dashed #cbd5e1;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .factura-header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 10px; }
+        .factura-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem; }
+        .factura-total { border-top: 2px dashed #000; padding-top: 10px; margin-top: 10px; font-weight: bold; font-size: 1.1rem; }
+        
+        /* REGLA DE ORO PARA IMPRIMIR/GUARDAR COMO PDF */
+        @media print {
+            body * { visibility: hidden; }
+            #modal-factura, #modal-factura * { visibility: visible; }
+            #modal-factura { 
+                position: absolute; 
+                left: 0; 
+                top: 0; 
+                width: 100%; 
+                background: white;
+            }
+            .no-print { display: none !important; }
+        }
+    </style>
 </head>
 <body class="bg-slate-100 font-sans text-slate-800">
 
@@ -26,7 +54,7 @@
                             <option value="VES">VES (Bs.)</option>
                         </select>
                     </div>
-                    <span class="text-sm bg-indigo-800 px-3 py-1 rounded-full shadow-inner font-medium text-indigo-200">Versión b 0.35 (Reporte dual USD/VES)</span>
+                    <span class="text-sm bg-indigo-800 px-3 py-1 rounded-full shadow-inner font-medium text-indigo-200">Versión b 0.37 (Reporte con N° Control y Totales)</span>
                 </div>
             </div>
         </header>
@@ -56,9 +84,9 @@
                     <form id="form-ingreso" class="space-y-4">
                         <div class="grid grid-cols-3 gap-3">
                             <div class="col-span-2">
-                                <label class="block text-sm font-semibold text-slate-600">Código de Barras / ID</label>
+                                <label for="ingreso-codigo" class="block text-sm font-semibold text-slate-600">Código de Barras / ID</label>
                                 <div class="flex gap-2 mt-1">
-                                    <input type="text" id="ingreso-codigo" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none">
+                                    <input type="text" id="ingreso-codigo" list="lista-codigos-ingreso" required placeholder="Escribe o busca un código existente" autocomplete="off" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none">
                                     <button type="button" onclick="abrirScanner('ingreso-codigo')" class="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-3 rounded-lg border border-emerald-200 transition-colors" title="Escanear con cámara">
                                         📷
                                     </button>
@@ -73,8 +101,10 @@
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-slate-600">Artículo / Descripción</label>
-                            <input type="text" id="ingreso-articulo" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none">
+                            <input type="text" id="ingreso-articulo" list="lista-articulos-ingreso" required placeholder="Escribe o busca un artículo" autocomplete="off" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none">
                         </div>
+                        <datalist id="lista-codigos-ingreso"></datalist>
+                        <datalist id="lista-articulos-ingreso"></datalist>
                         <div class="grid grid-cols-3 gap-3">
                             <div>
                                 <label class="block text-sm font-semibold text-slate-600">Cantidad</label>
@@ -144,9 +174,9 @@
                     <form id="form-egreso" class="space-y-4">
                         
                         <div>
-                            <label class="block text-sm font-semibold text-slate-600">Código</label>
+                            <label for="egreso-codigo" class="block text-sm font-semibold text-slate-600">Código de Barras / ID</label>
                             <div class="flex gap-2 mt-1">
-                                <input type="text" id="egreso-codigo" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-rose-400 outline-none">
+                                <input type="text" id="egreso-codigo" list="lista-codigos-egreso" required placeholder="Escribe o busca un código" autocomplete="off" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-rose-400 outline-none">
                                 <button type="button" onclick="abrirScanner('egreso-codigo')" class="bg-rose-100 text-rose-700 hover:bg-rose-200 px-3 rounded-lg border border-rose-200 transition-colors" title="Escanear con cámara">
                                     📷
                                 </button>
@@ -154,10 +184,12 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-semibold text-slate-600">Buscar por Nombre</label>
-                            <input type="text" id="egreso-articulo" list="lista-articulos-egreso" required placeholder="Escribe el nombre del artículo..." class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-rose-400 outline-none">
+                            <label class="block text-sm font-semibold text-slate-600">Artículo / Descripción</label>
+                            <input type="text" id="egreso-articulo" list="lista-articulos-egreso" required placeholder="Escribe o busca un artículo" autocomplete="off" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-rose-400 outline-none">
                             <datalist id="lista-articulos-egreso"></datalist>
                         </div>
+                        
+                        <datalist id="lista-codigos-egreso"></datalist>
                         
                         <div class="grid grid-cols-2 gap-3">
                             <div>
@@ -277,6 +309,71 @@
         </main>
     </div>
 
+    <!-- MODAL DE FACTURA / RECIBO -->
+    <div id="modal-factura" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden my-8">
+            <div class="flex justify-between items-center p-4 border-b bg-slate-50 no-print">
+                <h3 class="font-bold text-slate-700 flex items-center gap-2">🧾 Vista Previa de Documento</h3>
+                <button onclick="cerrarFactura()" class="text-rose-500 hover:text-rose-700 font-black text-lg px-2">✕</button>
+            </div>
+            
+            <div id="area-impresion" class="p-6">
+                <div class="factura-container">
+                    <div class="factura-header">
+                        <h2 class="text-xl font-bold">P.O.S. Almacén Inteligente</h2>
+                        <p class="text-xs text-slate-500 mt-1">RIF: J-00000000-0 (Ejemplo)</p>
+                        <p class="text-sm font-bold mt-2" id="factura-tipo">COMPROBANTE</p>
+                        <p class="text-xs">N° Control: <span id="factura-control" class="font-bold"></span></p>
+                        <p class="text-xs">Fecha: <span id="factura-fecha"></span></p>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="flex justify-between text-xs font-bold border-b pb-1 mb-2">
+                            <span class="w-1/2">Artículo</span>
+                            <span class="w-1/6 text-center">Cant.</span>
+                            <span class="w-1/6 text-right">Precio</span>
+                            <span class="w-1/6 text-right">Total</span>
+                        </div>
+                        <div id="factura-items" class="text-xs space-y-1"></div>
+                    </div>
+
+                    <div class="factura-total space-y-1 text-sm">
+                        <div class="factura-row">
+                            <span>Subtotal:</span>
+                            <span id="factura-subtotal">$ 0.00</span>
+                        </div>
+                        <div class="factura-row">
+                            <span>Impuesto (16%):</span>
+                            <span id="factura-impuesto">$ 0.00</span>
+                        </div>
+                        <div class="factura-row text-base font-black text-emerald-700">
+                            <span>TOTAL:</span>
+                            <span id="factura-total">$ 0.00</span>
+                        </div>
+                        <div class="factura-row text-xs text-slate-500 mt-2 pt-2 border-t border-dashed">
+                            <span>Tasa BCV:</span>
+                            <span id="factura-tasa">Bs. 0.00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-6 text-xs text-slate-400">
+                        <p>¡Gracias por su operación!</p>
+                        <p>Documento generado digitalmente</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 border-t bg-slate-50 flex gap-3 no-print">
+                <button onclick="window.print()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+                    🖨️ Imprimir / Guardar PDF
+                </button>
+                <button onclick="cerrarFactura()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition-colors">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let inventario = JSON.parse(localStorage.getItem('pos_inventario')) || {};
         let transacciones = JSON.parse(localStorage.getItem('pos_transacciones')) || [];
@@ -290,10 +387,7 @@
         const MARGEN_GANANCIA = 0.30;
 
         const formatoMoneda = (numero) => {
-            return numero.toLocaleString('es-VE', { 
-                minimumFractionDigits: 2, 
-                maximumFractionDigits: 2 
-            });
+            return numero.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         };
 
         const formatoDecimal = (numero, decimales = 2) => {
@@ -339,6 +433,9 @@
         const egresoArticulo = document.getElementById('egreso-articulo');
         const egresoPrecio = document.getElementById('egreso-precio');
         const listaArticulosEgreso = document.getElementById('lista-articulos-egreso');
+        const listaCodigosEgreso = document.getElementById('lista-codigos-egreso');
+        const listaCodigosIngreso = document.getElementById('lista-codigos-ingreso');
+        const listaArticulosIngreso = document.getElementById('lista-articulos-ingreso');
         const tablaCarrito = document.getElementById('tabla-carrito');
         const totalCarrito = document.getElementById('total-carrito');
         const btnProcesarEgreso = document.getElementById('btn-procesar-egreso');
@@ -357,24 +454,60 @@
         const labelCostoCompra = document.getElementById('label-costo-compra');
         const labelPrecioVenta = document.getElementById('label-precio-venta');
 
+        function generarNumeroControl() {
+            const now = new Date();
+            const dateStr = now.toISOString().slice(0,10).replace(/-/g, '');
+            const randomStr = Math.floor(1000 + Math.random() * 9000);
+            return `CTRL-${dateStr}-${randomStr}`;
+        }
+
+        function mostrarFactura(tipo, items, subtotal, impuesto, total, numeroControl) {
+            document.getElementById('factura-tipo').textContent = tipo;
+            document.getElementById('factura-control').textContent = numeroControl;
+            document.getElementById('factura-fecha').textContent = new Date().toLocaleString('es-ES');
+            document.getElementById('factura-tasa').textContent = `Bs. ${formatoMoneda(tasaBCV)}`;
+            
+            const contenedorItems = document.getElementById('factura-items');
+            contenedorItems.innerHTML = '';
+            
+            items.forEach(item => {
+                const precioUnitario = tipo.includes('INGRESO') ? item.precioCompra : item.precioVenta;
+                const totalItem = item.cantidad * precioUnitario;
+                
+                const div = document.createElement('div');
+                div.className = 'factura-row';
+                div.innerHTML = `
+                    <span class="w-1/2 truncate pr-2">${item.articulo}</span>
+                    <span class="w-1/6 text-center">${item.cantidad}</span>
+                    <span class="w-1/6 text-right">$${formatoMoneda(precioUnitario)}</span>
+                    <span class="w-1/6 text-right font-bold">$${formatoMoneda(totalItem)}</span>
+                `;
+                contenedorItems.appendChild(div);
+            });
+
+            document.getElementById('factura-subtotal').textContent = `$ ${formatoMoneda(subtotal)}`;
+            document.getElementById('factura-impuesto').textContent = `$ ${formatoMoneda(impuesto)}`;
+            document.getElementById('factura-total').textContent = `$ ${formatoMoneda(total)}`;
+            
+            document.getElementById('modal-factura').classList.remove('hidden');
+        }
+
+        function cerrarFactura() {
+            document.getElementById('modal-factura').classList.add('hidden');
+        }
+
         async function obtenerTasaBCV() {
             tasaBCVContainer.innerHTML = '<span class="animate-pulse">⏳</span><span>Actualizando tasa BCV...</span>';
-            
             try {
                 const response = await fetch('https://rates.dolarvzla.com/bcv/current.json');
                 if (!response.ok) throw new Error('Error al obtener la tasa del BCV');
-                
                 const data = await response.json();
                 tasaBCV = data.current.usd;
                 fechaTasaBCV = data.current.date;
-                
                 localStorage.setItem('tasa_bcv', tasaBCV.toString());
                 localStorage.setItem('fecha_tasa_bcv', fechaTasaBCV);
-                
                 actualizarDisplayTasaBCV();
                 actualizarTodo();
-                
-                console.log(`✅ Tasa BCV actualizada: $1 USD = Bs. ${tasaBCV} (Fecha: ${fechaTasaBCV})`);
             } catch (error) {
                 console.error('❌ Error al obtener tasa BCV:', error);
                 if (tasaBCV > 0) {
@@ -467,22 +600,28 @@
             infoPaginacion.textContent = `Página ${paginaActual} de ${totalPaginas} (${totalItems} artículos)`;
             btnAnterior.disabled = (paginaActual === 1);
             btnSiguiente.disabled = (paginaActual === totalPaginas);
-            
             actualizarDashboard();
         }
 
         function actualizarListaSugerencias() {
             listaArticulosEgreso.innerHTML = '';
+            listaCodigosEgreso.innerHTML = '';
+            listaCodigosIngreso.innerHTML = '';
+            listaArticulosIngreso.innerHTML = '';
+            
             Object.keys(inventario).forEach(codigo => {
-                const option = document.createElement('option');
-                option.value = inventario[codigo].articulo;
-                listaArticulosEgreso.appendChild(option);
+                const item = inventario[codigo];
+                const articulo = item.articulo;
+                
+                const opt1 = document.createElement('option'); opt1.value = articulo; opt1.label = `Código: ${codigo}`; listaArticulosEgreso.appendChild(opt1);
+                const opt2 = document.createElement('option'); opt2.value = codigo; opt2.label = articulo; listaCodigosEgreso.appendChild(opt2);
+                const opt3 = document.createElement('option'); opt3.value = codigo; opt3.label = articulo; listaCodigosIngreso.appendChild(opt3);
+                const opt4 = document.createElement('option'); opt4.value = articulo; opt4.label = `Código: ${codigo}`; listaArticulosIngreso.appendChild(opt4);
             });
         }
 
         function actualizarCarrito() {
             tablaCarrito.innerHTML = '';
-            
             if (carrito.length === 0) {
                 tablaCarrito.innerHTML = `<tr><td colspan="7" class="p-3 text-center text-slate-400 italic">Ningún artículo añadido.</td></tr>`;
                 impuestoCarrito.textContent = `${simboloMoneda()} 0.00`;
@@ -490,13 +629,11 @@
                 return;
             }
 
-            let sumaSubtotalGravable = 0;
-            let sumaSubtotalExento = 0;
+            let sumaSubtotalGravable = 0, sumaSubtotalExento = 0;
 
             carrito.forEach((item, index) => {
                 const esExento = item.exento === true;
                 const subtotalItem = item.cantidad * item.precioVenta;
-                
                 const impuestoUnitario = esExento ? 0 : item.precioVenta * 0.16;
                 const impuestoTotalFila = esExento ? 0 : subtotalItem * 0.16;
                 const totalFilaConImpuesto = subtotalItem + impuestoTotalFila;
@@ -504,13 +641,10 @@
                 if (esExento) sumaSubtotalExento += subtotalItem;
                 else sumaSubtotalGravable += subtotalItem;
 
-                const etiquetaTipo = esExento ? 
-                    `<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-bold">E</span>` : 
-                    `<span class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-bold">G</span>`;
+                const etiquetaTipo = esExento ? `<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-bold">E</span>` : `<span class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-bold">G</span>`;
 
                 const fila = document.createElement('tr');
                 fila.className = "hover:bg-slate-100";
-                
                 fila.innerHTML = `
                     <td class="p-2 font-medium truncate max-w-[120px]">${item.articulo}</td>
                     <td class="p-2 text-center font-bold text-slate-700">${item.cantidad}</td>
@@ -518,9 +652,7 @@
                     <td class="p-2 text-right font-medium text-rose-500">${formatearMoneda(impuestoUnitario)}</td>
                     <td class="p-2 text-center">${etiquetaTipo}</td>
                     <td class="p-2 text-right font-bold text-slate-700">${formatearMoneda(totalFilaConImpuesto)}</td>
-                    <td class="p-2 text-center">
-                        <button type="button" onclick="eliminarDelCarrito(${index})" class="text-rose-500 hover:text-rose-700 font-bold px-1">✕</button>
-                    </td>
+                    <td class="p-2 text-center"><button type="button" onclick="eliminarDelCarrito(${index})" class="text-rose-500 hover:text-rose-700 font-bold px-1">✕</button></td>
                 `;
                 tablaCarrito.appendChild(fila);
             });
@@ -532,15 +664,11 @@
             totalCarrito.textContent = `${simboloMoneda()} ${formatoMoneda(monedaSeleccionada === 'VES' ? convertirAVES(totalConImpuesto) : totalConImpuesto)}`;
         }
 
-        function eliminarDelCarrito(index) {
-            carrito.splice(index, 1);
-            actualizarCarrito();
-        }
+        function eliminarDelCarrito(index) { carrito.splice(index, 1); actualizarCarrito(); }
         
         function actualizarCarritoIngreso() {
             tablaCarritoIngreso.innerHTML = '';
-            let sumaSubtotalGravable = 0;
-            let sumaSubtotalExento = 0;
+            let sumaSubtotalGravable = 0, sumaSubtotalExento = 0;
 
             if (carritoIngreso.length === 0) {
                 tablaCarritoIngreso.innerHTML = `<tr><td colspan="7" class="p-3 text-center text-slate-400 italic">Ningún artículo añadido.</td></tr>`;
@@ -551,7 +679,6 @@
 
             carritoIngreso.forEach((item, index) => {
                 const subtotalItem = item.cantidad * item.precioCompra;
-                
                 const impuestoUnitario = item.exento ? 0 : item.precioCompra * 0.16;
                 const impuestoTotalFila = item.exento ? 0 : subtotalItem * 0.16;
                 const totalFilaConImpuesto = subtotalItem + impuestoTotalFila;
@@ -559,9 +686,7 @@
                 if (item.exento) sumaSubtotalExento += subtotalItem;
                 else sumaSubtotalGravable += subtotalItem;
 
-                const etiquetaTipo = item.exento ? 
-                    `<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-bold">E</span>` : 
-                    `<span class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-bold">G</span>`;
+                const etiquetaTipo = item.exento ? `<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-bold">E</span>` : `<span class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-bold">G</span>`;
 
                 const fila = document.createElement('tr');
                 fila.className = "hover:bg-slate-100";
@@ -572,9 +697,7 @@
                     <td class="p-2 text-right font-medium text-emerald-500">${formatearMoneda(impuestoUnitario)}</td>
                     <td class="p-2 text-center">${etiquetaTipo}</td>
                     <td class="p-2 text-right font-bold text-slate-700">${formatearMoneda(totalFilaConImpuesto)}</td>
-                    <td class="p-2 text-center">
-                        <button type="button" onclick="eliminarDelCarritoIngreso(${index})" class="text-rose-500 hover:text-rose-700 font-bold px-1">✕</button>
-                    </td>
+                    <td class="p-2 text-center"><button type="button" onclick="eliminarDelCarritoIngreso(${index})" class="text-rose-500 hover:text-rose-700 font-bold px-1">✕</button></td>
                 `;
                 tablaCarritoIngreso.appendChild(fila);
             });
@@ -586,10 +709,7 @@
             totalCarritoIngreso.textContent = `${simboloMoneda()} ${formatoMoneda(monedaSeleccionada === 'VES' ? convertirAVES(totalFactura) : totalFactura)}`;
         }
 
-        function eliminarDelCarritoIngreso(index) {
-            carritoIngreso.splice(index, 1);
-            actualizarCarritoIngreso();
-        }
+        function eliminarDelCarritoIngreso(index) { carritoIngreso.splice(index, 1); actualizarCarritoIngreso(); }
 
         function guardarDatos() {
             localStorage.setItem('pos_inventario', JSON.stringify(inventario));
@@ -606,7 +726,6 @@
 
         ingresoCodigo.addEventListener('input', (e) => {
             const codigo = e.target.value.trim();
-            
             if (inventario[codigo]) {
                 ingresoArticulo.value = inventario[codigo].articulo;
                 ingresoArticulo.readOnly = true;
@@ -620,6 +739,19 @@
             }
         });
 
+        ingresoArticulo.addEventListener('input', () => {
+            const nombreIngresado = ingresoArticulo.value.trim().toLowerCase();
+            if (!nombreIngresado) { ingresoCodigo.value = ''; ingresoExento.disabled = false; ingresoExento.checked = false; return; }
+            const codigoEncontrado = Object.keys(inventario).find(codigo => inventario[codigo].articulo.toLowerCase() === nombreIngresado);
+            if (codigoEncontrado) {
+                ingresoCodigo.value = codigoEncontrado;
+                ingresoExento.checked = inventario[codigoEncontrado].exento || false;
+                ingresoExento.disabled = true;
+                ingresoArticulo.readOnly = true;
+                ingresoArticulo.classList.add('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+            }
+        });
+
         formIngreso.addEventListener('submit', (e) => {
             e.preventDefault();
             const codigo = ingresoCodigo.value.trim();
@@ -628,26 +760,16 @@
             let precioCompra = parseFloat(document.getElementById('ingreso-precio').value);
             const stockMin = parseInt(ingresoMinimo.value);
             
-            if (monedaSeleccionada === 'VES' && tasaBCV > 0) {
-                precioCompra = convertirAUSD(precioCompra);
-            }
-            
+            if (monedaSeleccionada === 'VES' && tasaBCV > 0) precioCompra = convertirAUSD(precioCompra);
             const exento = inventario[codigo] ? inventario[codigo].exento : ingresoExento.checked;
             
-            const itemExistente = carritoIngreso.find(
-                item => item.codigo === codigo && 
-                        Math.abs(item.precioCompra - precioCompra) < 0.0001 &&
-                        item.exento === !!exento
-            );
+            const itemExistente = carritoIngreso.find(item => item.codigo === codigo && Math.abs(item.precioCompra - precioCompra) < 0.0001 && item.exento === !!exento);
 
             if (itemExistente) {
                 itemExistente.cantidad += cantidad;
                 itemExistente.stockMinimo = stockMin;
             } else {
-                carritoIngreso.push({
-                    codigo, articulo, cantidad, precioCompra,
-                    stockMinimo: stockMin, exento: !!exento
-                });
+                carritoIngreso.push({ codigo, articulo, cantidad, precioCompra, stockMinimo: stockMin, exento: !!exento });
             }
 
             formIngreso.reset();
@@ -656,61 +778,50 @@
             ingresoExento.disabled = false;
             ingresoArticulo.readOnly = false;
             ingresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
-            
             actualizarCarritoIngreso();
             ingresoCodigo.focus();
         });
 
         btnProcesarIngreso.addEventListener('click', () => {
             if (carritoIngreso.length === 0) return alert('⚠️ La lista de compra está vacía.');
-
             const fechaActual = new Date().toLocaleString('es-ES');
+            const numeroControl = generarNumeroControl();
+            let subtotalGeneral = 0, impuestoGeneral = 0;
 
             carritoIngreso.forEach(item => {
                 if (inventario[item.codigo]) {
                     const stockAnterior = inventario[item.codigo].cantidad;
                     const cppAnterior = inventario[item.codigo].precioCompra || 0;
                     const stockTotal = stockAnterior + item.cantidad;
-                    
                     const cppNuevo = ((stockAnterior * cppAnterior) + (item.cantidad * item.precioCompra)) / stockTotal;
                     
                     inventario[item.codigo].cantidad = stockTotal;
                     inventario[item.codigo].precioCompra = cppNuevo;
                     inventario[item.codigo].stockMinimo = item.stockMinimo;
                     inventario[item.codigo].exento = item.exento;
-                    
-                    console.log(`📊 CPP recalculado para ${item.codigo}: ${stockAnterior}u@$${cppAnterior.toFixed(2)} + ${item.cantidad}u@$${item.precioCompra.toFixed(2)} = ${stockTotal}u@$${cppNuevo.toFixed(2)}`);
                 } else {
-                    inventario[item.codigo] = {
-                        articulo: item.articulo,
-                        cantidad: item.cantidad,
-                        precioCompra: item.precioCompra,
-                        precioVenta: null,
-                        stockMinimo: item.stockMinimo,
-                        exento: item.exento
-                    };
+                    inventario[item.codigo] = { articulo: item.articulo, cantidad: item.cantidad, precioCompra: item.precioCompra, precioVenta: null, stockMinimo: item.stockMinimo, exento: item.exento };
                 }
 
+                const subtotalItem = item.cantidad * item.precioCompra;
+                const impuestoItem = item.exento ? 0 : subtotalItem * 0.16;
+                subtotalGeneral += subtotalItem;
+                impuestoGeneral += impuestoItem;
+
                 transacciones.push({
-                    fecha: fechaActual,
-                    tipo: 'Ingreso',
-                    codigo: item.codigo,
-                    articulo: item.articulo,
-                    cantidad: item.cantidad,
-                    precioCompra: item.precioCompra,
-                    precioVenta: 0,
-                    stockMinimo: item.stockMinimo,
-                    exento: item.exento,
-                    tasaBCV: tasaBCV,
-                    cppResultante: inventario[item.codigo].precioCompra,
-                    stockResultante: inventario[item.codigo].cantidad
+                    fecha: fechaActual, tipo: 'Ingreso', codigo: item.codigo, articulo: item.articulo,
+                    cantidad: item.cantidad, precioCompra: item.precioCompra, precioVenta: 0,
+                    stockMinimo: item.stockMinimo, exento: item.exento, tasaBCV: tasaBCV,
+                    cppResultante: inventario[item.codigo].precioCompra, stockResultante: inventario[item.codigo].cantidad,
+                    numeroControl: numeroControl
                 });
             });
 
+            const totalFactura = subtotalGeneral + impuestoGeneral;
             carritoIngreso = [];
             actualizarCarritoIngreso();
             guardarDatos();
-            alert('📥 ¡Inventario actualizado con CPP recalculado correctamente!');
+            mostrarFactura('COMPROBANTE DE INGRESO', transacciones.filter(t => t.numeroControl === numeroControl), subtotalGeneral, impuestoGeneral, totalFactura, numeroControl);
         });
 
         btnCancelarIngreso.addEventListener('click', () => {
@@ -722,39 +833,28 @@
 
         egresoArticulo.addEventListener('input', () => {
             const nombreIngresado = egresoArticulo.value.trim().toLowerCase();
-            const codigoEncontrado = Object.keys(inventario).find(codigo => 
-                inventario[codigo].articulo.toLowerCase() === nombreIngresado
-            );
-
+            if (!nombreIngresado) { egresoCodigo.value = ''; egresoPrecio.value = ''; return; }
+            const codigoEncontrado = Object.keys(inventario).find(codigo => inventario[codigo].articulo.toLowerCase() === nombreIngresado);
             if (codigoEncontrado) {
                 egresoCodigo.value = codigoEncontrado;
                 if (inventario[codigoEncontrado].precioVenta) {
                     let precio = inventario[codigoEncontrado].precioVenta;
                     if (monedaSeleccionada === 'VES' && tasaBCV > 0) precio = convertirAVES(precio);
                     egresoPrecio.value = precio.toFixed(2);
-                } else {
-                    egresoPrecio.value = '';
-                }
-            } else {
-                egresoCodigo.value = '';
-                egresoPrecio.value = '';
+                } else { egresoPrecio.value = ''; }
             }
         });
 
         egresoCodigo.addEventListener('input', () => {
             const codigo = egresoCodigo.value.trim();
+            if (!codigo) { egresoArticulo.value = ''; egresoPrecio.value = ''; return; }
             if (inventario[codigo]) {
                 egresoArticulo.value = inventario[codigo].articulo;
                 if (inventario[codigo].precioVenta) {
                     let precio = inventario[codigo].precioVenta;
                     if (monedaSeleccionada === 'VES' && tasaBCV > 0) precio = convertirAVES(precio);
                     egresoPrecio.value = precio.toFixed(2);
-                } else {
-                    egresoPrecio.value = '';
-                }
-            } else {
-                egresoArticulo.value = '';
-                egresoPrecio.value = '';
+                } else { egresoPrecio.value = ''; }
             }
         });
 
@@ -764,13 +864,8 @@
             const cantidad = parseInt(document.getElementById('egreso-cantidad').value);
             let precioVenta = parseFloat(egresoPrecio.value);
 
-            if (!inventario[codigo]) {
-                return alert('⚠️ Error: El artículo o código ingresado no coincide con ningún producto.');
-            }
-
-            if (monedaSeleccionada === 'VES' && tasaBCV > 0) {
-                precioVenta = convertirAUSD(precioVenta);
-            }
+            if (!inventario[codigo]) return alert('⚠️ Error: El artículo o código ingresado no coincide con ningún producto registrado.');
+            if (monedaSeleccionada === 'VES' && tasaBCV > 0) precioVenta = convertirAUSD(precioVenta);
 
             const itemEnCarrito = carrito.find(item => item.codigo === codigo);
             const cantidadPreviaEnCarrito = itemEnCarrito ? itemEnCarrito.cantidad : 0;
@@ -784,53 +879,46 @@
                 itemEnCarrito.cantidad += cantidad;
                 itemEnCarrito.precioVenta = precioVenta; 
             } else {
-                carrito.push({
-                    codigo,
-                    articulo: inventario[codigo].articulo,
-                    cantidad,
-                    precioVenta,
-                    exento: !!inventario[codigo].exento
-                });
+                carrito.push({ codigo, articulo: inventario[codigo].articulo, cantidad, precioVenta, exento: !!inventario[codigo].exento });
             }
 
             formEgreso.reset();
             actualizarCarrito();
-            egresoArticulo.focus();
+            egresoCodigo.focus();
         });
 
         btnProcesarEgreso.addEventListener('click', () => {
             if (carrito.length === 0) return alert('⚠️ La lista de venta está vacía.');
-
             const fechaActual = new Date().toLocaleString('es-ES');
+            const numeroControl = generarNumeroControl();
+            let subtotalGeneral = 0, impuestoGeneral = 0;
             
             for (let item of carrito) {
-                if (inventario[item.codigo].cantidad < item.cantidad) {
-                    return alert(`❌ Error crítico de última hora: El producto "${item.articulo}" ya no cuenta con stock disponible en almacén.`);
-                }
+                if (inventario[item.codigo].cantidad < item.cantidad) return alert(`❌ Error crítico: El producto "${item.articulo}" ya no cuenta con stock disponible.`);
             }
 
             carrito.forEach(item => {
                 inventario[item.codigo].cantidad -= item.cantidad;
                 inventario[item.codigo].precioVenta = item.precioVenta; 
 
+                const subtotalItem = item.cantidad * item.precioVenta;
+                const impuestoItem = item.exento ? 0 : subtotalItem * 0.16;
+                subtotalGeneral += subtotalItem;
+                impuestoGeneral += impuestoItem;
+
                 transacciones.push({
-                    fecha: fechaActual,
-                    tipo: 'Egreso',
-                    codigo: item.codigo,
-                    articulo: item.articulo,
-                    cantidad: item.cantidad,
-                    precioCompra: inventario[item.codigo].precioCompra || 0,
-                    precioVenta: item.precioVenta,
-                    stockMinimo: inventario[item.codigo].stockMinimo || 3,
-                    exento: item.exento,
-                    tasaBCV: tasaBCV
+                    fecha: fechaActual, tipo: 'Egreso', codigo: item.codigo, articulo: item.articulo,
+                    cantidad: item.cantidad, precioCompra: inventario[item.codigo].precioCompra || 0,
+                    precioVenta: item.precioVenta, stockMinimo: inventario[item.codigo].stockMinimo || 3,
+                    exento: item.exento, tasaBCV: tasaBCV, numeroControl: numeroControl
                 });
             });
 
+            const totalFactura = subtotalGeneral + impuestoGeneral;
             carrito = [];
             actualizarCarrito();
             guardarDatos(); 
-            alert('🛍️ ¡Salida / Venta ejecutada con éxito!');
+            mostrarFactura('FACTURA DE VENTA', transacciones.filter(t => t.numeroControl === numeroControl), subtotalGeneral, impuestoGeneral, totalFactura, numeroControl);
         });
 
         btnCancelarEgreso.addEventListener('click', () => {
@@ -840,10 +928,9 @@
             }
         });
 
-        // ✅ NUEVO: Genera contenido TXT con costos en AMBAS monedas (USD y VES)
+        // ✅ FUNCIÓN ACTUALIZADA: Genera contenido TXT con N° Control y Totales por línea
         function generarContenidoTXT() {
-            // Encabezado con columnas duplicadas para USD y VES
-            let txtContent = "Fecha\tHora\tTipo de Movimiento\tCódigo\tArtículo\tCantidad Entrada\tCantidad Salida\tPrecio USD\tPrecio VES\tExento\tStock Minimo\tImpuesto USD\tImpuesto VES\tTasa BCV\tCPP USD\tCPP VES\tStock Resultante\n";
+            let txtContent = "Fecha\tHora\tTipo de Movimiento\tCódigo\tArtículo\tCantidad Entrada\tCantidad Salida\tPrecio USD\tPrecio VES\tExento\tStock Minimo\tImpuesto USD\tImpuesto VES\tTasa BCV\tCPP USD\tCPP VES\tStock Resultante\tN° Control\tTotal USD\tTotal VES\n";
 
             transacciones.forEach(item => {
                 const esIngreso = item.tipo === 'Ingreso';
@@ -853,20 +940,16 @@
                 const cantidadSalida = esEgreso ? item.cantidad : 0;
                 const precioUSD = esIngreso ? (item.precioCompra || 0) : (item.precioVenta || 0);
                 
-                // ✅ Tasa BCV usada en el momento de la transacción
                 const tasaUsada = item.tasaBCV || tasaBCV || 0;
-                
-                // ✅ Convertir a VES usando la tasa de la transacción
                 const precioVES = convertirAVES(precioUSD, tasaUsada);
                 
-                const subtotalUSD = item.cantidad * precioUSD;
+                const totalLineaUSD = item.cantidad * precioUSD; // ✅ Total USD de la línea
                 let montoImpuestoUSD = 0;
-                if (item.exento !== true) montoImpuestoUSD = subtotalUSD * 0.16;
+                if (item.exento !== true) montoImpuestoUSD = totalLineaUSD * 0.16;
                 
-                // ✅ Impuesto también en VES
                 const montoImpuestoVES = convertirAVES(montoImpuestoUSD, tasaUsada);
+                const totalLineaVES = convertirAVES(totalLineaUSD, tasaUsada); // ✅ Total VES de la línea
 
-                // ✅ CPP en ambas monedas
                 const cppUSD = item.cppResultante || 0;
                 const cppVES = convertirAVES(cppUSD, tasaUsada);
 
@@ -882,24 +965,19 @@
                     horaPura = partes[1].trim();
                 }
 
+                const numeroControl = item.numeroControl || 'N/A';
+
                 const fila = [
-                    fechaPura, 
-                    horaPura, 
-                    item.tipo, 
-                    item.codigo, 
-                    item.articulo, 
-                    cantidadEntrada, 
-                    cantidadSalida, 
-                    formatoDecimal(precioUSD),           // Precio USD
-                    formatoDecimal(precioVES),           // Precio VES
-                    item.exento ? "Si" : "No", 
-                    item.stockMinimo || 3,
-                    formatoDecimal(montoImpuestoUSD),    // Impuesto USD
-                    formatoDecimal(montoImpuestoVES),    // Impuesto VES
-                    formatoDecimal(tasaUsada),           // Tasa BCV
-                    formatoDecimal(cppUSD),              // CPP USD
-                    formatoDecimal(cppVES),              // CPP VES
-                    item.stockResultante !== undefined ? item.stockResultante : ''
+                    fechaPura, horaPura, item.tipo, item.codigo, item.articulo, 
+                    cantidadEntrada, cantidadSalida, 
+                    formatoDecimal(precioUSD), formatoDecimal(precioVES),
+                    item.exento ? "Si" : "No", item.stockMinimo || 3,
+                    formatoDecimal(montoImpuestoUSD), formatoDecimal(montoImpuestoVES),
+                    formatoDecimal(tasaUsada), formatoDecimal(cppUSD), formatoDecimal(cppVES),
+                    item.stockResultante !== undefined ? item.stockResultante : '',
+                    numeroControl,
+                    formatoDecimal(totalLineaUSD),
+                    formatoDecimal(totalLineaVES)
                 ];
                 
                 txtContent += fila.join("\t") + "\n";
@@ -910,7 +988,6 @@
 
         btnExportar.addEventListener('click', async () => {
             if (transacciones.length === 0) return alert("⚠️ No hay transacciones guardadas en el historial.");
-
             const txtContent = generarContenidoTXT();
             const nombreArchivo = `Master_Inventario_POS_${new Date().toLocaleDateString('es-ES').replace(/\//g, '-')}.txt`;
             const blob = new Blob(["\uFEFF" + txtContent], { type: 'text/plain;charset=utf-8;' });
@@ -920,14 +997,8 @@
 
             if (esMovil && navigator.canShare && navigator.canShare({ files: [archivoTXT] })) {
                 try {
-                    await navigator.share({
-                        files: [archivoTXT],
-                        title: 'Backup P.O.S.',
-                        text: 'Adjunto el archivo maestro de inventario (dual USD/VES) para su respaldo o revisión.'
-                    });
-                } catch (err) {
-                    console.log("Operación de compartir cancelada por el usuario.");
-                }
+                    await navigator.share({ files: [archivoTXT], title: 'Backup P.O.S.', text: 'Adjunto el archivo maestro de inventario (dual USD/VES) para su respaldo o revisión.' });
+                } catch (err) { console.log("Operación de compartir cancelada por el usuario."); }
             } else {
                 if (esMovil) alert("Tu navegador móvil no soporta el envío directo. Iniciando descarga...");
                 const url = URL.createObjectURL(blob);
@@ -948,10 +1019,8 @@
             lector.onload = function(evt) {
                 const lineas = evt.target.result.split(/\r?\n/);
                 if (lineas.length <= 1) return alert("❌ Error: El archivo está vacío.");
-                
                 if (!confirm("⚠️ ATENCIÓN: Esta acción reconstruirá la base de datos a partir del archivo de texto tabulado. ¿Continuar?")) { 
-                    inputImportar.value = ''; 
-                    return; 
+                    inputImportar.value = ''; return; 
                 }
 
                 let nuevoInventario = {};
@@ -961,9 +1030,7 @@
                 const parsearLineaTab = (texto) => {
                     return texto.split('\t').map(valor => {
                         let v = valor.trim();
-                        if (v.startsWith('"') && v.endsWith('"')) {
-                            v = v.substring(1, v.length - 1).replace(/""/g, '"');
-                        }
+                        if (v.startsWith('"') && v.endsWith('"')) v = v.substring(1, v.length - 1).replace(/""/g, '"');
                         return v;
                     });
                 };
@@ -982,30 +1049,20 @@
                     let columnas = parsearLineaTab(linea);
                     if (columnas.length < 10) continue; 
 
-                    let fecha = columnas[0];
-                    let hora = columnas[1]; 
-                    let tipo = columnas[2];
-                    let codigo = columnas[3];
-                    let articulo = columnas[4];
+                    let fecha = columnas[0], hora = columnas[1], tipo = columnas[2], codigo = columnas[3], articulo = columnas[4];
                     let cantidadEntrada = parseInt(columnas[5]) || 0;
                     let cantidadSalida = parseInt(columnas[6]) || 0;
                     
-                    // ✅ Detectar formato: nuevo (17 cols) o antiguo (12 cols)
-                    // En el nuevo formato: col 7 = Precio USD, col 8 = Precio VES
-                    // En el antiguo: col 7 = Precio único
-                    let precio;
-                    let exento, stockMinimo, tasaBCVTransaccion, cppResultante, stockResultante;
+                    let precio, exento, stockMinimo, tasaBCVTransaccion, cppResultante, stockResultante;
                     
                     if (columnas.length >= 17) {
-                        // ✅ Formato nuevo con ambas monedas
-                        precio = parsearNumero(columnas[7]);      // Precio USD
+                        precio = parsearNumero(columnas[7]);
                         exento = columnas[9].toLowerCase() === 'si';
                         stockMinimo = parseInt(columnas[10]) || 3;
                         tasaBCVTransaccion = parsearNumero(columnas[13]);
                         cppResultante = parsearNumero(columnas[14]);
                         stockResultante = parseInt(columnas[16]) || 0;
                     } else {
-                        // ✅ Formato antiguo (compatibilidad hacia atrás)
                         precio = parsearNumero(columnas[7]);
                         exento = columnas[8].toLowerCase() === 'si';
                         stockMinimo = parseInt(columnas[9]) || 3;
@@ -1022,9 +1079,7 @@
                     nuevasTransacciones.push({ 
                         fecha: fechaCompleta, tipo, codigo, articulo, cantidad, 
                         precioCompra, precioVenta, stockMinimo, exento, 
-                        tasaBCV: tasaBCVTransaccion,
-                        cppResultante: cppResultante,
-                        stockResultante: stockResultante
+                        tasaBCV: tasaBCVTransaccion, cppResultante: cppResultante, stockResultante: stockResultante
                     });
 
                     if (tipo === 'Ingreso') {
@@ -1033,7 +1088,6 @@
                             const cppAnterior = nuevoInventario[codigo].precioCompra || 0;
                             const stockTotal = stockAnterior + cantidad;
                             const cppNuevo = ((stockAnterior * cppAnterior) + (cantidad * precioCompra)) / stockTotal;
-                            
                             nuevoInventario[codigo].cantidad = stockTotal; 
                             nuevoInventario[codigo].precioCompra = cppNuevo;
                             nuevoInventario[codigo].stockMinimo = stockMinimo;
@@ -1089,11 +1143,7 @@
             labelPrecioVenta.textContent = `Precio Venta (u)(${simbolo})`;
         }
 
-        function actualizarTodo() {
-            actualizarTabla();
-            actualizarCarrito();
-            actualizarCarritoIngreso();
-        }
+        function actualizarTodo() { actualizarTabla(); actualizarCarrito(); actualizarCarritoIngreso(); }
         
         let escanerActivo = null;
         let inputDestinoActual = ''; 
@@ -1101,16 +1151,7 @@
         function abrirScanner(idInputDestino) {
             inputDestinoActual = idInputDestino;
             document.getElementById('modal-scanner').classList.remove('hidden');
-
-            escanerActivo = new Html5QrcodeScanner(
-                "lector-camara", 
-                { 
-                    fps: 10, 
-                    qrbox: { width: 250, height: 100 }, 
-                    formatsToSupport: [ Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.CODE_128 ]
-                }, 
-                false
-            );
+            escanerActivo = new Html5QrcodeScanner("lector-camara", { fps: 10, qrbox: { width: 250, height: 100 }, formatsToSupport: [ Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.CODE_128 ] }, false);
             escanerActivo.render(onScanExito, onScanError);
         }
 
@@ -1136,7 +1177,6 @@
         
         function descargarMovimientosTXT() {
             if (transacciones.length === 0) return alert("⚠️ No hay transacciones guardadas en el historial.");
-            
             const txtContent = generarContenidoTXT();
             const blob = new Blob(["\uFEFF" + txtContent], { type: 'text/plain;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
@@ -1151,32 +1191,16 @@
         function sugerirPrecioGanancia() {
             const codigo = document.getElementById('egreso-codigo').value.trim();
             const campoPrecio = document.getElementById('egreso-precio');
-
-            if (!codigo) {
-                return alert('⚠️ Por favor, ingresa o busca un producto primero para poder calcular su costo.');
-            }
-
-            if (!inventario[codigo]) {
-                return alert('⚠️ El producto no existe en el inventario.');
-            }
+            if (!codigo) return alert('⚠️ Por favor, ingresa o busca un producto primero.');
+            if (!inventario[codigo]) return alert('⚠️ El producto no existe en el inventario.');
 
             let costoPromedioPonderado = inventario[codigo].precioCompra;
+            if (!costoPromedioPonderado || costoPromedioPonderado === 0) return alert('⚠️ No hay registros de compras para este artículo.');
 
-            if (!costoPromedioPonderado || costoPromedioPonderado === 0) {
-                return alert('⚠️ No hay registros de compras para este artículo. Introduce el precio manualmente.');
-            }
-
-            if (monedaSeleccionada === 'VES' && tasaBCV > 0) {
-                costoPromedioPonderado = convertirAVES(costoPromedioPonderado);
-            }
+            if (monedaSeleccionada === 'VES' && tasaBCV > 0) costoPromedioPonderado = convertirAVES(costoPromedioPonderado);
 
             const precioVentaSugerido = costoPromedioPonderado / (1 - MARGEN_GANANCIA);
             campoPrecio.value = precioVentaSugerido.toFixed(2);
-            
-            const gananciaUnitaria = precioVentaSugerido - costoPromedioPonderado;
-            const margenReal = (gananciaUnitaria / precioVentaSugerido) * 100;
-            
-            console.log(`💡 CPP: ${costoPromedioPonderado.toFixed(2)} → Precio sugerido: ${precioVentaSugerido.toFixed(2)} (Margen real: ${margenReal.toFixed(2)}%)`);
         }
     </script>
     <div id="modal-scanner" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4">

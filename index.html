@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
-        /* Estilos para el modal de factura */
         .factura-container {
             max-width: 400px;
             margin: 0 auto;
@@ -20,7 +19,6 @@
         .factura-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem; }
         .factura-total { border-top: 2px dashed #000; padding-top: 10px; margin-top: 10px; font-weight: bold; font-size: 1.1rem; }
         
-        /* REGLA DE ORO PARA IMPRIMIR/GUARDAR COMO PDF */
         @media print {
             body * { visibility: hidden; }
             #modal-factura, #modal-factura * { visibility: visible; }
@@ -54,7 +52,7 @@
                             <option value="VES">VES (Bs.)</option>
                         </select>
                     </div>
-                    <span class="text-sm bg-indigo-800 px-3 py-1 rounded-full shadow-inner font-medium text-indigo-200">Versión b 0.37 (Reporte con N° Control y Totales)</span>
+                    <span class="text-sm bg-indigo-800 px-3 py-1 rounded-full shadow-inner font-medium text-indigo-200">Versión b 0.38 (Bloqueo bidireccional en Ventas)</span>
                 </div>
             </div>
         </header>
@@ -84,7 +82,7 @@
                     <form id="form-ingreso" class="space-y-4">
                         <div class="grid grid-cols-3 gap-3">
                             <div class="col-span-2">
-                                <label for="ingreso-codigo" class="block text-sm font-semibold text-slate-600">Código de Barras / ID</label>
+                                <label class="block text-sm font-semibold text-slate-600">Código de Barras / ID</label>
                                 <div class="flex gap-2 mt-1">
                                     <input type="text" id="ingreso-codigo" list="lista-codigos-ingreso" required placeholder="Escribe o busca un código existente" autocomplete="off" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none">
                                     <button type="button" onclick="abrirScanner('ingreso-codigo')" class="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-3 rounded-lg border border-emerald-200 transition-colors" title="Escanear con cámara">
@@ -174,7 +172,7 @@
                     <form id="form-egreso" class="space-y-4">
                         
                         <div>
-                            <label for="egreso-codigo" class="block text-sm font-semibold text-slate-600">Código de Barras / ID</label>
+                            <label class="block text-sm font-semibold text-slate-600">Código de Barras / ID</label>
                             <div class="flex gap-2 mt-1">
                                 <input type="text" id="egreso-codigo" list="lista-codigos-egreso" required placeholder="Escribe o busca un código" autocomplete="off" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-rose-400 outline-none">
                                 <button type="button" onclick="abrirScanner('egreso-codigo')" class="bg-rose-100 text-rose-700 hover:bg-rose-200 px-3 rounded-lg border border-rose-200 transition-colors" title="Escanear con cámara">
@@ -831,30 +829,61 @@
             }
         });
 
+        // ✅ COMPORTAMIENTO ADAPTADO: Bloqueo bidireccional en Ventas
         egresoArticulo.addEventListener('input', () => {
             const nombreIngresado = egresoArticulo.value.trim().toLowerCase();
-            if (!nombreIngresado) { egresoCodigo.value = ''; egresoPrecio.value = ''; return; }
+            if (!nombreIngresado) { 
+                egresoCodigo.value = ''; 
+                egresoCodigo.readOnly = false;
+                egresoCodigo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+                egresoPrecio.value = ''; 
+                return; 
+            }
             const codigoEncontrado = Object.keys(inventario).find(codigo => inventario[codigo].articulo.toLowerCase() === nombreIngresado);
             if (codigoEncontrado) {
                 egresoCodigo.value = codigoEncontrado;
+                // Bloquear el campo de código para evitar inconsistencias
+                egresoCodigo.readOnly = true;
+                egresoCodigo.classList.add('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+                
                 if (inventario[codigoEncontrado].precioVenta) {
                     let precio = inventario[codigoEncontrado].precioVenta;
                     if (monedaSeleccionada === 'VES' && tasaBCV > 0) precio = convertirAVES(precio);
                     egresoPrecio.value = precio.toFixed(2);
                 } else { egresoPrecio.value = ''; }
+            } else {
+                egresoCodigo.value = '';
+                egresoCodigo.readOnly = false;
+                egresoCodigo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+                egresoPrecio.value = '';
             }
         });
 
         egresoCodigo.addEventListener('input', () => {
             const codigo = egresoCodigo.value.trim();
-            if (!codigo) { egresoArticulo.value = ''; egresoPrecio.value = ''; return; }
+            if (!codigo) { 
+                egresoArticulo.value = ''; 
+                egresoArticulo.readOnly = false;
+                egresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+                egresoPrecio.value = ''; 
+                return; 
+            }
             if (inventario[codigo]) {
                 egresoArticulo.value = inventario[codigo].articulo;
+                // Bloquear el campo de artículo para evitar modificaciones accidentales
+                egresoArticulo.readOnly = true;
+                egresoArticulo.classList.add('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+                
                 if (inventario[codigo].precioVenta) {
                     let precio = inventario[codigo].precioVenta;
                     if (monedaSeleccionada === 'VES' && tasaBCV > 0) precio = convertirAVES(precio);
                     egresoPrecio.value = precio.toFixed(2);
                 } else { egresoPrecio.value = ''; }
+            } else {
+                egresoArticulo.value = '';
+                egresoArticulo.readOnly = false;
+                egresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+                egresoPrecio.value = '';
             }
         });
 
@@ -883,6 +912,12 @@
             }
 
             formEgreso.reset();
+            // ✅ Limpiar estados de bloqueo tras el envío exitoso
+            egresoArticulo.readOnly = false;
+            egresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+            egresoCodigo.readOnly = false;
+            egresoCodigo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+            
             actualizarCarrito();
             egresoCodigo.focus();
         });
@@ -925,10 +960,14 @@
             if (carrito.length > 0 && confirm('¿Deseas vaciar la lista de la venta actual?')) {
                 carrito = [];
                 actualizarCarrito();
+                formEgreso.reset();
+                egresoArticulo.readOnly = false;
+                egresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+                egresoCodigo.readOnly = false;
+                egresoCodigo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
             }
         });
 
-        // ✅ FUNCIÓN ACTUALIZADA: Genera contenido TXT con N° Control y Totales por línea
         function generarContenidoTXT() {
             let txtContent = "Fecha\tHora\tTipo de Movimiento\tCódigo\tArtículo\tCantidad Entrada\tCantidad Salida\tPrecio USD\tPrecio VES\tExento\tStock Minimo\tImpuesto USD\tImpuesto VES\tTasa BCV\tCPP USD\tCPP VES\tStock Resultante\tN° Control\tTotal USD\tTotal VES\n";
 
@@ -943,12 +982,12 @@
                 const tasaUsada = item.tasaBCV || tasaBCV || 0;
                 const precioVES = convertirAVES(precioUSD, tasaUsada);
                 
-                const totalLineaUSD = item.cantidad * precioUSD; // ✅ Total USD de la línea
+                const totalLineaUSD = item.cantidad * precioUSD;
                 let montoImpuestoUSD = 0;
                 if (item.exento !== true) montoImpuestoUSD = totalLineaUSD * 0.16;
                 
                 const montoImpuestoVES = convertirAVES(montoImpuestoUSD, tasaUsada);
-                const totalLineaVES = convertirAVES(totalLineaUSD, tasaUsada); // ✅ Total VES de la línea
+                const totalLineaVES = convertirAVES(totalLineaUSD, tasaUsada);
 
                 const cppUSD = item.cppResultante || 0;
                 const cppVES = convertirAVES(cppUSD, tasaUsada);

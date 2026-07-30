@@ -8,16 +8,28 @@
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         .factura-container {
-            max-width: 400px;
+            max-width: 450px;
             margin: 0 auto;
             background: white;
-            padding: 20px;
+            padding: 24px;
             border: 1px dashed #cbd5e1;
             font-family: 'Courier New', Courier, monospace;
         }
-        .factura-header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 10px; }
-        .factura-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem; }
-        .factura-total { border-top: 2px dashed #000; padding-top: 10px; margin-top: 10px; font-weight: bold; font-size: 1.1rem; }
+        .factura-header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 12px; margin-bottom: 16px; }
+        .factura-item { 
+            border-bottom: 1px dashed #e2e8f0; 
+            padding: 10px 0; 
+            margin-bottom: 8px;
+        }
+        .factura-item:last-child { border-bottom: none; }
+        .factura-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .factura-total { border-top: 2px dashed #000; padding-top: 12px; margin-top: 12px; }
+        .factura-linea-monto { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: baseline;
+            padding: 6px 0;
+        }
         
         @media print {
             body * { visibility: hidden; }
@@ -28,6 +40,8 @@
                 top: 0; 
                 width: 100%; 
                 background: white;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
             .no-print { display: none !important; }
         }
@@ -52,7 +66,7 @@
                             <option value="VES">VES (Bs.)</option>
                         </select>
                     </div>
-                    <span class="text-sm bg-indigo-800 px-3 py-1 rounded-full shadow-inner font-medium text-indigo-200">Versión b 0.38 (Bloqueo bidireccional en Ventas)</span>
+                    <span class="text-sm bg-indigo-800 px-3 py-1 rounded-full shadow-inner font-medium text-indigo-200">Versión b 0.41 (Factura Vertical + Historial)</span>
                 </div>
             </div>
         </header>
@@ -262,6 +276,10 @@
                         <button id="btn-actualizar-tasa" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-1">
                             🔄 Actualizar Tasa BCV
                         </button>
+                        <!-- ✅ NUEVO BOTÓN: Ver Historial de Facturas -->
+                        <button id="btn-ver-facturas" onclick="mostrarHistorialFacturas()" class="bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-1">
+                            📋 Ver Facturas
+                        </button>
                         <button id="btn-exportar" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-1">
                             📧 Exportar y Enviar
                         </button>
@@ -307,9 +325,9 @@
         </main>
     </div>
 
-    <!-- MODAL DE FACTURA / RECIBO -->
+    <!-- MODAL DE FACTURA / RECIBO (REDISEÑADO VERTICAL) -->
     <div id="modal-factura" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden my-8">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden my-8">
             <div class="flex justify-between items-center p-4 border-b bg-slate-50 no-print">
                 <h3 class="font-bold text-slate-700 flex items-center gap-2">🧾 Vista Previa de Documento</h3>
                 <button onclick="cerrarFactura()" class="text-rose-500 hover:text-rose-700 font-black text-lg px-2">✕</button>
@@ -320,41 +338,58 @@
                     <div class="factura-header">
                         <h2 class="text-xl font-bold">P.O.S. Almacén Inteligente</h2>
                         <p class="text-xs text-slate-500 mt-1">RIF: J-00000000-0 (Ejemplo)</p>
-                        <p class="text-sm font-bold mt-2" id="factura-tipo">COMPROBANTE</p>
-                        <p class="text-xs">N° Control: <span id="factura-control" class="font-bold"></span></p>
+                        <p class="text-sm font-bold mt-3" id="factura-tipo">COMPROBANTE</p>
+                        <p class="text-xs mt-1">N° Control: <span id="factura-control" class="font-bold"></span></p>
                         <p class="text-xs">Fecha: <span id="factura-fecha"></span></p>
                     </div>
 
+                    <!-- Desglose de artículos con layout vertical -->
                     <div class="mb-4">
-                        <div class="flex justify-between text-xs font-bold border-b pb-1 mb-2">
-                            <span class="w-1/2">Artículo</span>
-                            <span class="w-1/6 text-center">Cant.</span>
-                            <span class="w-1/6 text-right">Precio</span>
-                            <span class="w-1/6 text-right">Total</span>
+                        <div class="text-xs font-bold border-b-2 border-slate-300 pb-2 mb-2 flex justify-between">
+                            <span>DETALLE DE ARTÍCULOS</span>
                         </div>
-                        <div id="factura-items" class="text-xs space-y-1"></div>
+                        <div id="factura-items" class="text-xs"></div>
                     </div>
 
-                    <div class="factura-total space-y-1 text-sm">
-                        <div class="factura-row">
-                            <span>Subtotal:</span>
-                            <span id="factura-subtotal">$ 0.00</span>
+                    <!-- Totales con formato vertical claro -->
+                    <div class="factura-total space-y-3 text-sm">
+                        <div class="border-b border-dashed border-slate-300 pb-3">
+                            <div class="factura-linea-monto">
+                                <span class="text-slate-600 font-semibold">SUBTOTAL:</span>
+                                <div class="text-right">
+                                    <div id="factura-subtotal-usd" class="text-slate-400 text-xs">$ 0.00</div>
+                                    <div id="factura-subtotal-ves" class="font-bold text-slate-800 text-base">Bs. 0.00</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="factura-row">
-                            <span>Impuesto (16%):</span>
-                            <span id="factura-impuesto">$ 0.00</span>
+                        
+                        <div class="border-b border-dashed border-slate-300 pb-3">
+                            <div class="factura-linea-monto">
+                                <span class="text-slate-600 font-semibold">IMPUESTO (16%):</span>
+                                <div class="text-right">
+                                    <div id="factura-impuesto-usd" class="text-slate-400 text-xs">$ 0.00</div>
+                                    <div id="factura-impuesto-ves" class="font-bold text-slate-800 text-base">Bs. 0.00</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="factura-row text-base font-black text-emerald-700">
-                            <span>TOTAL:</span>
-                            <span id="factura-total">$ 0.00</span>
+                        
+                        <div class="bg-slate-50 -mx-4 px-4 py-3 border-t-2 border-slate-400">
+                            <div class="factura-linea-monto">
+                                <span class="text-lg font-black text-slate-800">TOTAL:</span>
+                                <div class="text-right">
+                                    <div id="factura-total-usd" class="text-slate-400 text-sm">$ 0.00</div>
+                                    <div id="factura-total-ves" class="text-2xl font-black text-emerald-700">Bs. 0.00</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="factura-row text-xs text-slate-500 mt-2 pt-2 border-t border-dashed">
-                            <span>Tasa BCV:</span>
-                            <span id="factura-tasa">Bs. 0.00</span>
+                        
+                        <div class="factura-linea-monto text-xs text-slate-500 pt-2 border-t border-dashed">
+                            <span>Tasa BCV aplicada:</span>
+                            <span id="factura-tasa" class="font-semibold">Bs. 0.00</span>
                         </div>
                     </div>
                     
-                    <div class="text-center mt-6 text-xs text-slate-400">
+                    <div class="text-center mt-6 text-xs text-slate-400 border-t border-dashed pt-4">
                         <p>¡Gracias por su operación!</p>
                         <p>Documento generado digitalmente</p>
                     </div>
@@ -366,6 +401,42 @@
                     🖨️ Imprimir / Guardar PDF
                 </button>
                 <button onclick="cerrarFactura()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition-colors">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ NUEVO MODAL: HISTORIAL DE FACTURAS -->
+    <div id="modal-historial" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl overflow-hidden my-8">
+            <div class="flex justify-between items-center p-4 border-b bg-violet-600 text-white">
+                <h3 class="font-bold text-lg flex items-center gap-2">📋 Historial de Facturas</h3>
+                <button onclick="cerrarHistorial()" class="text-white hover:text-rose-200 font-black text-lg px-2">✕</button>
+            </div>
+            
+            <div class="p-4 bg-slate-50 border-b">
+                <div class="flex gap-2 flex-wrap">
+                    <input type="text" id="buscar-factura" placeholder="🔍 Buscar por N° Control, fecha o tipo..." 
+                           oninput="filtrarHistorial()" 
+                           class="flex-1 min-w-[200px] p-2 border rounded-lg text-sm focus:ring-2 focus:ring-violet-400 outline-none">
+                    <select id="filtro-tipo-factura" onchange="filtrarHistorial()" class="p-2 border rounded-lg text-sm bg-white">
+                        <option value="">Todos los tipos</option>
+                        <option value="Ingreso">Solo Ingresos</option>
+                        <option value="Egreso">Solo Egresos (Ventas)</option>
+                    </select>
+                </div>
+                <div class="mt-2 text-xs text-slate-500">
+                    <span id="total-facturas-info">0 facturas encontradas</span>
+                </div>
+            </div>
+            
+            <div id="lista-facturas" class="p-4 max-h-[60vh] overflow-y-auto">
+                <!-- Las facturas se insertan aquí dinámicamente -->
+            </div>
+            
+            <div class="p-4 border-t bg-slate-50 flex justify-end">
+                <button onclick="cerrarHistorial()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-6 rounded-lg transition-colors">
                     Cerrar
                 </button>
             </div>
@@ -459,39 +530,209 @@
             return `CTRL-${dateStr}-${randomStr}`;
         }
 
-        function mostrarFactura(tipo, items, subtotal, impuesto, total, numeroControl) {
+        // ✅ FUNCIÓN REDISEÑADA: Layout vertical mejorado
+        function mostrarFactura(tipo, items, subtotal, impuesto, total, numeroControl, tasaUsada = tasaBCV) {
             document.getElementById('factura-tipo').textContent = tipo;
             document.getElementById('factura-control').textContent = numeroControl;
-            document.getElementById('factura-fecha').textContent = new Date().toLocaleString('es-ES');
-            document.getElementById('factura-tasa').textContent = `Bs. ${formatoMoneda(tasaBCV)}`;
+            
+            // Si es una factura histórica, usar la fecha de la primera transacción
+            const primeraTransaccion = items[0];
+            document.getElementById('factura-fecha').textContent = primeraTransaccion ? primeraTransaccion.fecha : new Date().toLocaleString('es-ES');
+            document.getElementById('factura-tasa').textContent = `Bs. ${formatoMoneda(tasaUsada)}`;
             
             const contenedorItems = document.getElementById('factura-items');
             contenedorItems.innerHTML = '';
             
-            items.forEach(item => {
+            items.forEach((item, idx) => {
                 const precioUnitario = tipo.includes('INGRESO') ? item.precioCompra : item.precioVenta;
                 const totalItem = item.cantidad * precioUnitario;
                 
+                const precioUnitarioVES = convertirAVES(precioUnitario, tasaUsada);
+                const totalItemVES = convertirAVES(totalItem, tasaUsada);
+                
                 const div = document.createElement('div');
-                div.className = 'factura-row';
+                div.className = 'factura-item';
                 div.innerHTML = `
-                    <span class="w-1/2 truncate pr-2">${item.articulo}</span>
-                    <span class="w-1/6 text-center">${item.cantidad}</span>
-                    <span class="w-1/6 text-right">$${formatoMoneda(precioUnitario)}</span>
-                    <span class="w-1/6 text-right font-bold">$${formatoMoneda(totalItem)}</span>
+                    <div class="font-bold text-slate-800 mb-2">${idx + 1}. ${item.articulo}</div>
+                    <div class="grid grid-cols-3 gap-2 text-[11px]">
+                        <div>
+                            <div class="text-slate-400">Cantidad:</div>
+                            <div class="font-semibold text-slate-700">${item.cantidad} u</div>
+                        </div>
+                        <div>
+                            <div class="text-slate-400">Precio Unit.:</div>
+                            <div class="text-slate-400 text-[10px]">$${formatoMoneda(precioUnitario)}</div>
+                            <div class="font-bold text-slate-800">Bs.${formatoMoneda(precioUnitarioVES)}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-slate-400">Total:</div>
+                            <div class="text-slate-400 text-[10px]">$${formatoMoneda(totalItem)}</div>
+                            <div class="font-bold text-slate-800">Bs.${formatoMoneda(totalItemVES)}</div>
+                        </div>
+                    </div>
                 `;
                 contenedorItems.appendChild(div);
             });
 
-            document.getElementById('factura-subtotal').textContent = `$ ${formatoMoneda(subtotal)}`;
-            document.getElementById('factura-impuesto').textContent = `$ ${formatoMoneda(impuesto)}`;
-            document.getElementById('factura-total').textContent = `$ ${formatoMoneda(total)}`;
+            // Calcular equivalentes en VES usando la tasa histórica
+            const subtotalVES = convertirAVES(subtotal, tasaUsada);
+            const impuestoVES = convertirAVES(impuesto, tasaUsada);
+            const totalVES = convertirAVES(total, tasaUsada);
+
+            document.getElementById('factura-subtotal-usd').textContent = `$ ${formatoMoneda(subtotal)}`;
+            document.getElementById('factura-subtotal-ves').textContent = `Bs. ${formatoMoneda(subtotalVES)}`;
+            
+            document.getElementById('factura-impuesto-usd').textContent = `$ ${formatoMoneda(impuesto)}`;
+            document.getElementById('factura-impuesto-ves').textContent = `Bs. ${formatoMoneda(impuestoVES)}`;
+            
+            document.getElementById('factura-total-usd').textContent = `$ ${formatoMoneda(total)}`;
+            document.getElementById('factura-total-ves').textContent = `Bs. ${formatoMoneda(totalVES)}`;
             
             document.getElementById('modal-factura').classList.remove('hidden');
         }
 
         function cerrarFactura() {
             document.getElementById('modal-factura').classList.add('hidden');
+        }
+
+        // ✅ NUEVAS FUNCIONES: Historial de Facturas
+        function agruparFacturas() {
+            const facturas = {};
+            transacciones.forEach(t => {
+                const nc = t.numeroControl || 'SIN-CONTROL';
+                if (!facturas[nc]) {
+                    facturas[nc] = {
+                        numeroControl: nc,
+                        tipo: t.tipo,
+                        fecha: t.fecha,
+                        tasaBCV: t.tasaBCV || tasaBCV,
+                        items: [],
+                        subtotal: 0,
+                        impuesto: 0,
+                        total: 0
+                    };
+                }
+                facturas[nc].items.push(t);
+                
+                const precio = t.tipo === 'Ingreso' ? (t.precioCompra || 0) : (t.precioVenta || 0);
+                const subtotalLinea = t.cantidad * precio;
+                const impuestoLinea = t.exento ? 0 : subtotalLinea * 0.16;
+                
+                facturas[nc].subtotal += subtotalLinea;
+                facturas[nc].impuesto += impuestoLinea;
+                facturas[nc].total += subtotalLinea + impuestoLinea;
+            });
+            
+            // Ordenar por fecha (más reciente primero)
+            return Object.values(facturas).sort((a, b) => {
+                return new Date(b.fecha.split(',')[0].split('/').reverse().join('-')) - 
+                       new Date(a.fecha.split(',')[0].split('/').reverse().join('-'));
+            });
+        }
+
+        function mostrarHistorialFacturas() {
+            const facturas = agruparFacturas();
+            if (facturas.length === 0) {
+                alert('⚠️ No hay facturas registradas en el historial.');
+                return;
+            }
+            
+            document.getElementById('buscar-factura').value = '';
+            document.getElementById('filtro-tipo-factura').value = '';
+            renderizarListaFacturas(facturas);
+            document.getElementById('modal-historial').classList.remove('hidden');
+        }
+
+        function renderizarListaFacturas(facturas) {
+            const contenedor = document.getElementById('lista-facturas');
+            contenedor.innerHTML = '';
+            
+            if (facturas.length === 0) {
+                contenedor.innerHTML = '<p class="text-center text-slate-400 italic py-8">No se encontraron facturas con los filtros aplicados.</p>';
+                document.getElementById('total-facturas-info').textContent = '0 facturas encontradas';
+                return;
+            }
+            
+            document.getElementById('total-facturas-info').textContent = `${facturas.length} factura(s) encontrada(s)`;
+            
+            facturas.forEach(f => {
+                const tasaUsada = f.tasaBCV || tasaBCV;
+                const totalVES = convertirAVES(f.total, tasaUsada);
+                const esIngreso = f.tipo === 'Ingreso';
+                const colorBadge = esIngreso ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800';
+                const icono = esIngreso ? '📥' : '📤';
+                const tipoTexto = esIngreso ? 'COMPRA' : 'VENTA';
+                
+                const div = document.createElement('div');
+                div.className = 'bg-white border border-slate-200 rounded-lg p-4 mb-3 hover:shadow-md transition-shadow cursor-pointer';
+                div.onclick = () => verFacturaDetalle(f.numeroControl);
+                
+                div.innerHTML = `
+                    <div class="flex justify-between items-start gap-3">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-xl">${icono}</span>
+                                <span class="font-bold text-slate-800">${tipoTexto}</span>
+                                <span class="px-2 py-0.5 rounded-full text-xs font-bold ${colorBadge}">${f.items.length} artículo(s)</span>
+                            </div>
+                            <div class="text-xs text-slate-500 space-y-1">
+                                <div><span class="font-semibold">N° Control:</span> <span class="font-mono">${f.numeroControl}</span></div>
+                                <div><span class="font-semibold">Fecha:</span> ${f.fecha}</div>
+                                <div><span class="font-semibold">Tasa BCV:</span> Bs. ${formatoMoneda(tasaUsada)}</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs text-slate-400">$ ${formatoMoneda(f.total)}</div>
+                            <div class="text-lg font-black text-emerald-700">Bs. ${formatoMoneda(totalVES)}</div>
+                            <button onclick="event.stopPropagation(); verFacturaDetalle('${f.numeroControl}')" 
+                                    class="mt-2 text-xs bg-violet-100 hover:bg-violet-200 text-violet-700 font-bold px-3 py-1 rounded transition-colors">
+                                👁️ Ver Detalle
+                            </button>
+                        </div>
+                    </div>
+                `;
+                contenedor.appendChild(div);
+            });
+        }
+
+        function filtrarHistorial() {
+            const texto = document.getElementById('buscar-factura').value.toLowerCase();
+            const tipo = document.getElementById('filtro-tipo-factura').value;
+            
+            let facturas = agruparFacturas();
+            
+            if (tipo) {
+                facturas = facturas.filter(f => f.tipo === tipo);
+            }
+            
+            if (texto) {
+                facturas = facturas.filter(f => 
+                    f.numeroControl.toLowerCase().includes(texto) ||
+                    f.fecha.toLowerCase().includes(texto) ||
+                    f.tipo.toLowerCase().includes(texto) ||
+                    f.items.some(item => item.articulo.toLowerCase().includes(texto))
+                );
+            }
+            
+            renderizarListaFacturas(facturas);
+        }
+
+        function verFacturaDetalle(numeroControl) {
+            const facturas = agruparFacturas();
+            const factura = facturas.find(f => f.numeroControl === numeroControl);
+            
+            if (!factura) {
+                alert('❌ No se encontró la factura.');
+                return;
+            }
+            
+            // Cerrar modal de historial temporalmente (se puede reabrir al cerrar la factura)
+            const tipoFactura = factura.tipo === 'Ingreso' ? 'COMPROBANTE DE INGRESO' : 'FACTURA DE VENTA';
+            mostrarFactura(tipoFactura, factura.items, factura.subtotal, factura.impuesto, factura.total, factura.numeroControl, factura.tasaBCV);
+        }
+
+        function cerrarHistorial() {
+            document.getElementById('modal-historial').classList.add('hidden');
         }
 
         async function obtenerTasaBCV() {
@@ -829,7 +1070,6 @@
             }
         });
 
-        // ✅ COMPORTAMIENTO ADAPTADO: Bloqueo bidireccional en Ventas
         egresoArticulo.addEventListener('input', () => {
             const nombreIngresado = egresoArticulo.value.trim().toLowerCase();
             if (!nombreIngresado) { 
@@ -842,7 +1082,6 @@
             const codigoEncontrado = Object.keys(inventario).find(codigo => inventario[codigo].articulo.toLowerCase() === nombreIngresado);
             if (codigoEncontrado) {
                 egresoCodigo.value = codigoEncontrado;
-                // Bloquear el campo de código para evitar inconsistencias
                 egresoCodigo.readOnly = true;
                 egresoCodigo.classList.add('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
                 
@@ -870,7 +1109,6 @@
             }
             if (inventario[codigo]) {
                 egresoArticulo.value = inventario[codigo].articulo;
-                // Bloquear el campo de artículo para evitar modificaciones accidentales
                 egresoArticulo.readOnly = true;
                 egresoArticulo.classList.add('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
                 
@@ -912,7 +1150,6 @@
             }
 
             formEgreso.reset();
-            // ✅ Limpiar estados de bloqueo tras el envío exitoso
             egresoArticulo.readOnly = false;
             egresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
             egresoCodigo.readOnly = false;
@@ -1092,7 +1329,7 @@
                     let cantidadEntrada = parseInt(columnas[5]) || 0;
                     let cantidadSalida = parseInt(columnas[6]) || 0;
                     
-                    let precio, exento, stockMinimo, tasaBCVTransaccion, cppResultante, stockResultante;
+                    let precio, exento, stockMinimo, tasaBCVTransaccion, cppResultante, stockResultante, numeroControl;
                     
                     if (columnas.length >= 17) {
                         precio = parsearNumero(columnas[7]);
@@ -1101,6 +1338,7 @@
                         tasaBCVTransaccion = parsearNumero(columnas[13]);
                         cppResultante = parsearNumero(columnas[14]);
                         stockResultante = parseInt(columnas[16]) || 0;
+                        numeroControl = columnas[17] && columnas[17] !== 'N/A' ? columnas[17] : null;
                     } else {
                         precio = parsearNumero(columnas[7]);
                         exento = columnas[8].toLowerCase() === 'si';
@@ -1108,6 +1346,7 @@
                         tasaBCVTransaccion = parsearNumero(columnas[11]) || tasaBCV || 0;
                         cppResultante = columnas[12] ? parsearNumero(columnas[12]) : 0;
                         stockResultante = columnas[13] ? parseInt(columnas[13]) : 0;
+                        numeroControl = null;
                     }
                     
                     let fechaCompleta = hora ? `${fecha}, ${hora}` : fecha;
@@ -1118,7 +1357,8 @@
                     nuevasTransacciones.push({ 
                         fecha: fechaCompleta, tipo, codigo, articulo, cantidad, 
                         precioCompra, precioVenta, stockMinimo, exento, 
-                        tasaBCV: tasaBCVTransaccion, cppResultante: cppResultante, stockResultante: stockResultante
+                        tasaBCV: tasaBCVTransaccion, cppResultante: cppResultante, stockResultante: stockResultante,
+                        numeroControl: numeroControl || `CTRL-IMPORT-${Date.now()}-${Math.floor(Math.random()*1000)}`
                     });
 
                     if (tipo === 'Ingreso') {

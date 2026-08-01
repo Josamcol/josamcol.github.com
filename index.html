@@ -66,7 +66,7 @@
                             <option value="VES">VES (Bs.)</option>
                         </select>
                     </div>
-                    <span class="text-sm bg-indigo-800 px-3 py-1 rounded-full shadow-inner font-medium text-indigo-200">Versión b 0.41 (Factura Vertical + Historial)</span>
+                    <span class="text-sm bg-indigo-800 px-3 py-1 rounded-full shadow-inner font-medium text-indigo-200">Versión b 0.43 (Historial por Artículo)</span>
                 </div>
             </div>
         </header>
@@ -276,9 +276,12 @@
                         <button id="btn-actualizar-tasa" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-1">
                             🔄 Actualizar Tasa BCV
                         </button>
-                        <!-- ✅ NUEVO BOTÓN: Ver Historial de Facturas -->
                         <button id="btn-ver-facturas" onclick="mostrarHistorialFacturas()" class="bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-1">
                             📋 Ver Facturas
+                        </button>
+                        <!-- ✅ NUEVO BOTÓN: Historial por Artículo -->
+                        <button id="btn-historial-articulo" onclick="abrirHistorialArticulo()" class="bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-1">
+                            🔍 Historial por Artículo
                         </button>
                         <button id="btn-exportar" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-1">
                             📧 Exportar y Enviar
@@ -325,7 +328,7 @@
         </main>
     </div>
 
-    <!-- MODAL DE FACTURA / RECIBO (REDISEÑADO VERTICAL) -->
+    <!-- MODAL DE FACTURA / RECIBO -->
     <div id="modal-factura" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden my-8">
             <div class="flex justify-between items-center p-4 border-b bg-slate-50 no-print">
@@ -343,7 +346,6 @@
                         <p class="text-xs">Fecha: <span id="factura-fecha"></span></p>
                     </div>
 
-                    <!-- Desglose de artículos con layout vertical -->
                     <div class="mb-4">
                         <div class="text-xs font-bold border-b-2 border-slate-300 pb-2 mb-2 flex justify-between">
                             <span>DETALLE DE ARTÍCULOS</span>
@@ -351,7 +353,6 @@
                         <div id="factura-items" class="text-xs"></div>
                     </div>
 
-                    <!-- Totales con formato vertical claro -->
                     <div class="factura-total space-y-3 text-sm">
                         <div class="border-b border-dashed border-slate-300 pb-3">
                             <div class="factura-linea-monto">
@@ -407,38 +408,158 @@
         </div>
     </div>
 
-    <!-- ✅ NUEVO MODAL: HISTORIAL DE FACTURAS -->
-    <div id="modal-historial" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl overflow-hidden my-8">
-            <div class="flex justify-between items-center p-4 border-b bg-violet-600 text-white">
-                <h3 class="font-bold text-lg flex items-center gap-2">📋 Historial de Facturas</h3>
-                <button onclick="cerrarHistorial()" class="text-white hover:text-rose-200 font-black text-lg px-2">✕</button>
+        <!-- ✅ MODAL MEJORADO: HISTORIAL POR ARTÍCULO (con botón de consulta) -->
+    <div id="modal-historial-articulo" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden my-8">
+            <div class="flex justify-between items-center p-4 border-b bg-cyan-600 text-white">
+                <h3 class="font-bold text-lg flex items-center gap-2">🔍 Historial de Movimientos por Artículo</h3>
+                <button onclick="cerrarHistorialArticulo()" class="text-white hover:text-rose-200 font-black text-lg px-2">✕</button>
             </div>
             
-            <div class="p-4 bg-slate-50 border-b">
-                <div class="flex gap-2 flex-wrap">
-                    <input type="text" id="buscar-factura" placeholder="🔍 Buscar por N° Control, fecha o tipo..." 
-                           oninput="filtrarHistorial()" 
-                           class="flex-1 min-w-[200px] p-2 border rounded-lg text-sm focus:ring-2 focus:ring-violet-400 outline-none">
-                    <select id="filtro-tipo-factura" onchange="filtrarHistorial()" class="p-2 border rounded-lg text-sm bg-white">
-                        <option value="">Todos los tipos</option>
-                        <option value="Ingreso">Solo Ingresos</option>
-                        <option value="Egreso">Solo Egresos (Ventas)</option>
-                    </select>
+            <!-- Paso 1: Selector de artículo -->
+            <div id="paso-seleccion" class="p-6">
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Selecciona un artículo para consultar su historial:</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="buscar-articulo-historial" list="lista-articulos-historial" 
+                               placeholder="🔍 Escribe el código o nombre del artículo..." 
+                               autocomplete="off"
+                               class="flex-1 p-3 border-2 border-cyan-200 rounded-lg text-sm focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none">
+                        <!-- ✅ NUEVO BOTÓN DE CONSULTA -->
+                        <button id="btn-consultar-articulo" onclick="consultarArticuloHistorial()" 
+                                class="bg-cyan-600 hover:bg-cyan-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap">
+                            🔍 Consultar
+                        </button>
+                    </div>
+                    <datalist id="lista-articulos-historial"></datalist>
                 </div>
-                <div class="mt-2 text-xs text-slate-500">
-                    <span id="total-facturas-info">0 facturas encontradas</span>
+                
+                <div id="sugerencias-articulo" class="max-h-60 overflow-y-auto border border-slate-200 rounded-lg bg-slate-50 hidden">
+                    <!-- Las sugerencias se insertan aquí -->
+                </div>
+                
+                <div class="mt-4 text-xs text-slate-500 italic flex items-center gap-2">
+                    <span>💡</span>
+                    <span>Puedes buscar por código exacto o escribir parte del nombre del artículo. También puedes presionar <kbd class="px-1.5 py-0.5 bg-slate-200 rounded text-[10px] font-mono">Enter</kbd> para consultar.</span>
                 </div>
             </div>
             
-            <div id="lista-facturas" class="p-4 max-h-[60vh] overflow-y-auto">
-                <!-- Las facturas se insertan aquí dinámicamente -->
+            <!-- Paso 2: Resultados del historial -->
+            <div id="paso-resultados" class="hidden">
+                <!-- Resumen estadístico -->
+                <div id="resumen-articulo" class="p-4 bg-gradient-to-r from-cyan-50 to-blue-50 border-b">
+                    <!-- Se llena dinámicamente -->
+                </div>
+                
+                <!-- Tabla de movimientos -->
+                <div class="p-4 max-h-[50vh] overflow-y-auto">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="font-bold text-slate-700">Movimientos registrados</h4>
+                        <span id="total-movimientos-info" class="text-xs text-slate-500">0 movimientos</span>
+                    </div>
+                    <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                        <table class="w-full text-xs text-slate-600">
+                            <thead class="bg-slate-100 text-slate-700 uppercase tracking-wider sticky top-0">
+                                <tr>
+                                    <th class="p-2 text-left">Fecha</th>
+                                    <th class="p-2 text-center">Tipo</th>
+                                    <th class="p-2 text-center">Cant.</th>
+                                    <th class="p-2 text-right">Precio Unit.</th>
+                                    <th class="p-2 text-right">Total</th>
+                                    <th class="p-2 text-center">N° Control</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-historial-articulo" class="divide-y divide-slate-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Botones de acción -->
+                <div class="p-4 border-t bg-slate-50 flex gap-3 flex-wrap">
+                    <button onclick="volverASeleccion()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition-colors">
+                        ← Buscar otro artículo
+                    </button>
+                    <button onclick="exportarHistorialArticuloTXT()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+                        📊 Exportar Historial a TXT
+                    </button>
+                    <button onclick="cerrarHistorialArticulo()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition-colors">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ NUEVO MODAL: HISTORIAL POR ARTÍCULO -->
+    <div id="modal-historial-articulo" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden my-8">
+            <div class="flex justify-between items-center p-4 border-b bg-cyan-600 text-white">
+                <h3 class="font-bold text-lg flex items-center gap-2">🔍 Historial de Movimientos por Artículo</h3>
+                <button onclick="cerrarHistorialArticulo()" class="text-white hover:text-rose-200 font-black text-lg px-2">✕</button>
             </div>
             
-            <div class="p-4 border-t bg-slate-50 flex justify-end">
-                <button onclick="cerrarHistorial()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-6 rounded-lg transition-colors">
-                    Cerrar
-                </button>
+            <!-- Paso 1: Selector de artículo -->
+            <div id="paso-seleccion" class="p-6">
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Selecciona un artículo para consultar su historial:</label>
+                    <input type="text" id="buscar-articulo-historial" list="lista-articulos-historial" 
+                           placeholder="🔍 Escribe el código o nombre del artículo..." 
+                           autocomplete="off"
+                           class="w-full p-3 border-2 border-cyan-200 rounded-lg text-sm focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none">
+                    <datalist id="lista-articulos-historial"></datalist>
+                </div>
+                
+                <div id="sugerencias-articulo" class="max-h-60 overflow-y-auto border border-slate-200 rounded-lg bg-slate-50 hidden">
+                    <!-- Las sugerencias se insertan aquí -->
+                </div>
+                
+                <div class="mt-4 text-xs text-slate-500 italic">
+                    💡 Puedes buscar por código exacto o escribir parte del nombre del artículo.
+                </div>
+            </div>
+            
+            <!-- Paso 2: Resultados del historial -->
+            <div id="paso-resultados" class="hidden">
+                <!-- Resumen estadístico -->
+                <div id="resumen-articulo" class="p-4 bg-gradient-to-r from-cyan-50 to-blue-50 border-b">
+                    <!-- Se llena dinámicamente -->
+                </div>
+                
+                <!-- Tabla de movimientos -->
+                <div class="p-4 max-h-[50vh] overflow-y-auto">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="font-bold text-slate-700">Movimientos registrados</h4>
+                        <span id="total-movimientos-info" class="text-xs text-slate-500">0 movimientos</span>
+                    </div>
+                    <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                        <table class="w-full text-xs text-slate-600">
+                            <thead class="bg-slate-100 text-slate-700 uppercase tracking-wider sticky top-0">
+                                <tr>
+                                    <th class="p-2 text-left">Fecha</th>
+                                    <th class="p-2 text-center">Tipo</th>
+                                    <th class="p-2 text-center">Cant.</th>
+                                    <th class="p-2 text-right">Precio Unit.</th>
+                                    <th class="p-2 text-right">Total</th>
+                                    <th class="p-2 text-center">N° Control</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-historial-articulo" class="divide-y divide-slate-200"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Botones de acción -->
+                <div class="p-4 border-t bg-slate-50 flex gap-3 flex-wrap">
+                    <button onclick="volverASeleccion()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition-colors">
+                        ← Buscar otro artículo
+                    </button>
+                    <button onclick="exportarHistorialArticuloTXT()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
+                        📊 Exportar Historial a TXT
+                    </button>
+                    <button onclick="cerrarHistorialArticulo()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition-colors">
+                        Cerrar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -454,6 +575,9 @@
         let monedaSeleccionada = localStorage.getItem('moneda_seleccionada') || 'VES';
         const itemsPorPagina = 10;
         const MARGEN_GANANCIA = 0.30;
+        
+        // ✅ Variable global para el artículo seleccionado en el historial
+        let articuloHistorialSeleccionado = null;
 
         const formatoMoneda = (numero) => {
             return numero.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -530,12 +654,9 @@
             return `CTRL-${dateStr}-${randomStr}`;
         }
 
-        // ✅ FUNCIÓN REDISEÑADA: Layout vertical mejorado
         function mostrarFactura(tipo, items, subtotal, impuesto, total, numeroControl, tasaUsada = tasaBCV) {
             document.getElementById('factura-tipo').textContent = tipo;
             document.getElementById('factura-control').textContent = numeroControl;
-            
-            // Si es una factura histórica, usar la fecha de la primera transacción
             const primeraTransaccion = items[0];
             document.getElementById('factura-fecha').textContent = primeraTransaccion ? primeraTransaccion.fecha : new Date().toLocaleString('es-ES');
             document.getElementById('factura-tasa').textContent = `Bs. ${formatoMoneda(tasaUsada)}`;
@@ -546,7 +667,6 @@
             items.forEach((item, idx) => {
                 const precioUnitario = tipo.includes('INGRESO') ? item.precioCompra : item.precioVenta;
                 const totalItem = item.cantidad * precioUnitario;
-                
                 const precioUnitarioVES = convertirAVES(precioUnitario, tasaUsada);
                 const totalItemVES = convertirAVES(totalItem, tasaUsada);
                 
@@ -574,17 +694,14 @@
                 contenedorItems.appendChild(div);
             });
 
-            // Calcular equivalentes en VES usando la tasa histórica
             const subtotalVES = convertirAVES(subtotal, tasaUsada);
             const impuestoVES = convertirAVES(impuesto, tasaUsada);
             const totalVES = convertirAVES(total, tasaUsada);
 
             document.getElementById('factura-subtotal-usd').textContent = `$ ${formatoMoneda(subtotal)}`;
             document.getElementById('factura-subtotal-ves').textContent = `Bs. ${formatoMoneda(subtotalVES)}`;
-            
             document.getElementById('factura-impuesto-usd').textContent = `$ ${formatoMoneda(impuesto)}`;
             document.getElementById('factura-impuesto-ves').textContent = `Bs. ${formatoMoneda(impuestoVES)}`;
-            
             document.getElementById('factura-total-usd').textContent = `$ ${formatoMoneda(total)}`;
             document.getElementById('factura-total-ves').textContent = `Bs. ${formatoMoneda(totalVES)}`;
             
@@ -595,35 +712,388 @@
             document.getElementById('modal-factura').classList.add('hidden');
         }
 
-        // ✅ NUEVAS FUNCIONES: Historial de Facturas
+        // ✅ NUEVAS FUNCIONES: Historial por Artículo
+        function abrirHistorialArticulo() {
+            if (Object.keys(inventario).length === 0) {
+                alert('⚠️ No hay artículos registrados en el inventario.');
+                return;
+            }
+            
+            // Llenar datalist con todos los artículos
+            const datalist = document.getElementById('lista-articulos-historial');
+            datalist.innerHTML = '';
+            Object.keys(inventario).forEach(codigo => {
+                const opt = document.createElement('option');
+                opt.value = `${codigo} - ${inventario[codigo].articulo}`;
+                datalist.appendChild(opt);
+            });
+            
+            document.getElementById('buscar-articulo-historial').value = '';
+            document.getElementById('paso-seleccion').classList.remove('hidden');
+            document.getElementById('paso-resultados').classList.add('hidden');
+            document.getElementById('modal-historial-articulo').classList.remove('hidden');
+            
+            setTimeout(() => document.getElementById('buscar-articulo-historial').focus(), 100);
+        }
+
+                // ✅ NUEVA FUNCIÓN CENTRALIZADA: Consulta el historial del artículo
+        function consultarArticuloHistorial() {
+            const inputBusqueda = document.getElementById('buscar-articulo-historial');
+            const valor = inputBusqueda.value.trim();
+            
+            if (!valor) {
+                alert('⚠️ Por favor, ingresa un código o nombre de artículo para consultar.');
+                inputBusqueda.focus();
+                return;
+            }
+            
+            // Extraer código (formato: "CODIGO - Nombre")
+            let codigo = valor;
+            if (valor.includes(' - ')) {
+                codigo = valor.split(' - ')[0].trim();
+            }
+            
+            // Buscar por código exacto o por nombre
+            let codigoEncontrado = null;
+            if (inventario[codigo]) {
+                codigoEncontrado = codigo;
+            } else {
+                // Buscar por nombre (coincidencia exacta o parcial)
+                const nombreBuscado = valor.toLowerCase();
+                codigoEncontrado = Object.keys(inventario).find(c => 
+                    inventario[c].articulo.toLowerCase() === nombreBuscado ||
+                    inventario[c].articulo.toLowerCase().includes(nombreBuscado)
+                );
+            }
+            
+            if (codigoEncontrado) {
+                mostrarHistorialDeArticulo(codigoEncontrado);
+            } else {
+                alert('❌ No se encontró ningún artículo con ese código o nombre.\n\nVerifica que esté registrado en el inventario.');
+                inputBusqueda.focus();
+                inputBusqueda.select();
+            }
+        }
+
+        // ✅ NUEVA FUNCIÓN CENTRALIZADA: Consulta el historial del artículo
+        function consultarArticuloHistorial() {
+            const inputBusqueda = document.getElementById('buscar-articulo-historial');
+            const valor = inputBusqueda.value.trim();
+            
+            if (!valor) {
+                alert('⚠️ Por favor, ingresa un código o nombre de artículo para consultar.');
+                inputBusqueda.focus();
+                return;
+            }
+            
+            // Extraer código (formato: "CODIGO - Nombre")
+            let codigo = valor;
+            if (valor.includes(' - ')) {
+                codigo = valor.split(' - ')[0].trim();
+            }
+            
+            // Buscar por código exacto o por nombre
+            let codigoEncontrado = null;
+            if (inventario[codigo]) {
+                codigoEncontrado = codigo;
+            } else {
+                // Buscar por nombre (coincidencia exacta o parcial)
+                const nombreBuscado = valor.toLowerCase();
+                codigoEncontrado = Object.keys(inventario).find(c => 
+                    inventario[c].articulo.toLowerCase() === nombreBuscado ||
+                    inventario[c].articulo.toLowerCase().includes(nombreBuscado)
+                );
+            }
+            
+            if (codigoEncontrado) {
+                mostrarHistorialDeArticulo(codigoEncontrado);
+            } else {
+                alert('❌ No se encontró ningún artículo con ese código o nombre.\n\nVerifica que esté registrado en el inventario.');
+                inputBusqueda.focus();
+                inputBusqueda.select();
+            }
+        }
+
+        // ✅ Event listeners para el input de búsqueda
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputBusqueda = document.getElementById('buscar-articulo-historial');
+            const btnConsultar = document.getElementById('btn-consultar-articulo');
+            
+            if (inputBusqueda) {
+                // Habilitar/deshabilitar botón según si hay texto
+                inputBusqueda.addEventListener('input', () => {
+                    const tieneTexto = inputBusqueda.value.trim().length > 0;
+                    if (btnConsultar) {
+                        btnConsultar.disabled = !tieneTexto;
+                    }
+                });
+                
+                // Consultar al presionar Enter
+                inputBusqueda.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        consultarArticuloHistorial();
+                    }
+                });
+                
+                // Consultar al seleccionar del datalist (evento change)
+                inputBusqueda.addEventListener('change', () => {
+                    if (inputBusqueda.value.trim()) {
+                        consultarArticuloHistorial();
+                    }
+                });
+            }
+        });
+
+        function mostrarHistorialDeArticulo(codigo) {
+            const articulo = inventario[codigo];
+            if (!articulo) {
+                alert('❌ Artículo no encontrado.');
+                return;
+            }
+            
+            articuloHistorialSeleccionado = codigo;
+            
+            // Filtrar transacciones de este artículo
+            const movimientos = transacciones.filter(t => t.codigo === codigo);
+            
+            // Calcular estadísticas
+            let totalComprado = 0, unidadesCompradas = 0;
+            let totalVendido = 0, unidadesVendidas = 0;
+            let gananciaGenerada = 0;
+            
+            movimientos.forEach(m => {
+                if (m.tipo === 'Ingreso') {
+                    unidadesCompradas += m.cantidad;
+                    totalComprado += (m.cantidad * (m.precioCompra || 0));
+                } else if (m.tipo === 'Egreso') {
+                    unidadesVendidas += m.cantidad;
+                    totalVendido += (m.cantidad * (m.precioVenta || 0));
+                    gananciaGenerada += (m.cantidad * ((m.precioVenta || 0) - (m.precioCompra || 0)));
+                }
+            });
+            
+            const stockActual = articulo.cantidad;
+            const cpp = articulo.precioCompra || 0;
+            const precioVenta = articulo.precioVenta || 0;
+            const valorInventario = stockActual * cpp;
+            
+            // Mostrar resumen
+            const resumen = document.getElementById('resumen-articulo');
+            resumen.innerHTML = `
+                <div class="flex justify-between items-start flex-wrap gap-4">
+                    <div class="flex-1 min-w-[250px]">
+                        <h4 class="text-lg font-black text-slate-800">${articulo.articulo}</h4>
+                        <p class="text-xs text-slate-500 font-mono">Código: ${codigo}</p>
+                        <div class="mt-2 flex gap-2 flex-wrap">
+                            <span class="px-2 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800">Stock: ${stockActual} u</span>
+                            <span class="px-2 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">CPP: $ ${formatoMoneda(cpp)}</span>
+                            ${precioVenta ? `<span class="px-2 py-1 rounded-full text-xs font-bold bg-violet-100 text-violet-800">P. Venta: $ ${formatoMoneda(precioVenta)}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div class="bg-white rounded-lg p-2 border border-emerald-200">
+                            <div class="text-slate-500">Total Comprado</div>
+                            <div class="font-black text-emerald-700">$ ${formatoMoneda(totalComprado)}</div>
+                            <div class="text-slate-400">${unidadesCompradas} u</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-2 border border-rose-200">
+                            <div class="text-slate-500">Total Vendido</div>
+                            <div class="font-black text-rose-700">$ ${formatoMoneda(totalVendido)}</div>
+                            <div class="text-slate-400">${unidadesVendidas} u</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-2 border border-violet-200">
+                            <div class="text-slate-500">Ganancia Generada</div>
+                            <div class="font-black text-violet-700">$ ${formatoMoneda(gananciaGenerada)}</div>
+                            <div class="text-slate-400">Bs. ${formatoMoneda(convertirAVES(gananciaGenerada))}</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-2 border border-blue-200">
+                            <div class="text-slate-500">Valor Inventario</div>
+                            <div class="font-black text-blue-700">$ ${formatoMoneda(valorInventario)}</div>
+                            <div class="text-slate-400">Bs. ${formatoMoneda(convertirAVES(valorInventario))}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Llenar tabla de movimientos
+            const tbody = document.getElementById('tabla-historial-articulo');
+            tbody.innerHTML = '';
+            
+            if (movimientos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">No hay movimientos registrados para este artículo.</td></tr>`;
+            } else {
+                // Ordenar por fecha (más reciente primero)
+                const movsOrdenados = [...movimientos].reverse();
+                
+                movsOrdenados.forEach(m => {
+                    const esIngreso = m.tipo === 'Ingreso';
+                    const precio = esIngreso ? (m.precioCompra || 0) : (m.precioVenta || 0);
+                    const total = m.cantidad * precio;
+                    const totalVES = convertirAVES(total, m.tasaBCV || tasaBCV);
+                    
+                    const fila = document.createElement('tr');
+                    fila.className = esIngreso ? 'hover:bg-emerald-50' : 'hover:bg-rose-50';
+                    fila.innerHTML = `
+                        <td class="p-2 text-xs">${m.fecha}</td>
+                        <td class="p-2 text-center">
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${esIngreso ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                                ${esIngreso ? '📥 INGRESO' : '📤 VENTA'}
+                            </span>
+                        </td>
+                        <td class="p-2 text-center font-bold">${m.cantidad} u</td>
+                        <td class="p-2 text-right">
+                            <div class="text-slate-400 text-[10px]">$ ${formatoMoneda(precio)}</div>
+                            <div class="font-semibold text-slate-700 text-xs">Bs. ${formatoMoneda(convertirAVES(precio, m.tasaBCV || tasaBCV))}</div>
+                        </td>
+                        <td class="p-2 text-right">
+                            <div class="text-slate-400 text-[10px]">$ ${formatoMoneda(total)}</div>
+                            <div class="font-bold text-slate-800 text-xs">Bs. ${formatoMoneda(totalVES)}</div>
+                        </td>
+                        <td class="p-2 text-center font-mono text-[10px]">${m.numeroControl || 'N/A'}</td>
+                    `;
+                    tbody.appendChild(fila);
+                });
+            }
+            
+            document.getElementById('total-movimientos-info').textContent = `${movimientos.length} movimiento(s) encontrado(s)`;
+            
+            // Cambiar de paso
+            document.getElementById('paso-seleccion').classList.add('hidden');
+            document.getElementById('paso-resultados').classList.remove('hidden');
+        }
+
+        function volverASeleccion() {
+            document.getElementById('paso-seleccion').classList.remove('hidden');
+            document.getElementById('paso-resultados').classList.add('hidden');
+            document.getElementById('buscar-articulo-historial').value = '';
+            articuloHistorialSeleccionado = null;
+            setTimeout(() => document.getElementById('buscar-articulo-historial').focus(), 100);
+        }
+
+        function cerrarHistorialArticulo() {
+            document.getElementById('modal-historial-articulo').classList.add('hidden');
+            articuloHistorialSeleccionado = null;
+        }
+
+        // ✅ Exportar historial de un artículo específico a TXT
+        function exportarHistorialArticuloTXT() {
+            if (!articuloHistorialSeleccionado || !inventario[articuloHistorialSeleccionado]) {
+                alert('❌ No hay artículo seleccionado.');
+                return;
+            }
+            
+            const codigo = articuloHistorialSeleccionado;
+            const articulo = inventario[codigo];
+            const movimientos = transacciones.filter(t => t.codigo === codigo);
+            
+            if (movimientos.length === 0) {
+                alert('⚠️ No hay movimientos para exportar.');
+                return;
+            }
+            
+            // Generar contenido TXT con el mismo formato que el general
+            let txtContent = `# HISTORIAL DEL ARTÍCULO: ${articulo.articulo}\n`;
+            txtContent += `# Código: ${codigo}\n`;
+            txtContent += `# Fecha de generación: ${new Date().toLocaleString('es-ES')}\n`;
+            txtContent += `# Total de movimientos: ${movimientos.length}\n`;
+            txtContent += `# ========================================\n\n`;
+            
+            txtContent += "Fecha\tHora\tTipo de Movimiento\tCódigo\tArtículo\tCantidad Entrada\tCantidad Salida\tPrecio USD\tPrecio VES\tExento\tStock Minimo\tImpuesto USD\tImpuesto VES\tTasa BCV\tCPP USD\tCPP VES\tStock Resultante\tN° Control\tTotal USD\tTotal VES\n";
+
+            movimientos.forEach(item => {
+                const esIngreso = item.tipo === 'Ingreso';
+                const esEgreso = item.tipo === 'Egreso';
+                
+                const cantidadEntrada = esIngreso ? item.cantidad : 0;
+                const cantidadSalida = esEgreso ? item.cantidad : 0;
+                const precioUSD = esIngreso ? (item.precioCompra || 0) : (item.precioVenta || 0);
+                
+                const tasaUsada = item.tasaBCV || tasaBCV || 0;
+                const precioVES = convertirAVES(precioUSD, tasaUsada);
+                
+                const totalLineaUSD = item.cantidad * precioUSD;
+                let montoImpuestoUSD = 0;
+                if (item.exento !== true) montoImpuestoUSD = totalLineaUSD * 0.16;
+                
+                const montoImpuestoVES = convertirAVES(montoImpuestoUSD, tasaUsada);
+                const totalLineaVES = convertirAVES(totalLineaUSD, tasaUsada);
+
+                const cppUSD = item.cppResultante || 0;
+                const cppVES = convertirAVES(cppUSD, tasaUsada);
+
+                let fechaPura = item.fecha;
+                let horaPura = "";
+                if (item.fecha.includes(",")) {
+                    let partes = item.fecha.split(",");
+                    fechaPura = partes[0].trim();
+                    horaPura = partes[1].trim();
+                } else if (item.fecha.includes(" ")) {
+                    let partes = item.fecha.split(" ");
+                    fechaPura = partes[0].trim();
+                    horaPura = partes[1].trim();
+                }
+
+                const fila = [
+                    fechaPura, horaPura, item.tipo, item.codigo, item.articulo, 
+                    cantidadEntrada, cantidadSalida, 
+                    formatoDecimal(precioUSD), formatoDecimal(precioVES),
+                    item.exento ? "Si" : "No", item.stockMinimo || 3,
+                    formatoDecimal(montoImpuestoUSD), formatoDecimal(montoImpuestoVES),
+                    formatoDecimal(tasaUsada), formatoDecimal(cppUSD), formatoDecimal(cppVES),
+                    item.stockResultante !== undefined ? item.stockResultante : '',
+                    item.numeroControl || 'N/A',
+                    formatoDecimal(totalLineaUSD),
+                    formatoDecimal(totalLineaVES)
+                ];
+                
+                txtContent += fila.join("\t") + "\n";
+            });
+
+            const nombreArchivo = `Historial_${articulo.articulo.replace(/[^a-zA-Z0-9]/g, '_')}_${codigo}_${new Date().toLocaleDateString('es-ES').replace(/\//g, '-')}.txt`;
+            const blob = new Blob(["\uFEFF" + txtContent], { type: 'text/plain;charset=utf-8;' });
+            const archivoTXT = new File([blob], nombreArchivo, { type: 'text/plain' });
+
+            const esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+            if (esMovil && navigator.canShare && navigator.canShare({ files: [archivoTXT] })) {
+                navigator.share({
+                    files: [archivoTXT],
+                    title: `Historial ${articulo.articulo}`,
+                    text: `Historial de movimientos del artículo ${articulo.articulo}`
+                }).catch(() => console.log("Compartir cancelado"));
+            } else {
+                if (esMovil) alert("Tu navegador móvil no soporta el envío directo. Iniciando descarga...");
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.setAttribute("href", url);
+                link.setAttribute("download", nombreArchivo);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        // Funciones del historial de facturas (existentes)
         function agruparFacturas() {
             const facturas = {};
             transacciones.forEach(t => {
                 const nc = t.numeroControl || 'SIN-CONTROL';
                 if (!facturas[nc]) {
                     facturas[nc] = {
-                        numeroControl: nc,
-                        tipo: t.tipo,
-                        fecha: t.fecha,
-                        tasaBCV: t.tasaBCV || tasaBCV,
-                        items: [],
-                        subtotal: 0,
-                        impuesto: 0,
-                        total: 0
+                        numeroControl: nc, tipo: t.tipo, fecha: t.fecha,
+                        tasaBCV: t.tasaBCV || tasaBCV, items: [],
+                        subtotal: 0, impuesto: 0, total: 0
                     };
                 }
                 facturas[nc].items.push(t);
-                
                 const precio = t.tipo === 'Ingreso' ? (t.precioCompra || 0) : (t.precioVenta || 0);
                 const subtotalLinea = t.cantidad * precio;
                 const impuestoLinea = t.exento ? 0 : subtotalLinea * 0.16;
-                
                 facturas[nc].subtotal += subtotalLinea;
                 facturas[nc].impuesto += impuestoLinea;
                 facturas[nc].total += subtotalLinea + impuestoLinea;
             });
-            
-            // Ordenar por fecha (más reciente primero)
             return Object.values(facturas).sort((a, b) => {
                 return new Date(b.fecha.split(',')[0].split('/').reverse().join('-')) - 
                        new Date(a.fecha.split(',')[0].split('/').reverse().join('-'));
@@ -636,7 +1106,6 @@
                 alert('⚠️ No hay facturas registradas en el historial.');
                 return;
             }
-            
             document.getElementById('buscar-factura').value = '';
             document.getElementById('filtro-tipo-factura').value = '';
             renderizarListaFacturas(facturas);
@@ -646,15 +1115,12 @@
         function renderizarListaFacturas(facturas) {
             const contenedor = document.getElementById('lista-facturas');
             contenedor.innerHTML = '';
-            
             if (facturas.length === 0) {
                 contenedor.innerHTML = '<p class="text-center text-slate-400 italic py-8">No se encontraron facturas con los filtros aplicados.</p>';
                 document.getElementById('total-facturas-info').textContent = '0 facturas encontradas';
                 return;
             }
-            
             document.getElementById('total-facturas-info').textContent = `${facturas.length} factura(s) encontrada(s)`;
-            
             facturas.forEach(f => {
                 const tasaUsada = f.tasaBCV || tasaBCV;
                 const totalVES = convertirAVES(f.total, tasaUsada);
@@ -662,11 +1128,9 @@
                 const colorBadge = esIngreso ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800';
                 const icono = esIngreso ? '📥' : '📤';
                 const tipoTexto = esIngreso ? 'COMPRA' : 'VENTA';
-                
                 const div = document.createElement('div');
                 div.className = 'bg-white border border-slate-200 rounded-lg p-4 mb-3 hover:shadow-md transition-shadow cursor-pointer';
                 div.onclick = () => verFacturaDetalle(f.numeroControl);
-                
                 div.innerHTML = `
                     <div class="flex justify-between items-start gap-3">
                         <div class="flex-1">
@@ -698,13 +1162,8 @@
         function filtrarHistorial() {
             const texto = document.getElementById('buscar-factura').value.toLowerCase();
             const tipo = document.getElementById('filtro-tipo-factura').value;
-            
             let facturas = agruparFacturas();
-            
-            if (tipo) {
-                facturas = facturas.filter(f => f.tipo === tipo);
-            }
-            
+            if (tipo) facturas = facturas.filter(f => f.tipo === tipo);
             if (texto) {
                 facturas = facturas.filter(f => 
                     f.numeroControl.toLowerCase().includes(texto) ||
@@ -713,20 +1172,13 @@
                     f.items.some(item => item.articulo.toLowerCase().includes(texto))
                 );
             }
-            
             renderizarListaFacturas(facturas);
         }
 
         function verFacturaDetalle(numeroControl) {
             const facturas = agruparFacturas();
             const factura = facturas.find(f => f.numeroControl === numeroControl);
-            
-            if (!factura) {
-                alert('❌ No se encontró la factura.');
-                return;
-            }
-            
-            // Cerrar modal de historial temporalmente (se puede reabrir al cerrar la factura)
+            if (!factura) { alert('❌ No se encontró la factura.'); return; }
             const tipoFactura = factura.tipo === 'Ingreso' ? 'COMPROBANTE DE INGRESO' : 'FACTURA DE VENTA';
             mostrarFactura(tipoFactura, factura.items, factura.subtotal, factura.impuesto, factura.total, factura.numeroControl, factura.tasaBCV);
         }
@@ -764,23 +1216,18 @@
         }
 
         function actualizarDashboard() {
-            let totalUnidades = 0;
-            let costoAlmacen = 0;
-            let gananciaRealEfectiva = 0;
-
+            let totalUnidades = 0, costoAlmacen = 0, gananciaRealEfectiva = 0;
             Object.keys(inventario).forEach(codigo => {
                 const item = inventario[codigo];
                 totalUnidades += item.cantidad;
                 costoAlmacen += (item.cantidad * item.precioCompra); 
             });
-
             transacciones.forEach(t => {
                 if (t.tipo === 'Egreso') {
                     const gananciaPorArticulo = t.precioVenta - t.precioCompra;
                     gananciaRealEfectiva += (gananciaPorArticulo * t.cantidad);
                 }
             });
-
             dashTotalItems.textContent = `${totalUnidades} u`;
             dashValorCosto.textContent = formatearMoneda(costoAlmacen);
             dashGananciaEstimada.textContent = formatearMoneda(gananciaRealEfectiva);
@@ -790,7 +1237,6 @@
             tablaInventario.innerHTML = '';
             const keys = Object.keys(inventario);
             const totalItems = keys.length;
-            
             if (totalItems === 0) {
                 tablaInventario.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">No hay mercancía en inventario.</td></tr>`;
                 infoPaginacion.textContent = "Página 1 de 1";
@@ -799,22 +1245,16 @@
                 actualizarDashboard();
                 return;
             }
-
             const totalPaginas = Math.ceil(totalItems / itemsPorPagina);
             if (paginaActual > totalPaginas) paginaActual = totalPaginas;
-
             const indiceInicio = (paginaActual - 1) * itemsPorPagina;
-            const indiceFin = indiceInicio + itemsPorPagina;
-            const keysPaginadas = keys.slice(indiceInicio, indiceFin);
-
+            const keysPaginadas = keys.slice(indiceInicio, indiceInicio + itemsPorPagina);
             keysPaginadas.forEach(codigo => {
                 const item = inventario[codigo];
                 const fila = document.createElement('tr');
                 const stockMin = item.stockMinimo !== undefined ? item.stockMinimo : 3;
-                
                 let claseFila = "hover:bg-slate-50 transition-colors";
                 let badgeEstado = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">OK</span>`;
-                
                 if (item.cantidad === 0) {
                     claseFila = "bg-rose-50 hover:bg-rose-100/70 transition-colors text-rose-900 font-medium";
                     badgeEstado = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-200 text-rose-800 animate-pulse">Agotado</span>`;
@@ -822,7 +1262,6 @@
                     claseFila = "bg-amber-50 hover:bg-amber-100/70 transition-colors text-amber-900";
                     badgeEstado = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-200 text-amber-800">Stock Bajo</span>`;
                 }
-
                 fila.className = claseFila;
                 fila.innerHTML = `
                     <td class="p-3 font-mono font-bold text-slate-700">${codigo}</td>
@@ -835,7 +1274,6 @@
                 `;
                 tablaInventario.appendChild(fila);
             });
-
             infoPaginacion.textContent = `Página ${paginaActual} de ${totalPaginas} (${totalItems} artículos)`;
             btnAnterior.disabled = (paginaActual === 1);
             btnSiguiente.disabled = (paginaActual === totalPaginas);
@@ -847,11 +1285,9 @@
             listaCodigosEgreso.innerHTML = '';
             listaCodigosIngreso.innerHTML = '';
             listaArticulosIngreso.innerHTML = '';
-            
             Object.keys(inventario).forEach(codigo => {
                 const item = inventario[codigo];
                 const articulo = item.articulo;
-                
                 const opt1 = document.createElement('option'); opt1.value = articulo; opt1.label = `Código: ${codigo}`; listaArticulosEgreso.appendChild(opt1);
                 const opt2 = document.createElement('option'); opt2.value = codigo; opt2.label = articulo; listaCodigosEgreso.appendChild(opt2);
                 const opt3 = document.createElement('option'); opt3.value = codigo; opt3.label = articulo; listaCodigosIngreso.appendChild(opt3);
@@ -867,21 +1303,16 @@
                 totalCarrito.textContent = `${simboloMoneda()} 0.00`;
                 return;
             }
-
             let sumaSubtotalGravable = 0, sumaSubtotalExento = 0;
-
             carrito.forEach((item, index) => {
                 const esExento = item.exento === true;
                 const subtotalItem = item.cantidad * item.precioVenta;
                 const impuestoUnitario = esExento ? 0 : item.precioVenta * 0.16;
                 const impuestoTotalFila = esExento ? 0 : subtotalItem * 0.16;
                 const totalFilaConImpuesto = subtotalItem + impuestoTotalFila;
-                
                 if (esExento) sumaSubtotalExento += subtotalItem;
                 else sumaSubtotalGravable += subtotalItem;
-
                 const etiquetaTipo = esExento ? `<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-bold">E</span>` : `<span class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-bold">G</span>`;
-
                 const fila = document.createElement('tr');
                 fila.className = "hover:bg-slate-100";
                 fila.innerHTML = `
@@ -895,10 +1326,8 @@
                 `;
                 tablaCarrito.appendChild(fila);
             });
-
             const totalImpuesto = sumaSubtotalGravable * 0.16;
             const totalConImpuesto = sumaSubtotalGravable + sumaSubtotalExento + totalImpuesto;
-
             impuestoCarrito.textContent = `${simboloMoneda()} ${formatoMoneda(monedaSeleccionada === 'VES' ? convertirAVES(totalImpuesto) : totalImpuesto)}`;
             totalCarrito.textContent = `${simboloMoneda()} ${formatoMoneda(monedaSeleccionada === 'VES' ? convertirAVES(totalConImpuesto) : totalConImpuesto)}`;
         }
@@ -908,25 +1337,20 @@
         function actualizarCarritoIngreso() {
             tablaCarritoIngreso.innerHTML = '';
             let sumaSubtotalGravable = 0, sumaSubtotalExento = 0;
-
             if (carritoIngreso.length === 0) {
                 tablaCarritoIngreso.innerHTML = `<tr><td colspan="7" class="p-3 text-center text-slate-400 italic">Ningún artículo añadido.</td></tr>`;
                 impuestoCarritoIngreso.textContent = `${simboloMoneda()} 0.00`;
                 totalCarritoIngreso.textContent = `${simboloMoneda()} 0.00`;
                 return;
             }
-
             carritoIngreso.forEach((item, index) => {
                 const subtotalItem = item.cantidad * item.precioCompra;
                 const impuestoUnitario = item.exento ? 0 : item.precioCompra * 0.16;
                 const impuestoTotalFila = item.exento ? 0 : subtotalItem * 0.16;
                 const totalFilaConImpuesto = subtotalItem + impuestoTotalFila;
-                
                 if (item.exento) sumaSubtotalExento += subtotalItem;
                 else sumaSubtotalGravable += subtotalItem;
-
                 const etiquetaTipo = item.exento ? `<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-bold">E</span>` : `<span class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-bold">G</span>`;
-
                 const fila = document.createElement('tr');
                 fila.className = "hover:bg-slate-100";
                 fila.innerHTML = `
@@ -940,10 +1364,8 @@
                 `;
                 tablaCarritoIngreso.appendChild(fila);
             });
-
             const totalImpuesto = sumaSubtotalGravable * 0.16;
             const totalFactura = sumaSubtotalGravable + sumaSubtotalExento + totalImpuesto;
-
             impuestoCarritoIngreso.textContent = `${simboloMoneda()} ${formatoMoneda(monedaSeleccionada === 'VES' ? convertirAVES(totalImpuesto) : totalImpuesto)}`;
             totalCarritoIngreso.textContent = `${simboloMoneda()} ${formatoMoneda(monedaSeleccionada === 'VES' ? convertirAVES(totalFactura) : totalFactura)}`;
         }
@@ -998,19 +1420,15 @@
             const cantidad = parseInt(document.getElementById('ingreso-cantidad').value);
             let precioCompra = parseFloat(document.getElementById('ingreso-precio').value);
             const stockMin = parseInt(ingresoMinimo.value);
-            
             if (monedaSeleccionada === 'VES' && tasaBCV > 0) precioCompra = convertirAUSD(precioCompra);
             const exento = inventario[codigo] ? inventario[codigo].exento : ingresoExento.checked;
-            
             const itemExistente = carritoIngreso.find(item => item.codigo === codigo && Math.abs(item.precioCompra - precioCompra) < 0.0001 && item.exento === !!exento);
-
             if (itemExistente) {
                 itemExistente.cantidad += cantidad;
                 itemExistente.stockMinimo = stockMin;
             } else {
                 carritoIngreso.push({ codigo, articulo, cantidad, precioCompra, stockMinimo: stockMin, exento: !!exento });
             }
-
             formIngreso.reset();
             ingresoMinimo.value = 3;
             ingresoExento.checked = false;
@@ -1026,14 +1444,12 @@
             const fechaActual = new Date().toLocaleString('es-ES');
             const numeroControl = generarNumeroControl();
             let subtotalGeneral = 0, impuestoGeneral = 0;
-
             carritoIngreso.forEach(item => {
                 if (inventario[item.codigo]) {
                     const stockAnterior = inventario[item.codigo].cantidad;
                     const cppAnterior = inventario[item.codigo].precioCompra || 0;
                     const stockTotal = stockAnterior + item.cantidad;
                     const cppNuevo = ((stockAnterior * cppAnterior) + (item.cantidad * item.precioCompra)) / stockTotal;
-                    
                     inventario[item.codigo].cantidad = stockTotal;
                     inventario[item.codigo].precioCompra = cppNuevo;
                     inventario[item.codigo].stockMinimo = item.stockMinimo;
@@ -1041,12 +1457,10 @@
                 } else {
                     inventario[item.codigo] = { articulo: item.articulo, cantidad: item.cantidad, precioCompra: item.precioCompra, precioVenta: null, stockMinimo: item.stockMinimo, exento: item.exento };
                 }
-
                 const subtotalItem = item.cantidad * item.precioCompra;
                 const impuestoItem = item.exento ? 0 : subtotalItem * 0.16;
                 subtotalGeneral += subtotalItem;
                 impuestoGeneral += impuestoItem;
-
                 transacciones.push({
                     fecha: fechaActual, tipo: 'Ingreso', codigo: item.codigo, articulo: item.articulo,
                     cantidad: item.cantidad, precioCompra: item.precioCompra, precioVenta: 0,
@@ -1055,7 +1469,6 @@
                     numeroControl: numeroControl
                 });
             });
-
             const totalFactura = subtotalGeneral + impuestoGeneral;
             carritoIngreso = [];
             actualizarCarritoIngreso();
@@ -1084,7 +1497,6 @@
                 egresoCodigo.value = codigoEncontrado;
                 egresoCodigo.readOnly = true;
                 egresoCodigo.classList.add('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
-                
                 if (inventario[codigoEncontrado].precioVenta) {
                     let precio = inventario[codigoEncontrado].precioVenta;
                     if (monedaSeleccionada === 'VES' && tasaBCV > 0) precio = convertirAVES(precio);
@@ -1111,7 +1523,6 @@
                 egresoArticulo.value = inventario[codigo].articulo;
                 egresoArticulo.readOnly = true;
                 egresoArticulo.classList.add('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
-                
                 if (inventario[codigo].precioVenta) {
                     let precio = inventario[codigo].precioVenta;
                     if (monedaSeleccionada === 'VES' && tasaBCV > 0) precio = convertirAVES(precio);
@@ -1130,31 +1541,25 @@
             const codigo = egresoCodigo.value.trim();
             const cantidad = parseInt(document.getElementById('egreso-cantidad').value);
             let precioVenta = parseFloat(egresoPrecio.value);
-
             if (!inventario[codigo]) return alert('⚠️ Error: El artículo o código ingresado no coincide con ningún producto registrado.');
             if (monedaSeleccionada === 'VES' && tasaBCV > 0) precioVenta = convertirAUSD(precioVenta);
-
             const itemEnCarrito = carrito.find(item => item.codigo === codigo);
             const cantidadPreviaEnCarrito = itemEnCarrito ? itemEnCarrito.cantidad : 0;
             const cantidadSolicitadaTotal = cantidadPreviaEnCarrito + cantidad;
-
             if (inventario[codigo].cantidad < cantidadSolicitadaTotal) {
                 return alert(`❌ Operación denegada: Stock insuficiente.\n\nEn inventario: ${inventario[codigo].cantidad} u\nEn la lista actual: ${cantidadPreviaEnCarrito} u\nSolicitado nuevo: ${cantidad} u\nFaltan: ${cantidadSolicitadaTotal - inventario[codigo].cantidad} unidades.`);
             }
-
             if (itemEnCarrito) {
                 itemEnCarrito.cantidad += cantidad;
                 itemEnCarrito.precioVenta = precioVenta; 
             } else {
                 carrito.push({ codigo, articulo: inventario[codigo].articulo, cantidad, precioVenta, exento: !!inventario[codigo].exento });
             }
-
             formEgreso.reset();
             egresoArticulo.readOnly = false;
             egresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
             egresoCodigo.readOnly = false;
             egresoCodigo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
-            
             actualizarCarrito();
             egresoCodigo.focus();
         });
@@ -1164,20 +1569,16 @@
             const fechaActual = new Date().toLocaleString('es-ES');
             const numeroControl = generarNumeroControl();
             let subtotalGeneral = 0, impuestoGeneral = 0;
-            
             for (let item of carrito) {
                 if (inventario[item.codigo].cantidad < item.cantidad) return alert(`❌ Error crítico: El producto "${item.articulo}" ya no cuenta con stock disponible.`);
             }
-
             carrito.forEach(item => {
                 inventario[item.codigo].cantidad -= item.cantidad;
                 inventario[item.codigo].precioVenta = item.precioVenta; 
-
                 const subtotalItem = item.cantidad * item.precioVenta;
                 const impuestoItem = item.exento ? 0 : subtotalItem * 0.16;
                 subtotalGeneral += subtotalItem;
                 impuestoGeneral += impuestoItem;
-
                 transacciones.push({
                     fecha: fechaActual, tipo: 'Egreso', codigo: item.codigo, articulo: item.articulo,
                     cantidad: item.cantidad, precioCompra: inventario[item.codigo].precioCompra || 0,
@@ -1185,7 +1586,6 @@
                     exento: item.exento, tasaBCV: tasaBCV, numeroControl: numeroControl
                 });
             });
-
             const totalFactura = subtotalGeneral + impuestoGeneral;
             carrito = [];
             actualizarCarrito();
@@ -1207,42 +1607,30 @@
 
         function generarContenidoTXT() {
             let txtContent = "Fecha\tHora\tTipo de Movimiento\tCódigo\tArtículo\tCantidad Entrada\tCantidad Salida\tPrecio USD\tPrecio VES\tExento\tStock Minimo\tImpuesto USD\tImpuesto VES\tTasa BCV\tCPP USD\tCPP VES\tStock Resultante\tN° Control\tTotal USD\tTotal VES\n";
-
             transacciones.forEach(item => {
                 const esIngreso = item.tipo === 'Ingreso';
                 const esEgreso = item.tipo === 'Egreso';
-                
                 const cantidadEntrada = esIngreso ? item.cantidad : 0;
                 const cantidadSalida = esEgreso ? item.cantidad : 0;
                 const precioUSD = esIngreso ? (item.precioCompra || 0) : (item.precioVenta || 0);
-                
                 const tasaUsada = item.tasaBCV || tasaBCV || 0;
                 const precioVES = convertirAVES(precioUSD, tasaUsada);
-                
                 const totalLineaUSD = item.cantidad * precioUSD;
                 let montoImpuestoUSD = 0;
                 if (item.exento !== true) montoImpuestoUSD = totalLineaUSD * 0.16;
-                
                 const montoImpuestoVES = convertirAVES(montoImpuestoUSD, tasaUsada);
                 const totalLineaVES = convertirAVES(totalLineaUSD, tasaUsada);
-
                 const cppUSD = item.cppResultante || 0;
                 const cppVES = convertirAVES(cppUSD, tasaUsada);
-
-                let fechaPura = item.fecha;
-                let horaPura = "";
+                let fechaPura = item.fecha, horaPura = "";
                 if (item.fecha.includes(",")) {
                     let partes = item.fecha.split(",");
-                    fechaPura = partes[0].trim();
-                    horaPura = partes[1].trim();
+                    fechaPura = partes[0].trim(); horaPura = partes[1].trim();
                 } else if (item.fecha.includes(" ")) {
                     let partes = item.fecha.split(" ");
-                    fechaPura = partes[0].trim();
-                    horaPura = partes[1].trim();
+                    fechaPura = partes[0].trim(); horaPura = partes[1].trim();
                 }
-
                 const numeroControl = item.numeroControl || 'N/A';
-
                 const fila = [
                     fechaPura, horaPura, item.tipo, item.codigo, item.articulo, 
                     cantidadEntrada, cantidadSalida, 
@@ -1251,14 +1639,10 @@
                     formatoDecimal(montoImpuestoUSD), formatoDecimal(montoImpuestoVES),
                     formatoDecimal(tasaUsada), formatoDecimal(cppUSD), formatoDecimal(cppVES),
                     item.stockResultante !== undefined ? item.stockResultante : '',
-                    numeroControl,
-                    formatoDecimal(totalLineaUSD),
-                    formatoDecimal(totalLineaVES)
+                    numeroControl, formatoDecimal(totalLineaUSD), formatoDecimal(totalLineaVES)
                 ];
-                
                 txtContent += fila.join("\t") + "\n";
             });
-
             return txtContent;
         }
 
@@ -1268,9 +1652,7 @@
             const nombreArchivo = `Master_Inventario_POS_${new Date().toLocaleDateString('es-ES').replace(/\//g, '-')}.txt`;
             const blob = new Blob(["\uFEFF" + txtContent], { type: 'text/plain;charset=utf-8;' });
             const archivoTXT = new File([blob], nombreArchivo, { type: 'text/plain' });
-
             const esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
             if (esMovil && navigator.canShare && navigator.canShare({ files: [archivoTXT] })) {
                 try {
                     await navigator.share({ files: [archivoTXT], title: 'Backup P.O.S.', text: 'Adjunto el archivo maestro de inventario (dual USD/VES) para su respaldo o revisión.' });
@@ -1291,18 +1673,13 @@
             const archivo = e.target.files[0];
             if (!archivo) return;
             const lector = new FileReader();
-            
             lector.onload = function(evt) {
                 const lineas = evt.target.result.split(/\r?\n/);
                 if (lineas.length <= 1) return alert("❌ Error: El archivo está vacío.");
                 if (!confirm("⚠️ ATENCIÓN: Esta acción reconstruirá la base de datos a partir del archivo de texto tabulado. ¿Continuar?")) { 
                     inputImportar.value = ''; return; 
                 }
-
-                let nuevoInventario = {};
-                let nuevasTransacciones = [];
-                let lineasProcesadas = 0;
-
+                let nuevoInventario = {}, nuevasTransacciones = [], lineasProcesadas = 0;
                 const parsearLineaTab = (texto) => {
                     return texto.split('\t').map(valor => {
                         let v = valor.trim();
@@ -1310,27 +1687,21 @@
                         return v;
                     });
                 };
-
                 const parsearNumero = (texto) => {
                     if (!texto || texto === '') return 0;
                     const normalizado = texto.toString().replace(',', '.');
                     const resultado = parseFloat(normalizado);
                     return isNaN(resultado) ? 0 : resultado;
                 };
-
                 for (let i = 1; i < lineas.length; i++) {
                     let linea = lineas[i].trim();
                     if (!linea) continue;
-                    
                     let columnas = parsearLineaTab(linea);
                     if (columnas.length < 10) continue; 
-
                     let fecha = columnas[0], hora = columnas[1], tipo = columnas[2], codigo = columnas[3], articulo = columnas[4];
                     let cantidadEntrada = parseInt(columnas[5]) || 0;
                     let cantidadSalida = parseInt(columnas[6]) || 0;
-                    
                     let precio, exento, stockMinimo, tasaBCVTransaccion, cppResultante, stockResultante, numeroControl;
-                    
                     if (columnas.length >= 17) {
                         precio = parsearNumero(columnas[7]);
                         exento = columnas[9].toLowerCase() === 'si';
@@ -1348,19 +1719,16 @@
                         stockResultante = columnas[13] ? parseInt(columnas[13]) : 0;
                         numeroControl = null;
                     }
-                    
                     let fechaCompleta = hora ? `${fecha}, ${hora}` : fecha;
                     let cantidad = tipo === 'Ingreso' ? cantidadEntrada : cantidadSalida;
                     let precioCompra = tipo === 'Ingreso' ? precio : 0;
                     let precioVenta = tipo === 'Egreso' ? precio : 0;
-
                     nuevasTransacciones.push({ 
                         fecha: fechaCompleta, tipo, codigo, articulo, cantidad, 
                         precioCompra, precioVenta, stockMinimo, exento, 
                         tasaBCV: tasaBCVTransaccion, cppResultante: cppResultante, stockResultante: stockResultante,
                         numeroControl: numeroControl || `CTRL-IMPORT-${Date.now()}-${Math.floor(Math.random()*1000)}`
                     });
-
                     if (tipo === 'Ingreso') {
                         if (nuevoInventario[codigo]) { 
                             const stockAnterior = nuevoInventario[codigo].cantidad;
@@ -1384,7 +1752,6 @@
                     }
                     lineasProcesadas++;
                 }
-
                 if (lineasProcesadas === 0) {
                     alert("❌ Formato incompatible. Asegúrate de importar un archivo de texto tabulado válido.");
                 } else {
@@ -1424,8 +1791,7 @@
 
         function actualizarTodo() { actualizarTabla(); actualizarCarrito(); actualizarCarritoIngreso(); }
         
-        let escanerActivo = null;
-        let inputDestinoActual = ''; 
+        let escanerActivo = null, inputDestinoActual = ''; 
 
         function abrirScanner(idInputDestino) {
             inputDestinoActual = idInputDestino;
@@ -1472,12 +1838,9 @@
             const campoPrecio = document.getElementById('egreso-precio');
             if (!codigo) return alert('⚠️ Por favor, ingresa o busca un producto primero.');
             if (!inventario[codigo]) return alert('⚠️ El producto no existe en el inventario.');
-
             let costoPromedioPonderado = inventario[codigo].precioCompra;
             if (!costoPromedioPonderado || costoPromedioPonderado === 0) return alert('⚠️ No hay registros de compras para este artículo.');
-
             if (monedaSeleccionada === 'VES' && tasaBCV > 0) costoPromedioPonderado = convertirAVES(costoPromedioPonderado);
-
             const precioVentaSugerido = costoPromedioPonderado / (1 - MARGEN_GANANCIA);
             campoPrecio.value = precioVentaSugerido.toFixed(2);
         }

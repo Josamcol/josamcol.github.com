@@ -16,33 +16,16 @@
             font-family: 'Courier New', Courier, monospace;
         }
         .factura-header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 12px; margin-bottom: 16px; }
-        .factura-item { 
-            border-bottom: 1px dashed #e2e8f0; 
-            padding: 10px 0; 
-            margin-bottom: 8px;
-        }
+        .factura-item { border-bottom: 1px dashed #e2e8f0; padding: 10px 0; margin-bottom: 8px; }
         .factura-item:last-child { border-bottom: none; }
         .factura-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
         .factura-total { border-top: 2px dashed #000; padding-top: 12px; margin-top: 12px; }
-        .factura-linea-monto { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: baseline;
-            padding: 6px 0;
-        }
+        .factura-linea-monto { display: flex; justify-content: space-between; align-items: baseline; padding: 6px 0; }
         
         @media print {
             body * { visibility: hidden; }
             #modal-factura, #modal-factura * { visibility: visible; }
-            #modal-factura { 
-                position: absolute; 
-                left: 0; 
-                top: 0; 
-                width: 100%; 
-                background: white;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
+            #modal-factura { position: absolute; left: 0; top: 0; width: 100%; background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .no-print { display: none !important; }
         }
     </style>
@@ -50,14 +33,12 @@
 <body class="bg-slate-100 font-sans text-slate-800">
 
     <div class="min-h-screen flex flex-col">
-        
         <header class="bg-indigo-700 text-white shadow-md p-4">
             <div class="container mx-auto flex justify-between items-center flex-wrap gap-2">
                 <h1 class="text-xl font-bold tracking-wide">📦 P.O.S. Almacén Inteligente</h1>
                 <div class="flex items-center gap-3 flex-wrap">
                     <div id="tasa-bcv-container" class="text-sm bg-indigo-800 px-3 py-1 rounded-full shadow-inner font-medium text-indigo-200 flex items-center gap-2">
-                        <span class="animate-pulse">⏳</span>
-                        <span>Cargando tasa BCV...</span>
+                        <span class="animate-pulse">⏳</span><span>Cargando tasa BCV...</span>
                     </div>
                     <div class="flex items-center gap-2 bg-indigo-800 px-3 py-1 rounded-full shadow-inner">
                         <span class="text-xs font-medium text-indigo-200">Moneda:</span>
@@ -66,7 +47,7 @@
                             <option value="VES">VES (Bs.)</option>
                         </select>
                     </div>
-                    <span class="text-sm bg-indigo-800 px-3 py-1 rounded-full shadow-inner font-medium text-indigo-200">Versión b 0.43 (Historial por Artículo)</span>
+                    <span class="text-sm bg-indigo-800 px-3 py-1 rounded-full shadow-inner font-medium text-indigo-200">Versión b 0.44 (Corrección Ver Facturas)</span>
                 </div>
             </div>
         </header>
@@ -87,21 +68,16 @@
         </section>
 
         <main class="flex-grow container mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-            
             <section class="bg-white p-6 rounded-xl shadow-md border-t-4 border-emerald-500 flex flex-col justify-between">
                 <div>
-                    <h2 class="text-lg font-bold text-emerald-700 mb-4 flex items-center gap-2">
-                        📥 Registro de Compras e Inventario
-                    </h2>
+                    <h2 class="text-lg font-bold text-emerald-700 mb-4 flex items-center gap-2">📥 Registro de Compras e Inventario</h2>
                     <form id="form-ingreso" class="space-y-4">
                         <div class="grid grid-cols-3 gap-3">
                             <div class="col-span-2">
                                 <label class="block text-sm font-semibold text-slate-600">Código de Barras / ID</label>
                                 <div class="flex gap-2 mt-1">
                                     <input type="text" id="ingreso-codigo" list="lista-codigos-ingreso" required placeholder="Escribe o busca un código existente" autocomplete="off" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-emerald-400 outline-none">
-                                    <button type="button" onclick="abrirScanner('ingreso-codigo')" class="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-3 rounded-lg border border-emerald-200 transition-colors" title="Escanear con cámara">
-                                        📷
-                                    </button>
+                                    <button type="button" onclick="abrirScanner('ingreso-codigo')" class="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-3 rounded-lg border border-emerald-200 transition-colors" title="Escanear con cámara">📷</button>
                                 </div>
                             </div>
                             <div class="flex flex-col justify-end items-center pb-2">
@@ -131,78 +107,51 @@
                                 <input type="number" id="ingreso-minimo" min="0" value="3" required class="w-full mt-1 p-2 border border-rose-200 rounded-lg focus:ring-2 focus:ring-rose-400 outline-none bg-rose-50/30">
                             </div>
                         </div>
-                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg transition-colors shadow-sm mt-2">
-                            ➕ Añadir a la Compra Actual
-                        </button>
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg transition-colors shadow-sm mt-2">➕ Añadir a la Compra Actual</button>
                     </form>
-
                     <div class="mt-6 pt-4 border-t border-slate-100">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">📦 Lista de mercancía a ingresar:</h3>
                         <div class="max-h-40 overflow-y-auto border border-slate-200 rounded-lg bg-slate-50">
                             <table class="w-full text-left text-xs text-slate-600">
                                 <thead class="bg-slate-200 text-slate-700 uppercase tracking-wider sticky top-0">
-                                    <tr>
-                                        <th class="p-2">Artículo</th>
-                                        <th class="p-2 text-center">Cant.</th>
-                                        <th class="p-2 text-right">Costo (u)</th>
-                                        <th class="p-2 text-right">Impuesto (u)</th>
-                                        <th class="p-2 text-center">Tipo</th>
-                                        <th class="p-2 text-right">Total c/Imp</th>
-                                        <th class="p-2 text-center"></th>
-                                    </tr>
+                                    <tr><th class="p-2">Artículo</th><th class="p-2 text-center">Cant.</th><th class="p-2 text-right">Costo (u)</th><th class="p-2 text-right">Impuesto (u)</th><th class="p-2 text-center">Tipo</th><th class="p-2 text-right">Total c/Imp</th><th class="p-2 text-center"></th></tr>
                                 </thead>
                                 <tbody id="tabla-carrito-ingreso" class="divide-y divide-slate-200"></tbody>
                             </table>
                         </div>
-
                         <div class="mt-3 space-y-2">
                             <div class="flex justify-between items-center p-2 bg-slate-50 rounded-lg border border-dashed font-medium text-slate-500 text-xs">
-                                <span>IMPUESTO COMPRAS (16%):</span>
-                                <span id="impuesto-carrito-ingreso">$ 0.00</span>
+                                <span>IMPUESTO COMPRAS (16%):</span><span id="impuesto-carrito-ingreso">$ 0.00</span>
                             </div>
                             <div class="flex justify-between items-center p-2 bg-slate-100 rounded-lg border font-bold text-slate-700">
-                                <span>TOTAL FACTURA COMPRA:</span>
-                                <span id="total-carrito-ingreso" class="text-base text-emerald-600">$ 0.00</span>
+                                <span>TOTAL FACTURA COMPRA:</span><span id="total-carrito-ingreso" class="text-base text-emerald-600">$ 0.00</span>
                             </div>
                         </div>
                     </div>
                 </div>
-
                 <div class="grid grid-cols-2 gap-3 mt-4 pt-2">
-                    <button type="button" id="btn-cancelar-ingreso" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold py-2.5 rounded-lg transition-colors">
-                        Cancelar Ingreso
-                    </button>
-                    <button type="button" id="btn-procesar-ingreso" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 rounded-lg transition-colors shadow-sm">
-                        ✔ Procesar Entrada / Carga
-                    </button>
+                    <button type="button" id="btn-cancelar-ingreso" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold py-2.5 rounded-lg transition-colors">Cancelar Ingreso</button>
+                    <button type="button" id="btn-procesar-ingreso" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 rounded-lg transition-colors shadow-sm">✔ Procesar Entrada / Carga</button>
                 </div>
             </section>
 
             <section class="bg-white p-6 rounded-xl shadow-md border-t-4 border-rose-500 flex flex-col justify-between">
                 <div>
-                    <h2 class="text-lg font-bold text-rose-700 mb-4 flex items-center gap-2">
-                        📤 Punto de Venta (Salidas)
-                    </h2>
+                    <h2 class="text-lg font-bold text-rose-700 mb-4 flex items-center gap-2">📤 Punto de Venta (Salidas)</h2>
                     <form id="form-egreso" class="space-y-4">
-                        
                         <div>
                             <label class="block text-sm font-semibold text-slate-600">Código de Barras / ID</label>
                             <div class="flex gap-2 mt-1">
                                 <input type="text" id="egreso-codigo" list="lista-codigos-egreso" required placeholder="Escribe o busca un código" autocomplete="off" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-rose-400 outline-none">
-                                <button type="button" onclick="abrirScanner('egreso-codigo')" class="bg-rose-100 text-rose-700 hover:bg-rose-200 px-3 rounded-lg border border-rose-200 transition-colors" title="Escanear con cámara">
-                                    📷
-                                </button>
+                                <button type="button" onclick="abrirScanner('egreso-codigo')" class="bg-rose-100 text-rose-700 hover:bg-rose-200 px-3 rounded-lg border border-rose-200 transition-colors" title="Escanear con cámara">📷</button>
                             </div>
                         </div>
-
                         <div>
                             <label class="block text-sm font-semibold text-slate-600">Artículo / Descripción</label>
                             <input type="text" id="egreso-articulo" list="lista-articulos-egreso" required placeholder="Escribe o busca un artículo" autocomplete="off" class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-rose-400 outline-none">
                             <datalist id="lista-articulos-egreso"></datalist>
                         </div>
-                        
                         <datalist id="lista-codigos-egreso"></datalist>
-                        
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-sm font-semibold text-slate-600">Cantidad</label>
@@ -211,58 +160,36 @@
                             <div>
                                 <div class="flex justify-between items-center">
                                     <label class="block text-sm font-semibold text-slate-600" id="label-precio-venta">Precio Venta (u)($)</label>
-                                    <button type="button" onclick="sugerirPrecioGanancia()" class="text-[10px] text-indigo-600 hover:text-indigo-800 font-bold underline bg-indigo-50 px-1.5 py-0.5 rounded" title="Calcula precio con 30% de margen sobre el precio de venta">
-                                        +30% Margen
-                                    </button>
+                                    <button type="button" onclick="sugerirPrecioGanancia()" class="text-[10px] text-indigo-600 hover:text-indigo-800 font-bold underline bg-indigo-50 px-1.5 py-0.5 rounded" title="Calcula precio con 30% de margen sobre el precio de venta">+30% Margen</button>
                                 </div>
                                 <input type="number" id="egreso-precio" step="0.01" min="0" required class="w-full mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-rose-400 outline-none">
                             </div>
                         </div>
-                        
-                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2.5 rounded-lg transition-colors shadow-sm mt-2">
-                            ➕ Añadir a la Venta Actual
-                        </button>
+                        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2.5 rounded-lg transition-colors shadow-sm mt-2">➕ Añadir a la Venta Actual</button>
                     </form>
-
                     <div class="mt-6 pt-4 border-t border-slate-100">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">🛒 Lista de productos a vender:</h3>
                         <div class="max-h-40 overflow-y-auto border border-slate-200 rounded-lg bg-slate-50">
                             <table class="w-full text-left text-xs text-slate-600">
                                 <thead class="bg-slate-200 text-slate-700 uppercase tracking-wider sticky top-0">
-                                    <tr>
-                                        <th class="p-2">Artículo</th>
-                                        <th class="p-2 text-center">Cant.</th>
-                                        <th class="p-2 text-right">Precio (u)</th>
-                                        <th class="p-2 text-right">Impuesto (u)</th>
-                                        <th class="p-2 text-center">Tipo</th>
-                                        <th class="p-2 text-right">Total c/Imp</th>
-                                        <th class="p-2 text-center"></th>
-                                    </tr>
+                                    <tr><th class="p-2">Artículo</th><th class="p-2 text-center">Cant.</th><th class="p-2 text-right">Precio (u)</th><th class="p-2 text-right">Impuesto (u)</th><th class="p-2 text-center">Tipo</th><th class="p-2 text-right">Total c/Imp</th><th class="p-2 text-center"></th></tr>
                                 </thead>
                                 <tbody id="tabla-carrito" class="divide-y divide-slate-200"></tbody>
                             </table>
                         </div>
-
                         <div class="mt-3 space-y-2">
                             <div class="flex justify-between items-center p-2 bg-slate-50 rounded-lg border border-dashed font-medium text-slate-500 text-xs">
-                                <span>IMPUESTO (16%):</span>
-                                <span id="impuesto-carrito">$ 0.00</span>
+                                <span>IMPUESTO (16%):</span><span id="impuesto-carrito">$ 0.00</span>
                             </div>
                             <div class="flex justify-between items-center p-2 bg-slate-100 rounded-lg border font-bold text-slate-700">
-                                <span>TOTAL DE LA VENTA:</span>
-                                <span id="total-carrito" class="text-base text-rose-600">$ 0.00</span>
+                                <span>TOTAL DE LA VENTA:</span><span id="total-carrito" class="text-base text-rose-600">$ 0.00</span>
                             </div>
                         </div>
                     </div>
                 </div>
-
                 <div class="grid grid-cols-2 gap-3 mt-4 pt-2">
-                    <button type="button" id="btn-cancelar-egreso" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold py-2.5 rounded-lg transition-colors">
-                        Cancelar Compra
-                    </button>
-                    <button type="button" id="btn-procesar-egreso" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold py-2.5 rounded-lg transition-colors shadow-sm">
-                        ✔ Procesar Venta / Salida
-                    </button>
+                    <button type="button" id="btn-cancelar-egreso" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold py-2.5 rounded-lg transition-colors">Cancelar Compra</button>
+                    <button type="button" id="btn-procesar-egreso" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold py-2.5 rounded-lg transition-colors shadow-sm">✔ Procesar Venta / Salida</button>
                 </div>
             </section>
 
@@ -273,50 +200,26 @@
                         <p class="text-xs text-slate-400">Los productos con stock crítico se marcarán automáticamente</p>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap">
-                        <button id="btn-actualizar-tasa" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-1">
-                            🔄 Actualizar Tasa BCV
-                        </button>
-                        <button id="btn-ver-facturas" onclick="mostrarHistorialFacturas()" class="bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-1">
-                            📋 Ver Facturas
-                        </button>
-                        <!-- ✅ NUEVO BOTÓN: Historial por Artículo -->
-                        <button id="btn-historial-articulo" onclick="abrirHistorialArticulo()" class="bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-1">
-                            🔍 Historial por Artículo
-                        </button>
-                        <button id="btn-exportar" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-1">
-                            📧 Exportar y Enviar
-                        </button>
-                        <label for="input-importar" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-colors cursor-pointer flex items-center gap-1">
-                            📂 Importar TXT (Tabulado)
-                        </label>
+                        <button id="btn-actualizar-tasa" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-1">🔄 Actualizar Tasa BCV</button>
+                        <button id="btn-ver-facturas" onclick="mostrarHistorialFacturas()" class="bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-1">📋 Ver Facturas</button>
+                        <button id="btn-historial-articulo" onclick="abrirHistorialArticulo()" class="bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-1">🔍 Historial por Artículo</button>
+                        <button id="btn-exportar" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-colors flex items-center gap-1">📧 Exportar y Enviar</button>
+                        <label for="input-importar" class="bg-blue-500 hover:bg-blue-600 text-white text-xs font-bold px-3 py-2 rounded-lg shadow-sm transition-colors cursor-pointer flex items-center gap-1">📂 Importar TXT (Tabulado)</label>
                         <input type="file" id="input-importar" accept=".txt,.tsv" class="hidden">
-                        <button type="button" onclick="descargarMovimientosTXT()" 
-                                class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md text-xs transition-colors flex items-center gap-2">
-                            <span>📊 Exportar Historial (TXT)</span>
-                        </button>
-                        <button id="btn-limpiar" class="text-xs bg-slate-100 hover:bg-rose-100 text-slate-400 hover:text-rose-600 px-3 py-2 rounded-lg transition-colors">
-                            Borrar Todo
-                        </button>
+                        <button type="button" onclick="descargarMovimientosTXT()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md text-xs transition-colors flex items-center gap-2"><span>📊 Exportar Historial (TXT)</span></button>
+                        <button id="btn-limpiar" class="text-xs bg-slate-100 hover:bg-rose-100 text-slate-400 hover:text-rose-600 px-3 py-2 rounded-lg transition-colors">Borrar Todo</button>
                     </div>
                 </div>
-                
                 <div class="overflow-x-auto">
                     <table class="w-full table-auto border-collapse text-left text-sm text-slate-600">
                         <thead>
                             <tr class="bg-slate-100 text-slate-700 uppercase text-xs tracking-wider border-b">
-                                <th class="p-3">Código</th>
-                                <th class="p-3">Artículo</th>
-                                <th class="p-3 text-center">Stock</th>
-                                <th class="p-3 text-center">Mínimo</th>
-                                <th class="p-3 text-right">Costo Promedio (u)</th>
-                                <th class="p-3 text-right">P. Venta (u)</th>
-                                <th class="p-3 text-center">Estado</th>
+                                <th class="p-3">Código</th><th class="p-3">Artículo</th><th class="p-3 text-center">Stock</th><th class="p-3 text-center">Mínimo</th><th class="p-3 text-right">Costo Promedio (u)</th><th class="p-3 text-right">P. Venta (u)</th><th class="p-3 text-center">Estado</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-inventario" class="divide-y divide-slate-200"></tbody>
                     </table>
                 </div>
-
                 <div class="flex justify-between items-center mt-4 pt-4 border-t border-slate-100">
                     <span id="info-paginacion" class="text-sm text-slate-500 font-medium">Página 1 de 1</span>
                     <div class="inline-flex gap-2">
@@ -335,7 +238,6 @@
                 <h3 class="font-bold text-slate-700 flex items-center gap-2">🧾 Vista Previa de Documento</h3>
                 <button onclick="cerrarFactura()" class="text-rose-500 hover:text-rose-700 font-black text-lg px-2">✕</button>
             </div>
-            
             <div id="area-impresion" class="p-6">
                 <div class="factura-container">
                     <div class="factura-header">
@@ -345,14 +247,10 @@
                         <p class="text-xs mt-1">N° Control: <span id="factura-control" class="font-bold"></span></p>
                         <p class="text-xs">Fecha: <span id="factura-fecha"></span></p>
                     </div>
-
                     <div class="mb-4">
-                        <div class="text-xs font-bold border-b-2 border-slate-300 pb-2 mb-2 flex justify-between">
-                            <span>DETALLE DE ARTÍCULOS</span>
-                        </div>
+                        <div class="text-xs font-bold border-b-2 border-slate-300 pb-2 mb-2 flex justify-between"><span>DETALLE DE ARTÍCULOS</span></div>
                         <div id="factura-items" class="text-xs"></div>
                     </div>
-
                     <div class="factura-total space-y-3 text-sm">
                         <div class="border-b border-dashed border-slate-300 pb-3">
                             <div class="factura-linea-monto">
@@ -363,7 +261,6 @@
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="border-b border-dashed border-slate-300 pb-3">
                             <div class="factura-linea-monto">
                                 <span class="text-slate-600 font-semibold">IMPUESTO (16%):</span>
@@ -373,7 +270,6 @@
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="bg-slate-50 -mx-4 px-4 py-3 border-t-2 border-slate-400">
                             <div class="factura-linea-monto">
                                 <span class="text-lg font-black text-slate-800">TOTAL:</span>
@@ -383,75 +279,69 @@
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="factura-linea-monto text-xs text-slate-500 pt-2 border-t border-dashed">
-                            <span>Tasa BCV aplicada:</span>
-                            <span id="factura-tasa" class="font-semibold">Bs. 0.00</span>
+                            <span>Tasa BCV aplicada:</span><span id="factura-tasa" class="font-semibold">Bs. 0.00</span>
                         </div>
                     </div>
-                    
                     <div class="text-center mt-6 text-xs text-slate-400 border-t border-dashed pt-4">
-                        <p>¡Gracias por su operación!</p>
-                        <p>Documento generado digitalmente</p>
+                        <p>¡Gracias por su operación!</p><p>Documento generado digitalmente</p>
                     </div>
                 </div>
             </div>
-
             <div class="p-4 border-t bg-slate-50 flex gap-3 no-print">
-                <button onclick="window.print()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
-                    🖨️ Imprimir / Guardar PDF
-                </button>
-                <button onclick="cerrarFactura()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition-colors">
-                    Cerrar
-                </button>
+                <button onclick="window.print()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">🖨️ Imprimir / Guardar PDF</button>
+                <button onclick="cerrarFactura()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition-colors">Cerrar</button>
             </div>
         </div>
     </div>
 
-        <!-- ✅ MODAL MEJORADO: HISTORIAL POR ARTÍCULO (con botón de consulta) -->
+    <!-- ✅ MODAL: HISTORIAL DE FACTURAS (ESTE ERA EL QUE FALTABA) -->
+    <div id="modal-historial" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl overflow-hidden my-8">
+            <div class="flex justify-between items-center p-4 border-b bg-violet-600 text-white">
+                <h3 class="font-bold text-lg flex items-center gap-2">📋 Historial de Facturas</h3>
+                <button onclick="cerrarHistorial()" class="text-white hover:text-rose-200 font-black text-lg px-2">✕</button>
+            </div>
+            <div class="p-4 bg-slate-50 border-b">
+                <div class="flex gap-2 flex-wrap">
+                    <input type="text" id="buscar-factura" placeholder="🔍 Buscar por N° Control, fecha o tipo..." oninput="filtrarHistorial()" class="flex-1 min-w-[200px] p-2 border rounded-lg text-sm focus:ring-2 focus:ring-violet-400 outline-none">
+                    <select id="filtro-tipo-factura" onchange="filtrarHistorial()" class="p-2 border rounded-lg text-sm bg-white">
+                        <option value="">Todos los tipos</option>
+                        <option value="Ingreso">Solo Ingresos</option>
+                        <option value="Egreso">Solo Egresos (Ventas)</option>
+                    </select>
+                </div>
+                <div class="mt-2 text-xs text-slate-500"><span id="total-facturas-info">0 facturas encontradas</span></div>
+            </div>
+            <div id="lista-facturas" class="p-4 max-h-[60vh] overflow-y-auto"></div>
+            <div class="p-4 border-t bg-slate-50 flex justify-end">
+                <button onclick="cerrarHistorial()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-6 rounded-lg transition-colors">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ MODAL MEJORADO: HISTORIAL POR ARTÍCULO -->
     <div id="modal-historial-articulo" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden my-8">
             <div class="flex justify-between items-center p-4 border-b bg-cyan-600 text-white">
                 <h3 class="font-bold text-lg flex items-center gap-2">🔍 Historial de Movimientos por Artículo</h3>
                 <button onclick="cerrarHistorialArticulo()" class="text-white hover:text-rose-200 font-black text-lg px-2">✕</button>
             </div>
-            
-            <!-- Paso 1: Selector de artículo -->
             <div id="paso-seleccion" class="p-6">
                 <div class="mb-4">
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Selecciona un artículo para consultar su historial:</label>
                     <div class="flex gap-2">
-                        <input type="text" id="buscar-articulo-historial" list="lista-articulos-historial" 
-                               placeholder="🔍 Escribe el código o nombre del artículo..." 
-                               autocomplete="off"
-                               class="flex-1 p-3 border-2 border-cyan-200 rounded-lg text-sm focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none">
-                        <!-- ✅ NUEVO BOTÓN DE CONSULTA -->
-                        <button id="btn-consultar-articulo" onclick="consultarArticuloHistorial()" 
-                                class="bg-cyan-600 hover:bg-cyan-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap">
-                            🔍 Consultar
-                        </button>
+                        <input type="text" id="buscar-articulo-historial" list="lista-articulos-historial" placeholder="🔍 Escribe el código o nombre del artículo..." autocomplete="off" class="flex-1 p-3 border-2 border-cyan-200 rounded-lg text-sm focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none">
+                        <button id="btn-consultar-articulo" onclick="consultarArticuloHistorial()" class="bg-cyan-600 hover:bg-cyan-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap">🔍 Consultar</button>
                     </div>
                     <datalist id="lista-articulos-historial"></datalist>
                 </div>
-                
-                <div id="sugerencias-articulo" class="max-h-60 overflow-y-auto border border-slate-200 rounded-lg bg-slate-50 hidden">
-                    <!-- Las sugerencias se insertan aquí -->
-                </div>
-                
                 <div class="mt-4 text-xs text-slate-500 italic flex items-center gap-2">
-                    <span>💡</span>
-                    <span>Puedes buscar por código exacto o escribir parte del nombre del artículo. También puedes presionar <kbd class="px-1.5 py-0.5 bg-slate-200 rounded text-[10px] font-mono">Enter</kbd> para consultar.</span>
+                    <span>💡</span><span>Puedes buscar por código exacto o escribir parte del nombre del artículo. También puedes presionar <kbd class="px-1.5 py-0.5 bg-slate-200 rounded text-[10px] font-mono">Enter</kbd> para consultar.</span>
                 </div>
             </div>
-            
-            <!-- Paso 2: Resultados del historial -->
             <div id="paso-resultados" class="hidden">
-                <!-- Resumen estadístico -->
-                <div id="resumen-articulo" class="p-4 bg-gradient-to-r from-cyan-50 to-blue-50 border-b">
-                    <!-- Se llena dinámicamente -->
-                </div>
-                
-                <!-- Tabla de movimientos -->
+                <div id="resumen-articulo" class="p-4 bg-gradient-to-r from-cyan-50 to-blue-50 border-b"></div>
                 <div class="p-4 max-h-[50vh] overflow-y-auto">
                     <div class="flex justify-between items-center mb-3">
                         <h4 class="font-bold text-slate-700">Movimientos registrados</h4>
@@ -460,105 +350,16 @@
                     <div class="overflow-x-auto border border-slate-200 rounded-lg">
                         <table class="w-full text-xs text-slate-600">
                             <thead class="bg-slate-100 text-slate-700 uppercase tracking-wider sticky top-0">
-                                <tr>
-                                    <th class="p-2 text-left">Fecha</th>
-                                    <th class="p-2 text-center">Tipo</th>
-                                    <th class="p-2 text-center">Cant.</th>
-                                    <th class="p-2 text-right">Precio Unit.</th>
-                                    <th class="p-2 text-right">Total</th>
-                                    <th class="p-2 text-center">N° Control</th>
-                                </tr>
+                                <tr><th class="p-2 text-left">Fecha</th><th class="p-2 text-center">Tipo</th><th class="p-2 text-center">Cant.</th><th class="p-2 text-right">Precio Unit.</th><th class="p-2 text-right">Total</th><th class="p-2 text-center">N° Control</th></tr>
                             </thead>
                             <tbody id="tabla-historial-articulo" class="divide-y divide-slate-200"></tbody>
                         </table>
                     </div>
                 </div>
-                
-                <!-- Botones de acción -->
                 <div class="p-4 border-t bg-slate-50 flex gap-3 flex-wrap">
-                    <button onclick="volverASeleccion()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition-colors">
-                        ← Buscar otro artículo
-                    </button>
-                    <button onclick="exportarHistorialArticuloTXT()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
-                        📊 Exportar Historial a TXT
-                    </button>
-                    <button onclick="cerrarHistorialArticulo()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition-colors">
-                        Cerrar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ✅ NUEVO MODAL: HISTORIAL POR ARTÍCULO -->
-    <div id="modal-historial-articulo" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden my-8">
-            <div class="flex justify-between items-center p-4 border-b bg-cyan-600 text-white">
-                <h3 class="font-bold text-lg flex items-center gap-2">🔍 Historial de Movimientos por Artículo</h3>
-                <button onclick="cerrarHistorialArticulo()" class="text-white hover:text-rose-200 font-black text-lg px-2">✕</button>
-            </div>
-            
-            <!-- Paso 1: Selector de artículo -->
-            <div id="paso-seleccion" class="p-6">
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Selecciona un artículo para consultar su historial:</label>
-                    <input type="text" id="buscar-articulo-historial" list="lista-articulos-historial" 
-                           placeholder="🔍 Escribe el código o nombre del artículo..." 
-                           autocomplete="off"
-                           class="w-full p-3 border-2 border-cyan-200 rounded-lg text-sm focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 outline-none">
-                    <datalist id="lista-articulos-historial"></datalist>
-                </div>
-                
-                <div id="sugerencias-articulo" class="max-h-60 overflow-y-auto border border-slate-200 rounded-lg bg-slate-50 hidden">
-                    <!-- Las sugerencias se insertan aquí -->
-                </div>
-                
-                <div class="mt-4 text-xs text-slate-500 italic">
-                    💡 Puedes buscar por código exacto o escribir parte del nombre del artículo.
-                </div>
-            </div>
-            
-            <!-- Paso 2: Resultados del historial -->
-            <div id="paso-resultados" class="hidden">
-                <!-- Resumen estadístico -->
-                <div id="resumen-articulo" class="p-4 bg-gradient-to-r from-cyan-50 to-blue-50 border-b">
-                    <!-- Se llena dinámicamente -->
-                </div>
-                
-                <!-- Tabla de movimientos -->
-                <div class="p-4 max-h-[50vh] overflow-y-auto">
-                    <div class="flex justify-between items-center mb-3">
-                        <h4 class="font-bold text-slate-700">Movimientos registrados</h4>
-                        <span id="total-movimientos-info" class="text-xs text-slate-500">0 movimientos</span>
-                    </div>
-                    <div class="overflow-x-auto border border-slate-200 rounded-lg">
-                        <table class="w-full text-xs text-slate-600">
-                            <thead class="bg-slate-100 text-slate-700 uppercase tracking-wider sticky top-0">
-                                <tr>
-                                    <th class="p-2 text-left">Fecha</th>
-                                    <th class="p-2 text-center">Tipo</th>
-                                    <th class="p-2 text-center">Cant.</th>
-                                    <th class="p-2 text-right">Precio Unit.</th>
-                                    <th class="p-2 text-right">Total</th>
-                                    <th class="p-2 text-center">N° Control</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabla-historial-articulo" class="divide-y divide-slate-200"></tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <!-- Botones de acción -->
-                <div class="p-4 border-t bg-slate-50 flex gap-3 flex-wrap">
-                    <button onclick="volverASeleccion()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition-colors">
-                        ← Buscar otro artículo
-                    </button>
-                    <button onclick="exportarHistorialArticuloTXT()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
-                        📊 Exportar Historial a TXT
-                    </button>
-                    <button onclick="cerrarHistorialArticulo()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition-colors">
-                        Cerrar
-                    </button>
+                    <button onclick="volverASeleccion()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition-colors">← Buscar otro artículo</button>
+                    <button onclick="exportarHistorialArticuloTXT()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">📊 Exportar Historial a TXT</button>
+                    <button onclick="cerrarHistorialArticulo()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg transition-colors">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -575,36 +376,13 @@
         let monedaSeleccionada = localStorage.getItem('moneda_seleccionada') || 'VES';
         const itemsPorPagina = 10;
         const MARGEN_GANANCIA = 0.30;
-        
-        // ✅ Variable global para el artículo seleccionado en el historial
         let articuloHistorialSeleccionado = null;
 
-        const formatoMoneda = (numero) => {
-            return numero.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        };
-
-        const formatoDecimal = (numero, decimales = 2) => {
-            if (numero === null || numero === undefined || isNaN(numero)) return '';
-            return numero.toFixed(decimales).replace('.', ',');
-        };
-
-        const convertirAVES = (montoUSD, tasa = tasaBCV) => {
-            if (!tasa || tasa === 0) return 0;
-            return montoUSD * tasa;
-        };
-
-        const convertirAUSD = (montoVES) => {
-            if (tasaBCV === 0) return 0;
-            return montoVES / tasaBCV;
-        };
-
-        const formatearMoneda = (montoUSD) => {
-            if (monedaSeleccionada === 'VES') {
-                return `Bs. ${formatoMoneda(convertirAVES(montoUSD))}`;
-            }
-            return `$ ${formatoMoneda(montoUSD)}`;
-        };
-
+        const formatoMoneda = (numero) => numero.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const formatoDecimal = (numero, decimales = 2) => (numero === null || numero === undefined || isNaN(numero)) ? '' : numero.toFixed(decimales).replace('.', ',');
+        const convertirAVES = (montoUSD, tasa = tasaBCV) => (!tasa || tasa === 0) ? 0 : montoUSD * tasa;
+        const convertirAUSD = (montoVES) => (tasaBCV === 0) ? 0 : montoVES / tasaBCV;
+        const formatearMoneda = (montoUSD) => monedaSeleccionada === 'VES' ? `Bs. ${formatoMoneda(convertirAVES(montoUSD))}` : `$ ${formatoMoneda(montoUSD)}`;
         const simboloMoneda = () => monedaSeleccionada === 'VES' ? 'Bs.' : '$';
 
         // Elementos DOM
@@ -675,416 +453,31 @@
                 div.innerHTML = `
                     <div class="font-bold text-slate-800 mb-2">${idx + 1}. ${item.articulo}</div>
                     <div class="grid grid-cols-3 gap-2 text-[11px]">
-                        <div>
-                            <div class="text-slate-400">Cantidad:</div>
-                            <div class="font-semibold text-slate-700">${item.cantidad} u</div>
-                        </div>
-                        <div>
-                            <div class="text-slate-400">Precio Unit.:</div>
-                            <div class="text-slate-400 text-[10px]">$${formatoMoneda(precioUnitario)}</div>
-                            <div class="font-bold text-slate-800">Bs.${formatoMoneda(precioUnitarioVES)}</div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-slate-400">Total:</div>
-                            <div class="text-slate-400 text-[10px]">$${formatoMoneda(totalItem)}</div>
-                            <div class="font-bold text-slate-800">Bs.${formatoMoneda(totalItemVES)}</div>
-                        </div>
-                    </div>
-                `;
+                        <div><div class="text-slate-400">Cantidad:</div><div class="font-semibold text-slate-700">${item.cantidad} u</div></div>
+                        <div><div class="text-slate-400">Precio Unit.:</div><div class="text-slate-400 text-[10px]">$${formatoMoneda(precioUnitario)}</div><div class="font-bold text-slate-800">Bs.${formatoMoneda(precioUnitarioVES)}</div></div>
+                        <div class="text-right"><div class="text-slate-400">Total:</div><div class="text-slate-400 text-[10px]">$${formatoMoneda(totalItem)}</div><div class="font-bold text-slate-800">Bs.${formatoMoneda(totalItemVES)}</div></div>
+                    </div>`;
                 contenedorItems.appendChild(div);
             });
 
-            const subtotalVES = convertirAVES(subtotal, tasaUsada);
-            const impuestoVES = convertirAVES(impuesto, tasaUsada);
-            const totalVES = convertirAVES(total, tasaUsada);
-
             document.getElementById('factura-subtotal-usd').textContent = `$ ${formatoMoneda(subtotal)}`;
-            document.getElementById('factura-subtotal-ves').textContent = `Bs. ${formatoMoneda(subtotalVES)}`;
+            document.getElementById('factura-subtotal-ves').textContent = `Bs. ${formatoMoneda(convertirAVES(subtotal, tasaUsada))}`;
             document.getElementById('factura-impuesto-usd').textContent = `$ ${formatoMoneda(impuesto)}`;
-            document.getElementById('factura-impuesto-ves').textContent = `Bs. ${formatoMoneda(impuestoVES)}`;
+            document.getElementById('factura-impuesto-ves').textContent = `Bs. ${formatoMoneda(convertirAVES(impuesto, tasaUsada))}`;
             document.getElementById('factura-total-usd').textContent = `$ ${formatoMoneda(total)}`;
-            document.getElementById('factura-total-ves').textContent = `Bs. ${formatoMoneda(totalVES)}`;
-            
+            document.getElementById('factura-total-ves').textContent = `Bs. ${formatoMoneda(convertirAVES(total, tasaUsada))}`;
             document.getElementById('modal-factura').classList.remove('hidden');
         }
 
-        function cerrarFactura() {
-            document.getElementById('modal-factura').classList.add('hidden');
-        }
+        function cerrarFactura() { document.getElementById('modal-factura').classList.add('hidden'); }
 
-        // ✅ NUEVAS FUNCIONES: Historial por Artículo
-        function abrirHistorialArticulo() {
-            if (Object.keys(inventario).length === 0) {
-                alert('⚠️ No hay artículos registrados en el inventario.');
-                return;
-            }
-            
-            // Llenar datalist con todos los artículos
-            const datalist = document.getElementById('lista-articulos-historial');
-            datalist.innerHTML = '';
-            Object.keys(inventario).forEach(codigo => {
-                const opt = document.createElement('option');
-                opt.value = `${codigo} - ${inventario[codigo].articulo}`;
-                datalist.appendChild(opt);
-            });
-            
-            document.getElementById('buscar-articulo-historial').value = '';
-            document.getElementById('paso-seleccion').classList.remove('hidden');
-            document.getElementById('paso-resultados').classList.add('hidden');
-            document.getElementById('modal-historial-articulo').classList.remove('hidden');
-            
-            setTimeout(() => document.getElementById('buscar-articulo-historial').focus(), 100);
-        }
-
-                // ✅ NUEVA FUNCIÓN CENTRALIZADA: Consulta el historial del artículo
-        function consultarArticuloHistorial() {
-            const inputBusqueda = document.getElementById('buscar-articulo-historial');
-            const valor = inputBusqueda.value.trim();
-            
-            if (!valor) {
-                alert('⚠️ Por favor, ingresa un código o nombre de artículo para consultar.');
-                inputBusqueda.focus();
-                return;
-            }
-            
-            // Extraer código (formato: "CODIGO - Nombre")
-            let codigo = valor;
-            if (valor.includes(' - ')) {
-                codigo = valor.split(' - ')[0].trim();
-            }
-            
-            // Buscar por código exacto o por nombre
-            let codigoEncontrado = null;
-            if (inventario[codigo]) {
-                codigoEncontrado = codigo;
-            } else {
-                // Buscar por nombre (coincidencia exacta o parcial)
-                const nombreBuscado = valor.toLowerCase();
-                codigoEncontrado = Object.keys(inventario).find(c => 
-                    inventario[c].articulo.toLowerCase() === nombreBuscado ||
-                    inventario[c].articulo.toLowerCase().includes(nombreBuscado)
-                );
-            }
-            
-            if (codigoEncontrado) {
-                mostrarHistorialDeArticulo(codigoEncontrado);
-            } else {
-                alert('❌ No se encontró ningún artículo con ese código o nombre.\n\nVerifica que esté registrado en el inventario.');
-                inputBusqueda.focus();
-                inputBusqueda.select();
-            }
-        }
-
-        // ✅ NUEVA FUNCIÓN CENTRALIZADA: Consulta el historial del artículo
-        function consultarArticuloHistorial() {
-            const inputBusqueda = document.getElementById('buscar-articulo-historial');
-            const valor = inputBusqueda.value.trim();
-            
-            if (!valor) {
-                alert('⚠️ Por favor, ingresa un código o nombre de artículo para consultar.');
-                inputBusqueda.focus();
-                return;
-            }
-            
-            // Extraer código (formato: "CODIGO - Nombre")
-            let codigo = valor;
-            if (valor.includes(' - ')) {
-                codigo = valor.split(' - ')[0].trim();
-            }
-            
-            // Buscar por código exacto o por nombre
-            let codigoEncontrado = null;
-            if (inventario[codigo]) {
-                codigoEncontrado = codigo;
-            } else {
-                // Buscar por nombre (coincidencia exacta o parcial)
-                const nombreBuscado = valor.toLowerCase();
-                codigoEncontrado = Object.keys(inventario).find(c => 
-                    inventario[c].articulo.toLowerCase() === nombreBuscado ||
-                    inventario[c].articulo.toLowerCase().includes(nombreBuscado)
-                );
-            }
-            
-            if (codigoEncontrado) {
-                mostrarHistorialDeArticulo(codigoEncontrado);
-            } else {
-                alert('❌ No se encontró ningún artículo con ese código o nombre.\n\nVerifica que esté registrado en el inventario.');
-                inputBusqueda.focus();
-                inputBusqueda.select();
-            }
-        }
-
-        // ✅ Event listeners para el input de búsqueda
-        document.addEventListener('DOMContentLoaded', () => {
-            const inputBusqueda = document.getElementById('buscar-articulo-historial');
-            const btnConsultar = document.getElementById('btn-consultar-articulo');
-            
-            if (inputBusqueda) {
-                // Habilitar/deshabilitar botón según si hay texto
-                inputBusqueda.addEventListener('input', () => {
-                    const tieneTexto = inputBusqueda.value.trim().length > 0;
-                    if (btnConsultar) {
-                        btnConsultar.disabled = !tieneTexto;
-                    }
-                });
-                
-                // Consultar al presionar Enter
-                inputBusqueda.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        consultarArticuloHistorial();
-                    }
-                });
-                
-                // Consultar al seleccionar del datalist (evento change)
-                inputBusqueda.addEventListener('change', () => {
-                    if (inputBusqueda.value.trim()) {
-                        consultarArticuloHistorial();
-                    }
-                });
-            }
-        });
-
-        function mostrarHistorialDeArticulo(codigo) {
-            const articulo = inventario[codigo];
-            if (!articulo) {
-                alert('❌ Artículo no encontrado.');
-                return;
-            }
-            
-            articuloHistorialSeleccionado = codigo;
-            
-            // Filtrar transacciones de este artículo
-            const movimientos = transacciones.filter(t => t.codigo === codigo);
-            
-            // Calcular estadísticas
-            let totalComprado = 0, unidadesCompradas = 0;
-            let totalVendido = 0, unidadesVendidas = 0;
-            let gananciaGenerada = 0;
-            
-            movimientos.forEach(m => {
-                if (m.tipo === 'Ingreso') {
-                    unidadesCompradas += m.cantidad;
-                    totalComprado += (m.cantidad * (m.precioCompra || 0));
-                } else if (m.tipo === 'Egreso') {
-                    unidadesVendidas += m.cantidad;
-                    totalVendido += (m.cantidad * (m.precioVenta || 0));
-                    gananciaGenerada += (m.cantidad * ((m.precioVenta || 0) - (m.precioCompra || 0)));
-                }
-            });
-            
-            const stockActual = articulo.cantidad;
-            const cpp = articulo.precioCompra || 0;
-            const precioVenta = articulo.precioVenta || 0;
-            const valorInventario = stockActual * cpp;
-            
-            // Mostrar resumen
-            const resumen = document.getElementById('resumen-articulo');
-            resumen.innerHTML = `
-                <div class="flex justify-between items-start flex-wrap gap-4">
-                    <div class="flex-1 min-w-[250px]">
-                        <h4 class="text-lg font-black text-slate-800">${articulo.articulo}</h4>
-                        <p class="text-xs text-slate-500 font-mono">Código: ${codigo}</p>
-                        <div class="mt-2 flex gap-2 flex-wrap">
-                            <span class="px-2 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800">Stock: ${stockActual} u</span>
-                            <span class="px-2 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">CPP: $ ${formatoMoneda(cpp)}</span>
-                            ${precioVenta ? `<span class="px-2 py-1 rounded-full text-xs font-bold bg-violet-100 text-violet-800">P. Venta: $ ${formatoMoneda(precioVenta)}</span>` : ''}
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3 text-xs">
-                        <div class="bg-white rounded-lg p-2 border border-emerald-200">
-                            <div class="text-slate-500">Total Comprado</div>
-                            <div class="font-black text-emerald-700">$ ${formatoMoneda(totalComprado)}</div>
-                            <div class="text-slate-400">${unidadesCompradas} u</div>
-                        </div>
-                        <div class="bg-white rounded-lg p-2 border border-rose-200">
-                            <div class="text-slate-500">Total Vendido</div>
-                            <div class="font-black text-rose-700">$ ${formatoMoneda(totalVendido)}</div>
-                            <div class="text-slate-400">${unidadesVendidas} u</div>
-                        </div>
-                        <div class="bg-white rounded-lg p-2 border border-violet-200">
-                            <div class="text-slate-500">Ganancia Generada</div>
-                            <div class="font-black text-violet-700">$ ${formatoMoneda(gananciaGenerada)}</div>
-                            <div class="text-slate-400">Bs. ${formatoMoneda(convertirAVES(gananciaGenerada))}</div>
-                        </div>
-                        <div class="bg-white rounded-lg p-2 border border-blue-200">
-                            <div class="text-slate-500">Valor Inventario</div>
-                            <div class="font-black text-blue-700">$ ${formatoMoneda(valorInventario)}</div>
-                            <div class="text-slate-400">Bs. ${formatoMoneda(convertirAVES(valorInventario))}</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // Llenar tabla de movimientos
-            const tbody = document.getElementById('tabla-historial-articulo');
-            tbody.innerHTML = '';
-            
-            if (movimientos.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">No hay movimientos registrados para este artículo.</td></tr>`;
-            } else {
-                // Ordenar por fecha (más reciente primero)
-                const movsOrdenados = [...movimientos].reverse();
-                
-                movsOrdenados.forEach(m => {
-                    const esIngreso = m.tipo === 'Ingreso';
-                    const precio = esIngreso ? (m.precioCompra || 0) : (m.precioVenta || 0);
-                    const total = m.cantidad * precio;
-                    const totalVES = convertirAVES(total, m.tasaBCV || tasaBCV);
-                    
-                    const fila = document.createElement('tr');
-                    fila.className = esIngreso ? 'hover:bg-emerald-50' : 'hover:bg-rose-50';
-                    fila.innerHTML = `
-                        <td class="p-2 text-xs">${m.fecha}</td>
-                        <td class="p-2 text-center">
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${esIngreso ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
-                                ${esIngreso ? '📥 INGRESO' : '📤 VENTA'}
-                            </span>
-                        </td>
-                        <td class="p-2 text-center font-bold">${m.cantidad} u</td>
-                        <td class="p-2 text-right">
-                            <div class="text-slate-400 text-[10px]">$ ${formatoMoneda(precio)}</div>
-                            <div class="font-semibold text-slate-700 text-xs">Bs. ${formatoMoneda(convertirAVES(precio, m.tasaBCV || tasaBCV))}</div>
-                        </td>
-                        <td class="p-2 text-right">
-                            <div class="text-slate-400 text-[10px]">$ ${formatoMoneda(total)}</div>
-                            <div class="font-bold text-slate-800 text-xs">Bs. ${formatoMoneda(totalVES)}</div>
-                        </td>
-                        <td class="p-2 text-center font-mono text-[10px]">${m.numeroControl || 'N/A'}</td>
-                    `;
-                    tbody.appendChild(fila);
-                });
-            }
-            
-            document.getElementById('total-movimientos-info').textContent = `${movimientos.length} movimiento(s) encontrado(s)`;
-            
-            // Cambiar de paso
-            document.getElementById('paso-seleccion').classList.add('hidden');
-            document.getElementById('paso-resultados').classList.remove('hidden');
-        }
-
-        function volverASeleccion() {
-            document.getElementById('paso-seleccion').classList.remove('hidden');
-            document.getElementById('paso-resultados').classList.add('hidden');
-            document.getElementById('buscar-articulo-historial').value = '';
-            articuloHistorialSeleccionado = null;
-            setTimeout(() => document.getElementById('buscar-articulo-historial').focus(), 100);
-        }
-
-        function cerrarHistorialArticulo() {
-            document.getElementById('modal-historial-articulo').classList.add('hidden');
-            articuloHistorialSeleccionado = null;
-        }
-
-        // ✅ Exportar historial de un artículo específico a TXT
-        function exportarHistorialArticuloTXT() {
-            if (!articuloHistorialSeleccionado || !inventario[articuloHistorialSeleccionado]) {
-                alert('❌ No hay artículo seleccionado.');
-                return;
-            }
-            
-            const codigo = articuloHistorialSeleccionado;
-            const articulo = inventario[codigo];
-            const movimientos = transacciones.filter(t => t.codigo === codigo);
-            
-            if (movimientos.length === 0) {
-                alert('⚠️ No hay movimientos para exportar.');
-                return;
-            }
-            
-            // Generar contenido TXT con el mismo formato que el general
-            let txtContent = `# HISTORIAL DEL ARTÍCULO: ${articulo.articulo}\n`;
-            txtContent += `# Código: ${codigo}\n`;
-            txtContent += `# Fecha de generación: ${new Date().toLocaleString('es-ES')}\n`;
-            txtContent += `# Total de movimientos: ${movimientos.length}\n`;
-            txtContent += `# ========================================\n\n`;
-            
-            txtContent += "Fecha\tHora\tTipo de Movimiento\tCódigo\tArtículo\tCantidad Entrada\tCantidad Salida\tPrecio USD\tPrecio VES\tExento\tStock Minimo\tImpuesto USD\tImpuesto VES\tTasa BCV\tCPP USD\tCPP VES\tStock Resultante\tN° Control\tTotal USD\tTotal VES\n";
-
-            movimientos.forEach(item => {
-                const esIngreso = item.tipo === 'Ingreso';
-                const esEgreso = item.tipo === 'Egreso';
-                
-                const cantidadEntrada = esIngreso ? item.cantidad : 0;
-                const cantidadSalida = esEgreso ? item.cantidad : 0;
-                const precioUSD = esIngreso ? (item.precioCompra || 0) : (item.precioVenta || 0);
-                
-                const tasaUsada = item.tasaBCV || tasaBCV || 0;
-                const precioVES = convertirAVES(precioUSD, tasaUsada);
-                
-                const totalLineaUSD = item.cantidad * precioUSD;
-                let montoImpuestoUSD = 0;
-                if (item.exento !== true) montoImpuestoUSD = totalLineaUSD * 0.16;
-                
-                const montoImpuestoVES = convertirAVES(montoImpuestoUSD, tasaUsada);
-                const totalLineaVES = convertirAVES(totalLineaUSD, tasaUsada);
-
-                const cppUSD = item.cppResultante || 0;
-                const cppVES = convertirAVES(cppUSD, tasaUsada);
-
-                let fechaPura = item.fecha;
-                let horaPura = "";
-                if (item.fecha.includes(",")) {
-                    let partes = item.fecha.split(",");
-                    fechaPura = partes[0].trim();
-                    horaPura = partes[1].trim();
-                } else if (item.fecha.includes(" ")) {
-                    let partes = item.fecha.split(" ");
-                    fechaPura = partes[0].trim();
-                    horaPura = partes[1].trim();
-                }
-
-                const fila = [
-                    fechaPura, horaPura, item.tipo, item.codigo, item.articulo, 
-                    cantidadEntrada, cantidadSalida, 
-                    formatoDecimal(precioUSD), formatoDecimal(precioVES),
-                    item.exento ? "Si" : "No", item.stockMinimo || 3,
-                    formatoDecimal(montoImpuestoUSD), formatoDecimal(montoImpuestoVES),
-                    formatoDecimal(tasaUsada), formatoDecimal(cppUSD), formatoDecimal(cppVES),
-                    item.stockResultante !== undefined ? item.stockResultante : '',
-                    item.numeroControl || 'N/A',
-                    formatoDecimal(totalLineaUSD),
-                    formatoDecimal(totalLineaVES)
-                ];
-                
-                txtContent += fila.join("\t") + "\n";
-            });
-
-            const nombreArchivo = `Historial_${articulo.articulo.replace(/[^a-zA-Z0-9]/g, '_')}_${codigo}_${new Date().toLocaleDateString('es-ES').replace(/\//g, '-')}.txt`;
-            const blob = new Blob(["\uFEFF" + txtContent], { type: 'text/plain;charset=utf-8;' });
-            const archivoTXT = new File([blob], nombreArchivo, { type: 'text/plain' });
-
-            const esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-            if (esMovil && navigator.canShare && navigator.canShare({ files: [archivoTXT] })) {
-                navigator.share({
-                    files: [archivoTXT],
-                    title: `Historial ${articulo.articulo}`,
-                    text: `Historial de movimientos del artículo ${articulo.articulo}`
-                }).catch(() => console.log("Compartir cancelado"));
-            } else {
-                if (esMovil) alert("Tu navegador móvil no soporta el envío directo. Iniciando descarga...");
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement("a");
-                link.setAttribute("href", url);
-                link.setAttribute("download", nombreArchivo);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-        }
-
-        // Funciones del historial de facturas (existentes)
+        // --- FUNCIONES HISTORIAL DE FACTURAS ---
         function agruparFacturas() {
             const facturas = {};
             transacciones.forEach(t => {
                 const nc = t.numeroControl || 'SIN-CONTROL';
                 if (!facturas[nc]) {
-                    facturas[nc] = {
-                        numeroControl: nc, tipo: t.tipo, fecha: t.fecha,
-                        tasaBCV: t.tasaBCV || tasaBCV, items: [],
-                        subtotal: 0, impuesto: 0, total: 0
-                    };
+                    facturas[nc] = { numeroControl: nc, tipo: t.tipo, fecha: t.fecha, tasaBCV: t.tasaBCV || tasaBCV, items: [], subtotal: 0, impuesto: 0, total: 0 };
                 }
                 facturas[nc].items.push(t);
                 const precio = t.tipo === 'Ingreso' ? (t.precioCompra || 0) : (t.precioVenta || 0);
@@ -1094,18 +487,12 @@
                 facturas[nc].impuesto += impuestoLinea;
                 facturas[nc].total += subtotalLinea + impuestoLinea;
             });
-            return Object.values(facturas).sort((a, b) => {
-                return new Date(b.fecha.split(',')[0].split('/').reverse().join('-')) - 
-                       new Date(a.fecha.split(',')[0].split('/').reverse().join('-'));
-            });
+            return Object.values(facturas).sort((a, b) => new Date(b.fecha.split(',')[0].split('/').reverse().join('-')) - new Date(a.fecha.split(',')[0].split('/').reverse().join('-')));
         }
 
         function mostrarHistorialFacturas() {
             const facturas = agruparFacturas();
-            if (facturas.length === 0) {
-                alert('⚠️ No hay facturas registradas en el historial.');
-                return;
-            }
+            if (facturas.length === 0) { alert('⚠️ No hay facturas registradas en el historial.'); return; }
             document.getElementById('buscar-factura').value = '';
             document.getElementById('filtro-tipo-factura').value = '';
             renderizarListaFacturas(facturas);
@@ -1135,8 +522,7 @@
                     <div class="flex justify-between items-start gap-3">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-2">
-                                <span class="text-xl">${icono}</span>
-                                <span class="font-bold text-slate-800">${tipoTexto}</span>
+                                <span class="text-xl">${icono}</span><span class="font-bold text-slate-800">${tipoTexto}</span>
                                 <span class="px-2 py-0.5 rounded-full text-xs font-bold ${colorBadge}">${f.items.length} artículo(s)</span>
                             </div>
                             <div class="text-xs text-slate-500 space-y-1">
@@ -1148,13 +534,9 @@
                         <div class="text-right">
                             <div class="text-xs text-slate-400">$ ${formatoMoneda(f.total)}</div>
                             <div class="text-lg font-black text-emerald-700">Bs. ${formatoMoneda(totalVES)}</div>
-                            <button onclick="event.stopPropagation(); verFacturaDetalle('${f.numeroControl}')" 
-                                    class="mt-2 text-xs bg-violet-100 hover:bg-violet-200 text-violet-700 font-bold px-3 py-1 rounded transition-colors">
-                                👁️ Ver Detalle
-                            </button>
+                            <button onclick="event.stopPropagation(); verFacturaDetalle('${f.numeroControl}')" class="mt-2 text-xs bg-violet-100 hover:bg-violet-200 text-violet-700 font-bold px-3 py-1 rounded transition-colors">👁️ Ver Detalle</button>
                         </div>
-                    </div>
-                `;
+                    </div>`;
                 contenedor.appendChild(div);
             });
         }
@@ -1164,14 +546,7 @@
             const tipo = document.getElementById('filtro-tipo-factura').value;
             let facturas = agruparFacturas();
             if (tipo) facturas = facturas.filter(f => f.tipo === tipo);
-            if (texto) {
-                facturas = facturas.filter(f => 
-                    f.numeroControl.toLowerCase().includes(texto) ||
-                    f.fecha.toLowerCase().includes(texto) ||
-                    f.tipo.toLowerCase().includes(texto) ||
-                    f.items.some(item => item.articulo.toLowerCase().includes(texto))
-                );
-            }
+            if (texto) facturas = facturas.filter(f => f.numeroControl.toLowerCase().includes(texto) || f.fecha.toLowerCase().includes(texto) || f.tipo.toLowerCase().includes(texto) || f.items.some(item => item.articulo.toLowerCase().includes(texto)));
             renderizarListaFacturas(facturas);
         }
 
@@ -1183,10 +558,165 @@
             mostrarFactura(tipoFactura, factura.items, factura.subtotal, factura.impuesto, factura.total, factura.numeroControl, factura.tasaBCV);
         }
 
-        function cerrarHistorial() {
-            document.getElementById('modal-historial').classList.add('hidden');
+        function cerrarHistorial() { document.getElementById('modal-historial').classList.add('hidden'); }
+
+        // --- FUNCIONES HISTORIAL POR ARTÍCULO ---
+        function abrirHistorialArticulo() {
+            if (Object.keys(inventario).length === 0) { alert('⚠️ No hay artículos registrados en el inventario.'); return; }
+            const datalist = document.getElementById('lista-articulos-historial');
+            datalist.innerHTML = '';
+            Object.keys(inventario).forEach(codigo => {
+                const opt = document.createElement('option');
+                opt.value = `${codigo} - ${inventario[codigo].articulo}`;
+                datalist.appendChild(opt);
+            });
+            document.getElementById('buscar-articulo-historial').value = '';
+            document.getElementById('paso-seleccion').classList.remove('hidden');
+            document.getElementById('paso-resultados').classList.add('hidden');
+            document.getElementById('modal-historial-articulo').classList.remove('hidden');
+            setTimeout(() => document.getElementById('buscar-articulo-historial').focus(), 100);
         }
 
+        function consultarArticuloHistorial() {
+            const inputBusqueda = document.getElementById('buscar-articulo-historial');
+            const valor = inputBusqueda.value.trim();
+            if (!valor) { alert('⚠️ Por favor, ingresa un código o nombre de artículo para consultar.'); inputBusqueda.focus(); return; }
+            
+            let codigo = valor.includes(' - ') ? valor.split(' - ')[0].trim() : valor;
+            let codigoEncontrado = inventario[codigo] ? codigo : Object.keys(inventario).find(c => inventario[c].articulo.toLowerCase().includes(valor.toLowerCase()));
+            
+            if (codigoEncontrado) { mostrarHistorialDeArticulo(codigoEncontrado); } 
+            else { alert('❌ No se encontró ningún artículo con ese código o nombre.\n\nVerifica que esté registrado en el inventario.'); inputBusqueda.focus(); inputBusqueda.select(); }
+        }
+
+        function mostrarHistorialDeArticulo(codigo) {
+            const articulo = inventario[codigo];
+            if (!articulo) { alert('❌ Artículo no encontrado.'); return; }
+            articuloHistorialSeleccionado = codigo;
+            const movimientos = transacciones.filter(t => t.codigo === codigo);
+            
+            let totalComprado = 0, unidadesCompradas = 0, totalVendido = 0, unidadesVendidas = 0, gananciaGenerada = 0;
+            movimientos.forEach(m => {
+                if (m.tipo === 'Ingreso') { unidadesCompradas += m.cantidad; totalComprado += (m.cantidad * (m.precioCompra || 0)); } 
+                else if (m.tipo === 'Egreso') { unidadesVendidas += m.cantidad; totalVendido += (m.cantidad * (m.precioVenta || 0)); gananciaGenerada += (m.cantidad * ((m.precioVenta || 0) - (m.precioCompra || 0))); }
+            });
+            
+            const stockActual = articulo.cantidad;
+            const cpp = articulo.precioCompra || 0;
+            const precioVenta = articulo.precioVenta || 0;
+            const valorInventario = stockActual * cpp;
+            
+            document.getElementById('resumen-articulo').innerHTML = `
+                <div class="flex justify-between items-start flex-wrap gap-4">
+                    <div class="flex-1 min-w-[250px]">
+                        <h4 class="text-lg font-black text-slate-800">${articulo.articulo}</h4>
+                        <p class="text-xs text-slate-500 font-mono">Código: ${codigo}</p>
+                        <div class="mt-2 flex gap-2 flex-wrap">
+                            <span class="px-2 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800">Stock: ${stockActual} u</span>
+                            <span class="px-2 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">CPP: $ ${formatoMoneda(cpp)}</span>
+                            ${precioVenta ? `<span class="px-2 py-1 rounded-full text-xs font-bold bg-violet-100 text-violet-800">P. Venta: $ ${formatoMoneda(precioVenta)}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div class="bg-white rounded-lg p-2 border border-emerald-200"><div class="text-slate-500">Total Comprado</div><div class="font-black text-emerald-700">$ ${formatoMoneda(totalComprado)}</div><div class="text-slate-400">${unidadesCompradas} u</div></div>
+                        <div class="bg-white rounded-lg p-2 border border-rose-200"><div class="text-slate-500">Total Vendido</div><div class="font-black text-rose-700">$ ${formatoMoneda(totalVendido)}</div><div class="text-slate-400">${unidadesVendidas} u</div></div>
+                        <div class="bg-white rounded-lg p-2 border border-violet-200"><div class="text-slate-500">Ganancia Generada</div><div class="font-black text-violet-700">$ ${formatoMoneda(gananciaGenerada)}</div><div class="text-slate-400">Bs. ${formatoMoneda(convertirAVES(gananciaGenerada))}</div></div>
+                        <div class="bg-white rounded-lg p-2 border border-blue-200"><div class="text-slate-500">Valor Inventario</div><div class="font-black text-blue-700">$ ${formatoMoneda(valorInventario)}</div><div class="text-slate-400">Bs. ${formatoMoneda(convertirAVES(valorInventario))}</div></div>
+                    </div>
+                </div>`;
+            
+            const tbody = document.getElementById('tabla-historial-articulo');
+            tbody.innerHTML = '';
+            if (movimientos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">No hay movimientos registrados para este artículo.</td></tr>`;
+            } else {
+                [...movimientos].reverse().forEach(m => {
+                    const esIngreso = m.tipo === 'Ingreso';
+                    const precio = esIngreso ? (m.precioCompra || 0) : (m.precioVenta || 0);
+                    const total = m.cantidad * precio;
+                    const totalVES = convertirAVES(total, m.tasaBCV || tasaBCV);
+                    const fila = document.createElement('tr');
+                    fila.className = esIngreso ? 'hover:bg-emerald-50' : 'hover:bg-rose-50';
+                    fila.innerHTML = `
+                        <td class="p-2 text-xs">${m.fecha}</td>
+                        <td class="p-2 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${esIngreso ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">${esIngreso ? '📥 INGRESO' : '📤 VENTA'}</span></td>
+                        <td class="p-2 text-center font-bold">${m.cantidad} u</td>
+                        <td class="p-2 text-right"><div class="text-slate-400 text-[10px]">$ ${formatoMoneda(precio)}</div><div class="font-semibold text-slate-700 text-xs">Bs. ${formatoMoneda(convertirAVES(precio, m.tasaBCV || tasaBCV))}</div></td>
+                        <td class="p-2 text-right"><div class="text-slate-400 text-[10px]">$ ${formatoMoneda(total)}</div><div class="font-bold text-slate-800 text-xs">Bs. ${formatoMoneda(totalVES)}</div></td>
+                        <td class="p-2 text-center font-mono text-[10px]">${m.numeroControl || 'N/A'}</td>`;
+                    tbody.appendChild(fila);
+                });
+            }
+            document.getElementById('total-movimientos-info').textContent = `${movimientos.length} movimiento(s) encontrado(s)`;
+            document.getElementById('paso-seleccion').classList.add('hidden');
+            document.getElementById('paso-resultados').classList.remove('hidden');
+        }
+
+        function volverASeleccion() {
+            document.getElementById('paso-seleccion').classList.remove('hidden');
+            document.getElementById('paso-resultados').classList.add('hidden');
+            document.getElementById('buscar-articulo-historial').value = '';
+            articuloHistorialSeleccionado = null;
+            setTimeout(() => document.getElementById('buscar-articulo-historial').focus(), 100);
+        }
+
+        function cerrarHistorialArticulo() {
+            document.getElementById('modal-historial-articulo').classList.add('hidden');
+            articuloHistorialSeleccionado = null;
+        }
+
+        function exportarHistorialArticuloTXT() {
+            if (!articuloHistorialSeleccionado || !inventario[articuloHistorialSeleccionado]) { alert('❌ No hay artículo seleccionado.'); return; }
+            const codigo = articuloHistorialSeleccionado;
+            const articulo = inventario[codigo];
+            const movimientos = transacciones.filter(t => t.codigo === codigo);
+            if (movimientos.length === 0) { alert('⚠️ No hay movimientos para exportar.'); return; }
+            
+            let txtContent = `# HISTORIAL DEL ARTÍCULO: ${articulo.articulo}\n# Código: ${codigo}\n# Fecha de generación: ${new Date().toLocaleString('es-ES')}\n# Total de movimientos: ${movimientos.length}\n# ========================================\n\n`;
+            txtContent += "Fecha\tHora\tTipo de Movimiento\tCódigo\tArtículo\tCantidad Entrada\tCantidad Salida\tPrecio USD\tPrecio VES\tExento\tStock Minimo\tImpuesto USD\tImpuesto VES\tTasa BCV\tCPP USD\tCPP VES\tStock Resultante\tN° Control\tTotal USD\tTotal VES\n";
+
+            movimientos.forEach(item => {
+                const esIngreso = item.tipo === 'Ingreso';
+                const cantidadEntrada = esIngreso ? item.cantidad : 0;
+                const cantidadSalida = esEgreso = item.tipo === 'Egreso' ? item.cantidad : 0;
+                const precioUSD = esIngreso ? (item.precioCompra || 0) : (item.precioVenta || 0);
+                const tasaUsada = item.tasaBCV || tasaBCV || 0;
+                const precioVES = convertirAVES(precioUSD, tasaUsada);
+                const totalLineaUSD = item.cantidad * precioUSD;
+                let montoImpuestoUSD = item.exento !== true ? totalLineaUSD * 0.16 : 0;
+                const montoImpuestoVES = convertirAVES(montoImpuestoUSD, tasaUsada);
+                const totalLineaVES = convertirAVES(totalLineaUSD, tasaUsada);
+                const cppUSD = item.cppResultante || 0;
+                const cppVES = convertirAVES(cppUSD, tasaUsada);
+                
+                let fechaPura = item.fecha, horaPura = "";
+                if (item.fecha.includes(",")) { let partes = item.fecha.split(","); fechaPura = partes[0].trim(); horaPura = partes[1].trim(); } 
+                else if (item.fecha.includes(" ")) { let partes = item.fecha.split(" "); fechaPura = partes[0].trim(); horaPura = partes[1].trim(); }
+
+                const fila = [fechaPura, horaPura, item.tipo, item.codigo, item.articulo, cantidadEntrada, cantidadSalida, formatoDecimal(precioUSD), formatoDecimal(precioVES), item.exento ? "Si" : "No", item.stockMinimo || 3, formatoDecimal(montoImpuestoUSD), formatoDecimal(montoImpuestoVES), formatoDecimal(tasaUsada), formatoDecimal(cppUSD), formatoDecimal(cppVES), item.stockResultante !== undefined ? item.stockResultante : '', item.numeroControl || 'N/A', formatoDecimal(totalLineaUSD), formatoDecimal(totalLineaVES)];
+                txtContent += fila.join("\t") + "\n";
+            });
+
+            const nombreArchivo = `Historial_${articulo.articulo.replace(/[^a-zA-Z0-9]/g, '_')}_${codigo}_${new Date().toLocaleDateString('es-ES').replace(/\//g, '-')}.txt`;
+            const blob = new Blob(["\uFEFF" + txtContent], { type: 'text/plain;charset=utf-8;' });
+            const archivoTXT = new File([blob], nombreArchivo, { type: 'text/plain' });
+            const esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+            if (esMovil && navigator.canShare && navigator.canShare({ files: [archivoTXT] })) {
+                navigator.share({ files: [archivoTXT], title: `Historial ${articulo.articulo}`, text: `Historial de movimientos del artículo ${articulo.articulo}` }).catch(() => console.log("Compartir cancelado"));
+            } else {
+                if (esMovil) alert("Tu navegador móvil no soporta el envío directo. Iniciando descarga...");
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.setAttribute("href", url);
+                link.setAttribute("download", nombreArchivo);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        // --- FUNCIONES GENERALES ---
         async function obtenerTasaBCV() {
             tasaBCVContainer.innerHTML = '<span class="animate-pulse">⏳</span><span>Actualizando tasa BCV...</span>';
             try {
@@ -1201,33 +731,19 @@
                 actualizarTodo();
             } catch (error) {
                 console.error('❌ Error al obtener tasa BCV:', error);
-                if (tasaBCV > 0) {
-                    tasaBCVContainer.innerHTML = `<span>⚠️</span><span>Tasa BCV: Bs. ${formatoMoneda(tasaBCV)} (${fechaTasaBCV})</span>`;
-                } else {
-                    tasaBCVContainer.innerHTML = '<span>❌</span><span>Error al cargar tasa BCV</span>';
-                }
+                if (tasaBCV > 0) { tasaBCVContainer.innerHTML = `<span>⚠️</span><span>Tasa BCV: Bs. ${formatoMoneda(tasaBCV)} (${fechaTasaBCV})</span>`; } 
+                else { tasaBCVContainer.innerHTML = '<span>❌</span><span>Error al cargar tasa BCV</span>'; }
             }
         }
 
         function actualizarDisplayTasaBCV() {
-            if (tasaBCV > 0) {
-                tasaBCVContainer.innerHTML = `<span>💵</span><span>Tasa BCV: Bs. ${formatoMoneda(tasaBCV)} (${fechaTasaBCV})</span>`;
-            }
+            if (tasaBCV > 0) { tasaBCVContainer.innerHTML = `<span>💵</span><span>Tasa BCV: Bs. ${formatoMoneda(tasaBCV)} (${fechaTasaBCV})</span>`; }
         }
 
         function actualizarDashboard() {
             let totalUnidades = 0, costoAlmacen = 0, gananciaRealEfectiva = 0;
-            Object.keys(inventario).forEach(codigo => {
-                const item = inventario[codigo];
-                totalUnidades += item.cantidad;
-                costoAlmacen += (item.cantidad * item.precioCompra); 
-            });
-            transacciones.forEach(t => {
-                if (t.tipo === 'Egreso') {
-                    const gananciaPorArticulo = t.precioVenta - t.precioCompra;
-                    gananciaRealEfectiva += (gananciaPorArticulo * t.cantidad);
-                }
-            });
+            Object.keys(inventario).forEach(codigo => { const item = inventario[codigo]; totalUnidades += item.cantidad; costoAlmacen += (item.cantidad * item.precioCompra); });
+            transacciones.forEach(t => { if (t.tipo === 'Egreso') { gananciaRealEfectiva += ((t.precioVenta - t.precioCompra) * t.cantidad); } });
             dashTotalItems.textContent = `${totalUnidades} u`;
             dashValorCosto.textContent = formatearMoneda(costoAlmacen);
             dashGananciaEstimada.textContent = formatearMoneda(gananciaRealEfectiva);
@@ -1240,38 +756,23 @@
             if (totalItems === 0) {
                 tablaInventario.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">No hay mercancía en inventario.</td></tr>`;
                 infoPaginacion.textContent = "Página 1 de 1";
-                btnAnterior.disabled = true;
-                btnSiguiente.disabled = true;
-                actualizarDashboard();
-                return;
+                btnAnterior.disabled = true; btnSiguiente.disabled = true;
+                actualizarDashboard(); return;
             }
             const totalPaginas = Math.ceil(totalItems / itemsPorPagina);
             if (paginaActual > totalPaginas) paginaActual = totalPaginas;
-            const indiceInicio = (paginaActual - 1) * itemsPorPagina;
-            const keysPaginadas = keys.slice(indiceInicio, indiceInicio + itemsPorPagina);
+            const keysPaginadas = keys.slice((paginaActual - 1) * itemsPorPagina, paginaActual * itemsPorPagina);
+            
             keysPaginadas.forEach(codigo => {
                 const item = inventario[codigo];
                 const fila = document.createElement('tr');
                 const stockMin = item.stockMinimo !== undefined ? item.stockMinimo : 3;
                 let claseFila = "hover:bg-slate-50 transition-colors";
                 let badgeEstado = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">OK</span>`;
-                if (item.cantidad === 0) {
-                    claseFila = "bg-rose-50 hover:bg-rose-100/70 transition-colors text-rose-900 font-medium";
-                    badgeEstado = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-200 text-rose-800 animate-pulse">Agotado</span>`;
-                } else if (item.cantidad <= stockMin) {
-                    claseFila = "bg-amber-50 hover:bg-amber-100/70 transition-colors text-amber-900";
-                    badgeEstado = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-200 text-amber-800">Stock Bajo</span>`;
-                }
+                if (item.cantidad === 0) { claseFila = "bg-rose-50 hover:bg-rose-100/70 transition-colors text-rose-900 font-medium"; badgeEstado = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-200 text-rose-800 animate-pulse">Agotado</span>`; } 
+                else if (item.cantidad <= stockMin) { claseFila = "bg-amber-50 hover:bg-amber-100/70 transition-colors text-amber-900"; badgeEstado = `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-200 text-amber-800">Stock Bajo</span>`; }
                 fila.className = claseFila;
-                fila.innerHTML = `
-                    <td class="p-3 font-mono font-bold text-slate-700">${codigo}</td>
-                    <td class="p-3 font-medium">${item.articulo}</td>
-                    <td class="p-3 text-center font-bold">${item.cantidad} u</td>
-                    <td class="p-3 text-center text-slate-400 font-medium">${stockMin} u</td>
-                    <td class="p-3 text-right text-slate-500">${formatearMoneda(item.precioCompra)}</td>
-                    <td class="p-3 text-right text-slate-500">${item.precioVenta ? formatearMoneda(item.precioVenta) : '-,--'}</td>
-                    <td class="p-3 text-center">${badgeEstado}</td>
-                `;
+                fila.innerHTML = `<td class="p-3 font-mono font-bold text-slate-700">${codigo}</td><td class="p-3 font-medium">${item.articulo}</td><td class="p-3 text-center font-bold">${item.cantidad} u</td><td class="p-3 text-center text-slate-400 font-medium">${stockMin} u</td><td class="p-3 text-right text-slate-500">${formatearMoneda(item.precioCompra)}</td><td class="p-3 text-right text-slate-500">${item.precioVenta ? formatearMoneda(item.precioVenta) : '-,--'}</td><td class="p-3 text-center">${badgeEstado}</td>`;
                 tablaInventario.appendChild(fila);
             });
             infoPaginacion.textContent = `Página ${paginaActual} de ${totalPaginas} (${totalItems} artículos)`;
@@ -1281,13 +782,9 @@
         }
 
         function actualizarListaSugerencias() {
-            listaArticulosEgreso.innerHTML = '';
-            listaCodigosEgreso.innerHTML = '';
-            listaCodigosIngreso.innerHTML = '';
-            listaArticulosIngreso.innerHTML = '';
+            listaArticulosEgreso.innerHTML = ''; listaCodigosEgreso.innerHTML = ''; listaCodigosIngreso.innerHTML = ''; listaArticulosIngreso.innerHTML = '';
             Object.keys(inventario).forEach(codigo => {
-                const item = inventario[codigo];
-                const articulo = item.articulo;
+                const articulo = inventario[codigo].articulo;
                 const opt1 = document.createElement('option'); opt1.value = articulo; opt1.label = `Código: ${codigo}`; listaArticulosEgreso.appendChild(opt1);
                 const opt2 = document.createElement('option'); opt2.value = codigo; opt2.label = articulo; listaCodigosEgreso.appendChild(opt2);
                 const opt3 = document.createElement('option'); opt3.value = codigo; opt3.label = articulo; listaCodigosIngreso.appendChild(opt3);
@@ -1299,31 +796,19 @@
             tablaCarrito.innerHTML = '';
             if (carrito.length === 0) {
                 tablaCarrito.innerHTML = `<tr><td colspan="7" class="p-3 text-center text-slate-400 italic">Ningún artículo añadido.</td></tr>`;
-                impuestoCarrito.textContent = `${simboloMoneda()} 0.00`;
-                totalCarrito.textContent = `${simboloMoneda()} 0.00`;
-                return;
+                impuestoCarrito.textContent = `${simboloMoneda()} 0.00`; totalCarrito.textContent = `${simboloMoneda()} 0.00`; return;
             }
             let sumaSubtotalGravable = 0, sumaSubtotalExento = 0;
             carrito.forEach((item, index) => {
                 const esExento = item.exento === true;
                 const subtotalItem = item.cantidad * item.precioVenta;
-                const impuestoUnitario = esExento ? 0 : item.precioVenta * 0.16;
                 const impuestoTotalFila = esExento ? 0 : subtotalItem * 0.16;
                 const totalFilaConImpuesto = subtotalItem + impuestoTotalFila;
-                if (esExento) sumaSubtotalExento += subtotalItem;
-                else sumaSubtotalGravable += subtotalItem;
+                if (esExento) sumaSubtotalExento += subtotalItem; else sumaSubtotalGravable += subtotalItem;
                 const etiquetaTipo = esExento ? `<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-bold">E</span>` : `<span class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-bold">G</span>`;
                 const fila = document.createElement('tr');
                 fila.className = "hover:bg-slate-100";
-                fila.innerHTML = `
-                    <td class="p-2 font-medium truncate max-w-[120px]">${item.articulo}</td>
-                    <td class="p-2 text-center font-bold text-slate-700">${item.cantidad}</td>
-                    <td class="p-2 text-right text-slate-500">${formatearMoneda(item.precioVenta)}</td>
-                    <td class="p-2 text-right font-medium text-rose-500">${formatearMoneda(impuestoUnitario)}</td>
-                    <td class="p-2 text-center">${etiquetaTipo}</td>
-                    <td class="p-2 text-right font-bold text-slate-700">${formatearMoneda(totalFilaConImpuesto)}</td>
-                    <td class="p-2 text-center"><button type="button" onclick="eliminarDelCarrito(${index})" class="text-rose-500 hover:text-rose-700 font-bold px-1">✕</button></td>
-                `;
+                fila.innerHTML = `<td class="p-2 font-medium truncate max-w-[120px]">${item.articulo}</td><td class="p-2 text-center font-bold text-slate-700">${item.cantidad}</td><td class="p-2 text-right text-slate-500">${formatearMoneda(item.precioVenta)}</td><td class="p-2 text-right font-medium text-rose-500">${formatearMoneda(esExento ? 0 : item.precioVenta * 0.16)}</td><td class="p-2 text-center">${etiquetaTipo}</td><td class="p-2 text-right font-bold text-slate-700">${formatearMoneda(totalFilaConImpuesto)}</td><td class="p-2 text-center"><button type="button" onclick="eliminarDelCarrito(${index})" class="text-rose-500 hover:text-rose-700 font-bold px-1">✕</button></td>`;
                 tablaCarrito.appendChild(fila);
             });
             const totalImpuesto = sumaSubtotalGravable * 0.16;
@@ -1339,29 +824,17 @@
             let sumaSubtotalGravable = 0, sumaSubtotalExento = 0;
             if (carritoIngreso.length === 0) {
                 tablaCarritoIngreso.innerHTML = `<tr><td colspan="7" class="p-3 text-center text-slate-400 italic">Ningún artículo añadido.</td></tr>`;
-                impuestoCarritoIngreso.textContent = `${simboloMoneda()} 0.00`;
-                totalCarritoIngreso.textContent = `${simboloMoneda()} 0.00`;
-                return;
+                impuestoCarritoIngreso.textContent = `${simboloMoneda()} 0.00`; totalCarritoIngreso.textContent = `${simboloMoneda()} 0.00`; return;
             }
             carritoIngreso.forEach((item, index) => {
                 const subtotalItem = item.cantidad * item.precioCompra;
-                const impuestoUnitario = item.exento ? 0 : item.precioCompra * 0.16;
                 const impuestoTotalFila = item.exento ? 0 : subtotalItem * 0.16;
                 const totalFilaConImpuesto = subtotalItem + impuestoTotalFila;
-                if (item.exento) sumaSubtotalExento += subtotalItem;
-                else sumaSubtotalGravable += subtotalItem;
+                if (item.exento) sumaSubtotalExento += subtotalItem; else sumaSubtotalGravable += subtotalItem;
                 const etiquetaTipo = item.exento ? `<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-bold">E</span>` : `<span class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-bold">G</span>`;
                 const fila = document.createElement('tr');
                 fila.className = "hover:bg-slate-100";
-                fila.innerHTML = `
-                    <td class="p-2 font-medium truncate max-w-[120px]">${item.articulo}</td>
-                    <td class="p-2 text-center font-bold text-slate-700">${item.cantidad}</td>
-                    <td class="p-2 text-right text-slate-500">${formatearMoneda(item.precioCompra)}</td>
-                    <td class="p-2 text-right font-medium text-emerald-500">${formatearMoneda(impuestoUnitario)}</td>
-                    <td class="p-2 text-center">${etiquetaTipo}</td>
-                    <td class="p-2 text-right font-bold text-slate-700">${formatearMoneda(totalFilaConImpuesto)}</td>
-                    <td class="p-2 text-center"><button type="button" onclick="eliminarDelCarritoIngreso(${index})" class="text-rose-500 hover:text-rose-700 font-bold px-1">✕</button></td>
-                `;
+                fila.innerHTML = `<td class="p-2 font-medium truncate max-w-[120px]">${item.articulo}</td><td class="p-2 text-center font-bold text-slate-700">${item.cantidad}</td><td class="p-2 text-right text-slate-500">${formatearMoneda(item.precioCompra)}</td><td class="p-2 text-right font-medium text-emerald-500">${formatearMoneda(item.exento ? 0 : item.precioCompra * 0.16)}</td><td class="p-2 text-center">${etiquetaTipo}</td><td class="p-2 text-right font-bold text-slate-700">${formatearMoneda(totalFilaConImpuesto)}</td><td class="p-2 text-center"><button type="button" onclick="eliminarDelCarritoIngreso(${index})" class="text-rose-500 hover:text-rose-700 font-bold px-1">✕</button></td>`;
                 tablaCarritoIngreso.appendChild(fila);
             });
             const totalImpuesto = sumaSubtotalGravable * 0.16;
@@ -1371,32 +844,18 @@
         }
 
         function eliminarDelCarritoIngreso(index) { carritoIngreso.splice(index, 1); actualizarCarritoIngreso(); }
-
-        function guardarDatos() {
-            localStorage.setItem('pos_inventario', JSON.stringify(inventario));
-            localStorage.setItem('pos_transacciones', JSON.stringify(transacciones));
-            actualizarTabla();
-            actualizarListaSugerencias();
-        }
+        function guardarDatos() { localStorage.setItem('pos_inventario', JSON.stringify(inventario)); localStorage.setItem('pos_transacciones', JSON.stringify(transacciones)); actualizarTabla(); actualizarListaSugerencias(); }
 
         btnAnterior.addEventListener('click', () => { if (paginaActual > 1) { paginaActual--; actualizarTabla(); } });
-        btnSiguiente.addEventListener('click', () => {
-            const totalPaginas = Math.ceil(Object.keys(inventario).length / itemsPorPagina);
-            if (paginaActual < totalPaginas) { paginaActual++; actualizarTabla(); }
-        });
+        btnSiguiente.addEventListener('click', () => { const totalPaginas = Math.ceil(Object.keys(inventario).length / itemsPorPagina); if (paginaActual < totalPaginas) { paginaActual++; actualizarTabla(); } });
 
         ingresoCodigo.addEventListener('input', (e) => {
             const codigo = e.target.value.trim();
             if (inventario[codigo]) {
-                ingresoArticulo.value = inventario[codigo].articulo;
-                ingresoArticulo.readOnly = true;
-                ingresoArticulo.classList.add('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
-                ingresoExento.checked = inventario[codigo].exento || false;
-                ingresoExento.disabled = true; 
+                ingresoArticulo.value = inventario[codigo].articulo; ingresoArticulo.readOnly = true; ingresoArticulo.classList.add('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+                ingresoExento.checked = inventario[codigo].exento || false; ingresoExento.disabled = true; 
             } else {
-                ingresoArticulo.readOnly = false;
-                ingresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
-                ingresoExento.disabled = false;
+                ingresoArticulo.readOnly = false; ingresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed'); ingresoExento.disabled = false;
             }
         });
 
@@ -1405,11 +864,8 @@
             if (!nombreIngresado) { ingresoCodigo.value = ''; ingresoExento.disabled = false; ingresoExento.checked = false; return; }
             const codigoEncontrado = Object.keys(inventario).find(codigo => inventario[codigo].articulo.toLowerCase() === nombreIngresado);
             if (codigoEncontrado) {
-                ingresoCodigo.value = codigoEncontrado;
-                ingresoExento.checked = inventario[codigoEncontrado].exento || false;
-                ingresoExento.disabled = true;
-                ingresoArticulo.readOnly = true;
-                ingresoArticulo.classList.add('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+                ingresoCodigo.value = codigoEncontrado; ingresoExento.checked = inventario[codigoEncontrado].exento || false; ingresoExento.disabled = true;
+                ingresoArticulo.readOnly = true; ingresoArticulo.classList.add('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
             }
         });
 
@@ -1423,20 +879,11 @@
             if (monedaSeleccionada === 'VES' && tasaBCV > 0) precioCompra = convertirAUSD(precioCompra);
             const exento = inventario[codigo] ? inventario[codigo].exento : ingresoExento.checked;
             const itemExistente = carritoIngreso.find(item => item.codigo === codigo && Math.abs(item.precioCompra - precioCompra) < 0.0001 && item.exento === !!exento);
-            if (itemExistente) {
-                itemExistente.cantidad += cantidad;
-                itemExistente.stockMinimo = stockMin;
-            } else {
-                carritoIngreso.push({ codigo, articulo, cantidad, precioCompra, stockMinimo: stockMin, exento: !!exento });
-            }
-            formIngreso.reset();
-            ingresoMinimo.value = 3;
-            ingresoExento.checked = false;
-            ingresoExento.disabled = false;
-            ingresoArticulo.readOnly = false;
-            ingresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
-            actualizarCarritoIngreso();
-            ingresoCodigo.focus();
+            if (itemExistente) { itemExistente.cantidad += cantidad; itemExistente.stockMinimo = stockMin; } 
+            else { carritoIngreso.push({ codigo, articulo, cantidad, precioCompra, stockMinimo: stockMin, exento: !!exento }); }
+            formIngreso.reset(); ingresoMinimo.value = 3; ingresoExento.checked = false; ingresoExento.disabled = false;
+            ingresoArticulo.readOnly = false; ingresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+            actualizarCarritoIngreso(); ingresoCodigo.focus();
         });
 
         btnProcesarIngreso.addEventListener('click', () => {
@@ -1450,89 +897,53 @@
                     const cppAnterior = inventario[item.codigo].precioCompra || 0;
                     const stockTotal = stockAnterior + item.cantidad;
                     const cppNuevo = ((stockAnterior * cppAnterior) + (item.cantidad * item.precioCompra)) / stockTotal;
-                    inventario[item.codigo].cantidad = stockTotal;
-                    inventario[item.codigo].precioCompra = cppNuevo;
-                    inventario[item.codigo].stockMinimo = item.stockMinimo;
-                    inventario[item.codigo].exento = item.exento;
+                    inventario[item.codigo].cantidad = stockTotal; inventario[item.codigo].precioCompra = cppNuevo;
+                    inventario[item.codigo].stockMinimo = item.stockMinimo; inventario[item.codigo].exento = item.exento;
                 } else {
                     inventario[item.codigo] = { articulo: item.articulo, cantidad: item.cantidad, precioCompra: item.precioCompra, precioVenta: null, stockMinimo: item.stockMinimo, exento: item.exento };
                 }
                 const subtotalItem = item.cantidad * item.precioCompra;
                 const impuestoItem = item.exento ? 0 : subtotalItem * 0.16;
-                subtotalGeneral += subtotalItem;
-                impuestoGeneral += impuestoItem;
-                transacciones.push({
-                    fecha: fechaActual, tipo: 'Ingreso', codigo: item.codigo, articulo: item.articulo,
-                    cantidad: item.cantidad, precioCompra: item.precioCompra, precioVenta: 0,
-                    stockMinimo: item.stockMinimo, exento: item.exento, tasaBCV: tasaBCV,
-                    cppResultante: inventario[item.codigo].precioCompra, stockResultante: inventario[item.codigo].cantidad,
-                    numeroControl: numeroControl
-                });
+                subtotalGeneral += subtotalItem; impuestoGeneral += impuestoItem;
+                transacciones.push({ fecha: fechaActual, tipo: 'Ingreso', codigo: item.codigo, articulo: item.articulo, cantidad: item.cantidad, precioCompra: item.precioCompra, precioVenta: 0, stockMinimo: item.stockMinimo, exento: item.exento, tasaBCV: tasaBCV, cppResultante: inventario[item.codigo].precioCompra, stockResultante: inventario[item.codigo].cantidad, numeroControl: numeroControl });
             });
             const totalFactura = subtotalGeneral + impuestoGeneral;
-            carritoIngreso = [];
-            actualizarCarritoIngreso();
-            guardarDatos();
+            carritoIngreso = []; actualizarCarritoIngreso(); guardarDatos();
             mostrarFactura('COMPROBANTE DE INGRESO', transacciones.filter(t => t.numeroControl === numeroControl), subtotalGeneral, impuestoGeneral, totalFactura, numeroControl);
         });
 
         btnCancelarIngreso.addEventListener('click', () => {
-            if (carritoIngreso.length > 0 && confirm('¿Deseas vaciar la lista de la compra actual sin guardarla?')) {
-                carritoIngreso = [];
-                actualizarCarritoIngreso();
-            }
+            if (carritoIngreso.length > 0 && confirm('¿Deseas vaciar la lista de la compra actual sin guardarla?')) { carritoIngreso = []; actualizarCarritoIngreso(); }
         });
 
         egresoArticulo.addEventListener('input', () => {
             const nombreIngresado = egresoArticulo.value.trim().toLowerCase();
-            if (!nombreIngresado) { 
-                egresoCodigo.value = ''; 
-                egresoCodigo.readOnly = false;
-                egresoCodigo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
-                egresoPrecio.value = ''; 
-                return; 
-            }
+            if (!nombreIngresado) { egresoCodigo.value = ''; egresoCodigo.readOnly = false; egresoCodigo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed'); egresoPrecio.value = ''; return; }
             const codigoEncontrado = Object.keys(inventario).find(codigo => inventario[codigo].articulo.toLowerCase() === nombreIngresado);
             if (codigoEncontrado) {
-                egresoCodigo.value = codigoEncontrado;
-                egresoCodigo.readOnly = true;
-                egresoCodigo.classList.add('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+                egresoCodigo.value = codigoEncontrado; egresoCodigo.readOnly = true; egresoCodigo.classList.add('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
                 if (inventario[codigoEncontrado].precioVenta) {
                     let precio = inventario[codigoEncontrado].precioVenta;
                     if (monedaSeleccionada === 'VES' && tasaBCV > 0) precio = convertirAVES(precio);
                     egresoPrecio.value = precio.toFixed(2);
                 } else { egresoPrecio.value = ''; }
             } else {
-                egresoCodigo.value = '';
-                egresoCodigo.readOnly = false;
-                egresoCodigo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
-                egresoPrecio.value = '';
+                egresoCodigo.value = ''; egresoCodigo.readOnly = false; egresoCodigo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed'); egresoPrecio.value = '';
             }
         });
 
         egresoCodigo.addEventListener('input', () => {
             const codigo = egresoCodigo.value.trim();
-            if (!codigo) { 
-                egresoArticulo.value = ''; 
-                egresoArticulo.readOnly = false;
-                egresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
-                egresoPrecio.value = ''; 
-                return; 
-            }
+            if (!codigo) { egresoArticulo.value = ''; egresoArticulo.readOnly = false; egresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed'); egresoPrecio.value = ''; return; }
             if (inventario[codigo]) {
-                egresoArticulo.value = inventario[codigo].articulo;
-                egresoArticulo.readOnly = true;
-                egresoArticulo.classList.add('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+                egresoArticulo.value = inventario[codigo].articulo; egresoArticulo.readOnly = true; egresoArticulo.classList.add('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
                 if (inventario[codigo].precioVenta) {
                     let precio = inventario[codigo].precioVenta;
                     if (monedaSeleccionada === 'VES' && tasaBCV > 0) precio = convertirAVES(precio);
                     egresoPrecio.value = precio.toFixed(2);
                 } else { egresoPrecio.value = ''; }
             } else {
-                egresoArticulo.value = '';
-                egresoArticulo.readOnly = false;
-                egresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
-                egresoPrecio.value = '';
+                egresoArticulo.value = ''; egresoArticulo.readOnly = false; egresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed'); egresoPrecio.value = '';
             }
         });
 
@@ -1549,19 +960,12 @@
             if (inventario[codigo].cantidad < cantidadSolicitadaTotal) {
                 return alert(`❌ Operación denegada: Stock insuficiente.\n\nEn inventario: ${inventario[codigo].cantidad} u\nEn la lista actual: ${cantidadPreviaEnCarrito} u\nSolicitado nuevo: ${cantidad} u\nFaltan: ${cantidadSolicitadaTotal - inventario[codigo].cantidad} unidades.`);
             }
-            if (itemEnCarrito) {
-                itemEnCarrito.cantidad += cantidad;
-                itemEnCarrito.precioVenta = precioVenta; 
-            } else {
-                carrito.push({ codigo, articulo: inventario[codigo].articulo, cantidad, precioVenta, exento: !!inventario[codigo].exento });
-            }
+            if (itemEnCarrito) { itemEnCarrito.cantidad += cantidad; itemEnCarrito.precioVenta = precioVenta; } 
+            else { carrito.push({ codigo, articulo: inventario[codigo].articulo, cantidad, precioVenta, exento: !!inventario[codigo].exento }); }
             formEgreso.reset();
-            egresoArticulo.readOnly = false;
-            egresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
-            egresoCodigo.readOnly = false;
-            egresoCodigo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
-            actualizarCarrito();
-            egresoCodigo.focus();
+            egresoArticulo.readOnly = false; egresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+            egresoCodigo.readOnly = false; egresoCodigo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+            actualizarCarrito(); egresoCodigo.focus();
         });
 
         btnProcesarEgreso.addEventListener('click', () => {
@@ -1569,39 +973,24 @@
             const fechaActual = new Date().toLocaleString('es-ES');
             const numeroControl = generarNumeroControl();
             let subtotalGeneral = 0, impuestoGeneral = 0;
-            for (let item of carrito) {
-                if (inventario[item.codigo].cantidad < item.cantidad) return alert(`❌ Error crítico: El producto "${item.articulo}" ya no cuenta con stock disponible.`);
-            }
+            for (let item of carrito) { if (inventario[item.codigo].cantidad < item.cantidad) return alert(`❌ Error crítico: El producto "${item.articulo}" ya no cuenta con stock disponible.`); }
             carrito.forEach(item => {
-                inventario[item.codigo].cantidad -= item.cantidad;
-                inventario[item.codigo].precioVenta = item.precioVenta; 
+                inventario[item.codigo].cantidad -= item.cantidad; inventario[item.codigo].precioVenta = item.precioVenta; 
                 const subtotalItem = item.cantidad * item.precioVenta;
                 const impuestoItem = item.exento ? 0 : subtotalItem * 0.16;
-                subtotalGeneral += subtotalItem;
-                impuestoGeneral += impuestoItem;
-                transacciones.push({
-                    fecha: fechaActual, tipo: 'Egreso', codigo: item.codigo, articulo: item.articulo,
-                    cantidad: item.cantidad, precioCompra: inventario[item.codigo].precioCompra || 0,
-                    precioVenta: item.precioVenta, stockMinimo: inventario[item.codigo].stockMinimo || 3,
-                    exento: item.exento, tasaBCV: tasaBCV, numeroControl: numeroControl
-                });
+                subtotalGeneral += subtotalItem; impuestoGeneral += impuestoItem;
+                transacciones.push({ fecha: fechaActual, tipo: 'Egreso', codigo: item.codigo, articulo: item.articulo, cantidad: item.cantidad, precioCompra: inventario[item.codigo].precioCompra || 0, precioVenta: item.precioVenta, stockMinimo: inventario[item.codigo].stockMinimo || 3, exento: item.exento, tasaBCV: tasaBCV, numeroControl: numeroControl });
             });
             const totalFactura = subtotalGeneral + impuestoGeneral;
-            carrito = [];
-            actualizarCarrito();
-            guardarDatos(); 
+            carrito = []; actualizarCarrito(); guardarDatos(); 
             mostrarFactura('FACTURA DE VENTA', transacciones.filter(t => t.numeroControl === numeroControl), subtotalGeneral, impuestoGeneral, totalFactura, numeroControl);
         });
 
         btnCancelarEgreso.addEventListener('click', () => {
             if (carrito.length > 0 && confirm('¿Deseas vaciar la lista de la venta actual?')) {
-                carrito = [];
-                actualizarCarrito();
-                formEgreso.reset();
-                egresoArticulo.readOnly = false;
-                egresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
-                egresoCodigo.readOnly = false;
-                egresoCodigo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+                carrito = []; actualizarCarrito(); formEgreso.reset();
+                egresoArticulo.readOnly = false; egresoArticulo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
+                egresoCodigo.readOnly = false; egresoCodigo.classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed');
             }
         });
 
@@ -1609,38 +998,22 @@
             let txtContent = "Fecha\tHora\tTipo de Movimiento\tCódigo\tArtículo\tCantidad Entrada\tCantidad Salida\tPrecio USD\tPrecio VES\tExento\tStock Minimo\tImpuesto USD\tImpuesto VES\tTasa BCV\tCPP USD\tCPP VES\tStock Resultante\tN° Control\tTotal USD\tTotal VES\n";
             transacciones.forEach(item => {
                 const esIngreso = item.tipo === 'Ingreso';
-                const esEgreso = item.tipo === 'Egreso';
                 const cantidadEntrada = esIngreso ? item.cantidad : 0;
-                const cantidadSalida = esEgreso ? item.cantidad : 0;
+                const cantidadSalida = !esIngreso ? item.cantidad : 0;
                 const precioUSD = esIngreso ? (item.precioCompra || 0) : (item.precioVenta || 0);
                 const tasaUsada = item.tasaBCV || tasaBCV || 0;
                 const precioVES = convertirAVES(precioUSD, tasaUsada);
                 const totalLineaUSD = item.cantidad * precioUSD;
-                let montoImpuestoUSD = 0;
-                if (item.exento !== true) montoImpuestoUSD = totalLineaUSD * 0.16;
+                let montoImpuestoUSD = item.exento !== true ? totalLineaUSD * 0.16 : 0;
                 const montoImpuestoVES = convertirAVES(montoImpuestoUSD, tasaUsada);
                 const totalLineaVES = convertirAVES(totalLineaUSD, tasaUsada);
                 const cppUSD = item.cppResultante || 0;
                 const cppVES = convertirAVES(cppUSD, tasaUsada);
                 let fechaPura = item.fecha, horaPura = "";
-                if (item.fecha.includes(",")) {
-                    let partes = item.fecha.split(",");
-                    fechaPura = partes[0].trim(); horaPura = partes[1].trim();
-                } else if (item.fecha.includes(" ")) {
-                    let partes = item.fecha.split(" ");
-                    fechaPura = partes[0].trim(); horaPura = partes[1].trim();
-                }
+                if (item.fecha.includes(",")) { let partes = item.fecha.split(","); fechaPura = partes[0].trim(); horaPura = partes[1].trim(); } 
+                else if (item.fecha.includes(" ")) { let partes = item.fecha.split(" "); fechaPura = partes[0].trim(); horaPura = partes[1].trim(); }
                 const numeroControl = item.numeroControl || 'N/A';
-                const fila = [
-                    fechaPura, horaPura, item.tipo, item.codigo, item.articulo, 
-                    cantidadEntrada, cantidadSalida, 
-                    formatoDecimal(precioUSD), formatoDecimal(precioVES),
-                    item.exento ? "Si" : "No", item.stockMinimo || 3,
-                    formatoDecimal(montoImpuestoUSD), formatoDecimal(montoImpuestoVES),
-                    formatoDecimal(tasaUsada), formatoDecimal(cppUSD), formatoDecimal(cppVES),
-                    item.stockResultante !== undefined ? item.stockResultante : '',
-                    numeroControl, formatoDecimal(totalLineaUSD), formatoDecimal(totalLineaVES)
-                ];
+                const fila = [fechaPura, horaPura, item.tipo, item.codigo, item.articulo, cantidadEntrada, cantidadSalida, formatoDecimal(precioUSD), formatoDecimal(precioVES), item.exento ? "Si" : "No", item.stockMinimo || 3, formatoDecimal(montoImpuestoUSD), formatoDecimal(montoImpuestoVES), formatoDecimal(tasaUsada), formatoDecimal(cppUSD), formatoDecimal(cppVES), item.stockResultante !== undefined ? item.stockResultante : '', numeroControl, formatoDecimal(totalLineaUSD), formatoDecimal(totalLineaVES)];
                 txtContent += fila.join("\t") + "\n";
             });
             return txtContent;
@@ -1654,18 +1027,14 @@
             const archivoTXT = new File([blob], nombreArchivo, { type: 'text/plain' });
             const esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             if (esMovil && navigator.canShare && navigator.canShare({ files: [archivoTXT] })) {
-                try {
-                    await navigator.share({ files: [archivoTXT], title: 'Backup P.O.S.', text: 'Adjunto el archivo maestro de inventario (dual USD/VES) para su respaldo o revisión.' });
-                } catch (err) { console.log("Operación de compartir cancelada por el usuario."); }
+                try { await navigator.share({ files: [archivoTXT], title: 'Backup P.O.S.', text: 'Adjunto el archivo maestro de inventario (dual USD/VES) para su respaldo o revisión.' }); } 
+                catch (err) { console.log("Operación de compartir cancelada por el usuario."); }
             } else {
                 if (esMovil) alert("Tu navegador móvil no soporta el envío directo. Iniciando descarga...");
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement("a");
-                link.setAttribute("href", url);
-                link.setAttribute("download", nombreArchivo);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                link.setAttribute("href", url); link.setAttribute("download", nombreArchivo);
+                document.body.appendChild(link); link.click(); document.body.removeChild(link);
             }
         });
 
@@ -1676,23 +1045,10 @@
             lector.onload = function(evt) {
                 const lineas = evt.target.result.split(/\r?\n/);
                 if (lineas.length <= 1) return alert("❌ Error: El archivo está vacío.");
-                if (!confirm("⚠️ ATENCIÓN: Esta acción reconstruirá la base de datos a partir del archivo de texto tabulado. ¿Continuar?")) { 
-                    inputImportar.value = ''; return; 
-                }
+                if (!confirm("⚠️ ATENCIÓN: Esta acción reconstruirá la base de datos a partir del archivo de texto tabulado. ¿Continuar?")) { inputImportar.value = ''; return; }
                 let nuevoInventario = {}, nuevasTransacciones = [], lineasProcesadas = 0;
-                const parsearLineaTab = (texto) => {
-                    return texto.split('\t').map(valor => {
-                        let v = valor.trim();
-                        if (v.startsWith('"') && v.endsWith('"')) v = v.substring(1, v.length - 1).replace(/""/g, '"');
-                        return v;
-                    });
-                };
-                const parsearNumero = (texto) => {
-                    if (!texto || texto === '') return 0;
-                    const normalizado = texto.toString().replace(',', '.');
-                    const resultado = parseFloat(normalizado);
-                    return isNaN(resultado) ? 0 : resultado;
-                };
+                const parsearLineaTab = (texto) => texto.split('\t').map(valor => { let v = valor.trim(); if (v.startsWith('"') && v.endsWith('"')) v = v.substring(1, v.length - 1).replace(/""/g, '"'); return v; });
+                const parsearNumero = (texto) => { if (!texto || texto === '') return 0; const normalizado = texto.toString().replace(',', '.'); const resultado = parseFloat(normalizado); return isNaN(resultado) ? 0 : resultado; };
                 for (let i = 1; i < lineas.length; i++) {
                     let linea = lineas[i].trim();
                     if (!linea) continue;
@@ -1703,62 +1059,37 @@
                     let cantidadSalida = parseInt(columnas[6]) || 0;
                     let precio, exento, stockMinimo, tasaBCVTransaccion, cppResultante, stockResultante, numeroControl;
                     if (columnas.length >= 17) {
-                        precio = parsearNumero(columnas[7]);
-                        exento = columnas[9].toLowerCase() === 'si';
-                        stockMinimo = parseInt(columnas[10]) || 3;
-                        tasaBCVTransaccion = parsearNumero(columnas[13]);
-                        cppResultante = parsearNumero(columnas[14]);
-                        stockResultante = parseInt(columnas[16]) || 0;
+                        precio = parsearNumero(columnas[7]); exento = columnas[9].toLowerCase() === 'si'; stockMinimo = parseInt(columnas[10]) || 3;
+                        tasaBCVTransaccion = parsearNumero(columnas[13]); cppResultante = parsearNumero(columnas[14]); stockResultante = parseInt(columnas[16]) || 0;
                         numeroControl = columnas[17] && columnas[17] !== 'N/A' ? columnas[17] : null;
                     } else {
-                        precio = parsearNumero(columnas[7]);
-                        exento = columnas[8].toLowerCase() === 'si';
-                        stockMinimo = parseInt(columnas[9]) || 3;
-                        tasaBCVTransaccion = parsearNumero(columnas[11]) || tasaBCV || 0;
-                        cppResultante = columnas[12] ? parsearNumero(columnas[12]) : 0;
-                        stockResultante = columnas[13] ? parseInt(columnas[13]) : 0;
-                        numeroControl = null;
+                        precio = parsearNumero(columnas[7]); exento = columnas[8].toLowerCase() === 'si'; stockMinimo = parseInt(columnas[9]) || 3;
+                        tasaBCVTransaccion = parsearNumero(columnas[11]) || tasaBCV || 0; cppResultante = columnas[12] ? parsearNumero(columnas[12]) : 0;
+                        stockResultante = columnas[13] ? parseInt(columnas[13]) : 0; numeroControl = null;
                     }
                     let fechaCompleta = hora ? `${fecha}, ${hora}` : fecha;
                     let cantidad = tipo === 'Ingreso' ? cantidadEntrada : cantidadSalida;
                     let precioCompra = tipo === 'Ingreso' ? precio : 0;
                     let precioVenta = tipo === 'Egreso' ? precio : 0;
-                    nuevasTransacciones.push({ 
-                        fecha: fechaCompleta, tipo, codigo, articulo, cantidad, 
-                        precioCompra, precioVenta, stockMinimo, exento, 
-                        tasaBCV: tasaBCVTransaccion, cppResultante: cppResultante, stockResultante: stockResultante,
-                        numeroControl: numeroControl || `CTRL-IMPORT-${Date.now()}-${Math.floor(Math.random()*1000)}`
-                    });
+                    nuevasTransacciones.push({ fecha: fechaCompleta, tipo, codigo, articulo, cantidad, precioCompra, precioVenta, stockMinimo, exento, tasaBCV: tasaBCVTransaccion, cppResultante: cppResultante, stockResultante: stockResultante, numeroControl: numeroControl || `CTRL-IMPORT-${Date.now()}-${Math.floor(Math.random()*1000)}` });
                     if (tipo === 'Ingreso') {
                         if (nuevoInventario[codigo]) { 
                             const stockAnterior = nuevoInventario[codigo].cantidad;
                             const cppAnterior = nuevoInventario[codigo].precioCompra || 0;
                             const stockTotal = stockAnterior + cantidad;
                             const cppNuevo = ((stockAnterior * cppAnterior) + (cantidad * precioCompra)) / stockTotal;
-                            nuevoInventario[codigo].cantidad = stockTotal; 
-                            nuevoInventario[codigo].precioCompra = cppNuevo;
-                            nuevoInventario[codigo].stockMinimo = stockMinimo;
-                            nuevoInventario[codigo].exento = exento;
-                        } else { 
-                            nuevoInventario[codigo] = { articulo, cantidad, precioCompra, precioVenta: null, stockMinimo, exento }; 
-                        }
+                            nuevoInventario[codigo].cantidad = stockTotal; nuevoInventario[codigo].precioCompra = cppNuevo;
+                            nuevoInventario[codigo].stockMinimo = stockMinimo; nuevoInventario[codigo].exento = exento;
+                        } else { nuevoInventario[codigo] = { articulo, cantidad, precioCompra, precioVenta: null, stockMinimo, exento }; }
                     } else if (tipo === 'Egreso') {
-                        if (nuevoInventario[codigo]) { 
-                            nuevoInventario[codigo].cantidad -= cantidad; 
-                            nuevoInventario[codigo].precioVenta = precioVenta; 
-                        } else { 
-                            nuevoInventario[codigo] = { articulo, cantidad: -Math.abs(cantidad), precioCompra: 0, precioVenta, stockMinimo: 3, exento }; 
-                        }
+                        if (nuevoInventario[codigo]) { nuevoInventario[codigo].cantidad -= cantidad; nuevoInventario[codigo].precioVenta = precioVenta; } 
+                        else { nuevoInventario[codigo] = { articulo, cantidad: -Math.abs(cantidad), precioCompra: 0, precioVenta, stockMinimo: 3, exento }; }
                     }
                     lineasProcesadas++;
                 }
-                if (lineasProcesadas === 0) {
-                    alert("❌ Formato incompatible. Asegúrate de importar un archivo de texto tabulado válido.");
-                } else {
-                    inventario = nuevoInventario; 
-                    transacciones = nuevasTransacciones; 
-                    paginaActual = 1;
-                    guardarDatos(); 
+                if (lineasProcesadas === 0) { alert("❌ Formato incompatible. Asegúrate de importar un archivo de texto tabulado válido."); } 
+                else {
+                    inventario = nuevoInventario; transacciones = nuevasTransacciones; paginaActual = 1; guardarDatos(); 
                     alert(`✅ Base de datos restaurada con éxito. Se procesaron ${lineasProcesadas} movimientos.`); 
                 }
                 inputImportar.value = ''; 
@@ -1774,13 +1105,11 @@
         });
 
         btnActualizarTasa.addEventListener('click', () => obtenerTasaBCV());
-
         selectorMoneda.value = monedaSeleccionada;
         selectorMoneda.addEventListener('change', (e) => {
             monedaSeleccionada = e.target.value;
             localStorage.setItem('moneda_seleccionada', monedaSeleccionada);
-            actualizarEtiquetasMoneda();
-            actualizarTodo();
+            actualizarEtiquetasMoneda(); actualizarTodo();
         });
 
         function actualizarEtiquetasMoneda() {
@@ -1792,19 +1121,13 @@
         function actualizarTodo() { actualizarTabla(); actualizarCarrito(); actualizarCarritoIngreso(); }
         
         let escanerActivo = null, inputDestinoActual = ''; 
-
         function abrirScanner(idInputDestino) {
             inputDestinoActual = idInputDestino;
             document.getElementById('modal-scanner').classList.remove('hidden');
             escanerActivo = new Html5QrcodeScanner("lector-camara", { fps: 10, qrbox: { width: 250, height: 100 }, formatsToSupport: [ Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.CODE_128 ] }, false);
             escanerActivo.render(onScanExito, onScanError);
         }
-
-        function cerrarScanner() {
-            document.getElementById('modal-scanner').classList.add('hidden');
-            if (escanerActivo) escanerActivo.clear(); 
-        }
-
+        function cerrarScanner() { document.getElementById('modal-scanner').classList.add('hidden'); if (escanerActivo) escanerActivo.clear(); }
         function onScanExito(codigoDecodificado) {
             cerrarScanner();
             const input = document.getElementById(inputDestinoActual);
@@ -1812,7 +1135,6 @@
             const evento = new Event('input', { bubbles: true });
             input.dispatchEvent(evento);
         }
-
         function onScanError(mensajeError) { }
         
         actualizarEtiquetasMoneda();
@@ -1844,6 +1166,17 @@
             const precioVentaSugerido = costoPromedioPonderado / (1 - MARGEN_GANANCIA);
             campoPrecio.value = precioVentaSugerido.toFixed(2);
         }
+
+        // ✅ Event listeners para el input de búsqueda de artículo en historial
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputBusqueda = document.getElementById('buscar-articulo-historial');
+            const btnConsultar = document.getElementById('btn-consultar-articulo');
+            if (inputBusqueda) {
+                inputBusqueda.addEventListener('input', () => { if (btnConsultar) btnConsultar.disabled = inputBusqueda.value.trim().length === 0; });
+                inputBusqueda.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); consultarArticuloHistorial(); } });
+                inputBusqueda.addEventListener('change', () => { if (inputBusqueda.value.trim()) consultarArticuloHistorial(); });
+            }
+        });
     </script>
     <div id="modal-scanner" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">

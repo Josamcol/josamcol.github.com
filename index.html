@@ -47,7 +47,7 @@
                             <option value="VES">VES (Bs.)</option>
                         </select>
                     </div>
-                    <span class="text-sm bg-indigo-800 px-3 py-1 rounded-full shadow-inner font-medium text-indigo-200">Versión b 0.44 (Corrección Ver Facturas)</span>
+                    <span class="text-sm bg-indigo-800 px-3 py-1 rounded-full shadow-inner font-medium text-indigo-200">Versión b 0.45 (Corrección Ver Facturas)</span>
                 </div>
             </div>
         </header>
@@ -366,6 +366,7 @@
     </div>
 
     <script>
+		"use strict"
         let inventario = JSON.parse(localStorage.getItem('pos_inventario')) || {};
         let transacciones = JSON.parse(localStorage.getItem('pos_transacciones')) || [];
         let carrito = [];
@@ -677,8 +678,9 @@
 
             movimientos.forEach(item => {
                 const esIngreso = item.tipo === 'Ingreso';
-                const cantidadEntrada = esIngreso ? item.cantidad : 0;
-                const cantidadSalida = esEgreso = item.tipo === 'Egreso' ? item.cantidad : 0;
+				const esEgreso = item.tipo === 'Egreso'; // ✅ Declaración correcta
+				const cantidadEntrada = esIngreso ? item.cantidad : 0;
+				const cantidadSalida = esEgreso ? item.cantidad : 0; // ✅ Evaluación correcta	
                 const precioUSD = esIngreso ? (item.precioCompra || 0) : (item.precioVenta || 0);
                 const tasaUsada = item.tasaBCV || tasaBCV || 0;
                 const precioVES = convertirAVES(precioUSD, tasaUsada);
@@ -887,6 +889,9 @@
         });
 
         btnProcesarIngreso.addEventListener('click', () => {
+			if (monedaSeleccionada === 'VES' && (!tasaBCV || tasaBCV <= 0)) {
+				return alert('⚠️ No se puede procesar en VES: La tasa BCV no está cargada o es inválida.');
+			}
             if (carritoIngreso.length === 0) return alert('⚠️ La lista de compra está vacía.');
             const fechaActual = new Date().toLocaleString('es-ES');
             const numeroControl = generarNumeroControl();
@@ -969,6 +974,9 @@
         });
 
         btnProcesarEgreso.addEventListener('click', () => {
+			if (monedaSeleccionada === 'VES' && (!tasaBCV || tasaBCV <= 0)) {
+				return alert('⚠️ No se puede procesar en VES: La tasa BCV no está cargada o es inválida.');
+			}
             if (carrito.length === 0) return alert('⚠️ La lista de venta está vacía.');
             const fechaActual = new Date().toLocaleString('es-ES');
             const numeroControl = generarNumeroControl();
@@ -1122,11 +1130,18 @@
         
         let escanerActivo = null, inputDestinoActual = ''; 
         function abrirScanner(idInputDestino) {
-            inputDestinoActual = idInputDestino;
-            document.getElementById('modal-scanner').classList.remove('hidden');
-            escanerActivo = new Html5QrcodeScanner("lector-camara", { fps: 10, qrbox: { width: 250, height: 100 }, formatsToSupport: [ Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.CODE_128 ] }, false);
-            escanerActivo.render(onScanExito, onScanError);
-        }
+			if (escanerActivo) {
+				escanerActivo.clear().catch(err => console.log("Limpiando escáner previo", err));
+			}
+			inputDestinoActual = idInputDestino;
+			document.getElementById('modal-scanner').classList.remove('hidden');
+			escanerActivo = new Html5QrcodeScanner("lector-camara", { 
+				fps: 10, 
+				qrbox: { width: 250, height: 100 }, 
+				formatsToSupport: [ Html5QrcodeSupportedFormats.EAN_13, Html5QrcodeSupportedFormats.CODE_128 ] 
+			}, false);
+			escanerActivo.render(onScanExito, onScanError);
+		}
         function cerrarScanner() { document.getElementById('modal-scanner').classList.add('hidden'); if (escanerActivo) escanerActivo.clear(); }
         function onScanExito(codigoDecodificado) {
             cerrarScanner();
